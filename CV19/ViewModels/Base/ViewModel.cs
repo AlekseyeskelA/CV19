@@ -6,6 +6,7 @@ using System.Text;
 
 namespace CV19.ViewModels.Base
 {
+    // Базовый класс представления
     internal abstract class ViewModel : INotifyPropertyChanged
     {
         // Событие:
