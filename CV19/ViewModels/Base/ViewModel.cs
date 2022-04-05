@@ -30,7 +30,7 @@ namespace CV19.ViewModels.Base
             // Предложил VisualStudio:
             //PropertyChangedEventHandler handler = PropertyChanged;
 
-            // Из обучения:
+            // Генерация события (из обучения):
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
         }
 
