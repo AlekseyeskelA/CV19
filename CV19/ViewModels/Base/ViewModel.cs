@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.ComponentModel;                    // Для INotifyPropertyChanged
+using System.Runtime.CompilerServices;          // Для [CallerMemberName]
 using System.Text;
 
 namespace CV19.ViewModels.Base
 {
     // Базовый класс представления
-    internal abstract class ViewModel : INotifyPropertyChanged
+    internal abstract class ViewModel : INotifyPropertyChanged, IDisposable
     // Интерфейс, способный уведомлять о том, что внутри нашего объекта изменилось какое-то свойство.
     // При этом интерфейсная визуальная часть подключится к этому интерфейсу и будет следить за своим свойством, которое егму интересно.
     // В том случае, если это свойство изменилось, оно перечитает его значение и обновит визуальную часть.
     // Внутри этого интерфейса содержится описание всего лишь одного события (PropertyChanged)
+    // IDisposable - для примера, чтобы понять, как можно реализовать интерфе с IDisposable.
+    // IDisposable плох тем, что обращает на сабя внимание сборщика мусора, отнимая его ресурсы.
     {
         // Событие:
         public event PropertyChangedEventHandler PropertyChanged;
@@ -50,6 +52,28 @@ namespace CV19.ViewModels.Base
             field = value;                                      // В противном случае обновляем поле и...
             OnPropertyChanged(PropertyName);                    // генерируем OnPropertyChanged события и...
             return true;                                        // возвращаем true.
+        }
+
+
+
+        // Для IDisposable:        
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        // Если вдруг у нас появится деструктор, то метод Dispose нужно вызывать с параметром false:
+        //~ViewModelDisposable()
+        //{
+        //    Dispose(false);
+        //}
+
+        private bool _Disposed;
+        protected virtual void Dispose(bool Disposing)
+        {
+            if (!Disposing || _Disposed) return;
+            _Disposed = true;
+            // Освобождение управляемых ресурсов
         }
     }
 }
