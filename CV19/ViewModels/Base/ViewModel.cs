@@ -7,7 +7,7 @@ using System.Text;
 namespace CV19.ViewModels.Base
 {
     // Базовый класс представления
-    internal abstract class ViewModel : INotifyPropertyChanged, IDisposable
+    internal abstract class ViewModel : INotifyPropertyChanged/*, IDisposable*/
     // Интерфейс, способный уведомлять о том, что внутри нашего объекта изменилось какое-то свойство.
     // При этом интерфейсная визуальная часть подключится к этому интерфейсу и будет следить за своим свойством, которое егму интересно.
     // В том случае, если это свойство изменилось, оно перечитает его значение и обновит визуальную часть.
@@ -44,8 +44,8 @@ namespace CV19.ViewModels.Base
         // Чтобы эти кольцевые обновления не зацикливались и не происходило переполнение стека.
         // ref T field - сюда попадает ссылка на поле свойства.
         // T value - сюда будем передавать новое значение, которое хотим установить.
-        // [CallerMemberName] string PeopsertName = null - этот параметр будет самостоятельно определяться компилятором, чтобы не указывать его вручную. Это будет имя нашего свойства,
-        // которое мы передадим в метод OnPropertyChanged.
+        // [CallerMemberName] string PeopsertName = null - Если написать так, то имя имя свойства будет определяться и определяться компилятором самостоятельно, чтобы не указывать его вручную.
+        // Это будет имя нашего свойства, которое мы передадим в метод OnPropertyChanged.
         protected virtual bool Set<T>(ref T field, T value, [CallerMemberName] string PropertyName = null)
         {
             if (Equals(field, value)) return false;             // Если значение поля, которое мы хотим обновить уже соответсвует передаваемому значению, то мы просто возвращаем false.
