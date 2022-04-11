@@ -7,6 +7,7 @@ using System.Text;
 namespace CV19.ViewModels.Base
 {
     // Базовый класс представления
+    // Если проект большой, то базовый класс представления лучше вынести в отдельную библиотеку
     internal abstract class ViewModel : INotifyPropertyChanged/*, IDisposable*/
     // Интерфейс, способный уведомлять о том, что внутри нашего объекта изменилось какое-то свойство.
     // При этом интерфейсная визуальная часть подключится к этому интерфейсу и будет следить за своим свойством, которое егму интересно.
@@ -56,24 +57,24 @@ namespace CV19.ViewModels.Base
 
 
 
-        // Для IDisposable:        
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        // Если вдруг у нас появится деструктор, то метод Dispose нужно вызывать с параметром false:
-        //~ViewModelDisposable()
+        //// Для IDisposable:        
+        //public void Dispose()
         //{
-        //    Dispose(false);
+        //    Dispose(true);
         //}
 
-        private bool _Disposed;
-        protected virtual void Dispose(bool Disposing)
-        {
-            if (!Disposing || _Disposed) return;
-            _Disposed = true;
-            // Освобождение управляемых ресурсов
-        }
+        //// Если вдруг у нас появится деструктор, то метод Dispose нужно вызывать с параметром false:
+        ////~ViewModelDisposable()
+        ////{
+        ////    Dispose(false);
+        ////}
+
+        //private bool _Disposed;
+        //protected virtual void Dispose(bool Disposing)
+        //{
+        //    if (!Disposing || _Disposed) return;
+        //    _Disposed = true;
+        //    // Освобождение управляемых ресурсов
+        //}
     }
 }
