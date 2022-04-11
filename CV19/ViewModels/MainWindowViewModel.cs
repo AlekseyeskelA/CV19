@@ -12,7 +12,7 @@ namespace CV19.ViewModels
         // В каждом свойстве должен быть такой код:
         private string _Title = "Анализ статистики CV19";
 
-        // Описание с тегами <summary> (нажать три раза "///"). Таким обрвзом в самом окне им проще пользоваться, так как просто видно, что это такое:
+        // Описание с тегами <summary> (нажать три раза "///"). Таким обрвзом в самом окне в разметке xaml при наведении мышки на Binding Свойство будет видно, что это такое:
         /// <summary>Заголовок окна</summary>
         public string Title
         {            
@@ -32,7 +32,20 @@ namespace CV19.ViewModels
 
             // Или ещё проще:
             set => Set(ref _Title, value); // если бы во ViewModel не было бы написано "[CallerMemberName] ... = null", то третьим аргументом здесь пришлось бы написать "Title".
-        } 
+        }
+        #endregion
+
+
+        #region Status : string - Статус программы
+        /// <summary>Статус программы</summary>
+        private string _Status = "Готов!";
+
+        /// <summary>Статус программы</summary>
+        public string Status
+        { 
+            get => _Status; 
+            set => Set(ref _Status, value); 
+        }
         #endregion
     }
 }
