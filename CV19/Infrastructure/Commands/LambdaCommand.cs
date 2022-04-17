@@ -3,6 +3,7 @@ using CV19.Infrastructure.Commands.Base;
 
 namespace CV19.Infrastructure.Commands
 {
+    // Главный класс команды для приложения.
     // После того, как создана базовая команда, создадим команду, которой легко пользоваться и которая будет основной рабочей лошадкой.
     // Назовём её LambdaCommand, так как она внутри использует Lambda-синтаксис. Также она может носить название RelayCommand или ActionCommand.
     internal class LambdaCommand : Command
