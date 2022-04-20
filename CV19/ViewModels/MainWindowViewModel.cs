@@ -1,7 +1,10 @@
-﻿using CV19.ViewModels.Base;
+﻿using CV19.Infrastructure.Commands;
+using CV19.ViewModels.Base;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
+using System.Windows.Input;
 
 namespace CV19.ViewModels
 {
@@ -47,5 +50,45 @@ namespace CV19.ViewModels
             set => Set(ref _Status, value); 
         }
         #endregion
+
+        #region Команды
+
+
+        #region CloseApplicationCommand        
+        // Команда, закрывающая программу:
+        // НАзвание свойства должно отображать его функционал, а в конце нужно написать "Command", чтобы отличать команду от обычного свойства.
+        public ICommand CloseApplicationCommand { get; }
+
+
+
+
+
+        // Методы (что команда должна делать):
+        //  Данный метод будет выполняться в момент, когда команда выполняется:
+        private void OnCloseApplicationCommandExecuted(object p)
+        {
+            // Обращаемся к классу Application из пространсва имён System.Windows, внутри вызываем текущее наше приложение (Current), у которого вызываем метод Shutdown():
+            Application.Current.Shutdown();
+            // Далее идём в разметру и привязываемся везде, где нужна функциональность закрытия окна.
+        }
+        // Данная команда будет доступна для выполнения всегда, поэтому возвращаем "true":
+        private bool CanCloseApplicationCommandExecute(object p) => true;
+        #endregion
+
+
+
+
+
+        #endregion
+        // Конструктор
+        public MainWindowViewModel()
+        {
+            // Создаём команды (объекты коменд) внутри конструктора:
+            #region Команды
+
+            CloseApplicationCommand = new LambdaCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
+
+            #endregion
+        }
     }
 }
