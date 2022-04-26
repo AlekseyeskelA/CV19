@@ -20,24 +20,45 @@
         xmlns:local="clr-namespace:CV19"        
         Title="{Binding Path=Title}"
         Height="450" Width="800">
-    <Window.DataContext>
-        <vm:MainWindowViewModel/>
-    </Window.DataContext>
+    <!--На уровне окна можно добавить команду на закрытие:-->
+    <Window.InputBindings>    
+    <KeyBinding Modifiers="Ctrl" Key="Q" Command="{Binding CloseApplicationCommand}"/>
+    </Window.InputBindings>
     <!--Внутри любого визуального элемента есть единое свойство DataContext, которое иерархически насдедуется внутри дерева интерфейса.
     То есть, если определить DataContext на уровне окна, то все вложенные элементы получают значение этого самого DataContextа.
     Если переопределить DataContext где-то уровнем ниже, то всё, что находится ниже по дереву интерфейса, изменит свой контекст данных.
     Можно написать DataContext="" после Title="MainWindow" Height="450" Width="800", а можно развернуть так: <Window.DataContext></Window.DataContext>-->
+    <!--Каждый тег <...> - это объект, который рождается в момент загрузки окна.-->
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+    <!--В словать ресурсов можно что-то поместить, только указав ключ. Сделаем ключ такой же, как и класс: "CloseApplicationCommand"-->
+    <Window.Resources>
+        <cmd:CloseApplicationCommand x:Key="CloseApplicationCommand"/>
+    </Window.Resources>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Файл">
                 <!--Вызов команды из ViewModel:-->
                 <!--<MenuItem Header="Выход" Command="{Binding CloseApplicationCommand}"/>-->
                 <!--Альтернативный вариант написания команды (на примере отдельной команды из Command):-->
-                <MenuItem Header="Выход">
-                    <MenuItem.Command>
+                
+                    <!--Команда "по месту". Здесь в разметку Parser-xaml создаст объект и вставит его в свойство Command. Если какая-то много где используется (например, в других окнах или в шаблонах),
+                    То такой подход быдет слишком расточителен для памяти, особенно, если используется DataGrid с множеством строк, внутрь каждой строки будет помещён визуальный объект
+                    и внутрь этого объекта помещена команда. Во первых они будут очень долго создаваться, а во вторых они съедят много памяти-->
+                    <!--<MenuItem Header="Выход">-->    
+                    <!--<MenuItem.Command>
                         <cmd:CloseApplicationCommand/>
-                    </MenuItem.Command>
-                </MenuItem>
+                    </MenuItem.Command>-->
+                    <!--Поэтому (да и вообще всегда), такие команды имеет смысл вынести в отдельные ресурсы, которые будут доступны той разметке, в которой они нужны.
+                    То есть если какая-то команда используется исключительно в пределах окна, то имеет смысл в пределах окна создать область ресурсов и туда поместить эту самую команду,
+                    которая в последствии внутри всего окна будет использоваться.
+                    Если эта команда уровня всего приложения, и она используется в нескольких окнах, тогда имеет смысл завестя словарь ресурсов, и подключить его на уровне всего приложения
+                    в файле App.xaml нутри "Application.Resources", и тогда эту команду можно будет, как ресурс, подключить в любом месте разметки, и она небудет сжирать память каждый раз.
+                    То есть она лишь в одном месте будет объявлена, и её можно будет оттуда использовать.
+                    Для уровня данного окна, нужно создать ресурс этого окна (см. "Window.Resources" вверху) (ресурсы можно объявить на любом уровне разметки), и после этого используем
+                    команду, как ресурс:-->
+                <MenuItem Header="Выход" Command="{StaticResource CloseApplicationCommand}"/>            
             </MenuItem>
             <MenuItem Header="Помощь">
                 <MenuItem Header="О программе"/>
@@ -67,10 +88,17 @@
                                Fill="Blue" Stroke="Red"
                                StrokeThickness="3"
                                RadiusX="5" RadiusY="7"/>
+                    <!--У эллипса нет понятия команды (нет свойства "Command"), но мы хотим, чтобы при щелчке по эллипсу срабатывала команда закрытия приложения.
+                    К любому визуальному элементу можно добавить привязки ввода (мышка или клавиатура).-->
                     <Ellipse Grid.Column="1" Grid.Row="0"
                              Fill="Red" Stroke="Blue"
-                             StrokeThickness="3"/>
-                    <GridSplitter Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                             StrokeThickness="3">
+                        <Ellipse.InputBindings>
+                            <MouseBinding Command="{Binding CloseApplicationCommand}"
+                                          MouseAction="LeftDoubleClick"/>
+                        </Ellipse.InputBindings>
+                    </Ellipse>                        
+                        <GridSplitter Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
                                   HorizontalAlignment="Right"
                                   Width="4"/>
                 </Grid>
