@@ -8,7 +8,8 @@
   <ItemGroup>
     <PackageReference Include="MaterialDesignThemes" Version="4.4.0" />
 	  <!--Поcле того, как MaterialDesignThemes был добавлен, нужно зайти на GitHub, вкладку Wiki, раздел SuoerQuikStart и довавить указанный код (словарь ресурсов)
-	  в ресурсы приложения (App.xaml). Установка MaterialDesignThemes сделает элементы более разнообразными и интересными-->
+	  в ресурсы приложения (App.xaml). Установка MaterialDesignThemes сделает элементы более разнообразными и интересными. Также очень хорош пакет Extended.WPF.Toolkit,
+	  но нужно читать лицензию, и выбирать белее раннюю бесплантую версию. А пакет HelixToolkit хорош для 3D-графики-->
   </ItemGroup>
 
 </Project>
