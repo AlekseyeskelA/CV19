@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+// В сдеале файлы прилагаемого кода .cs с обработчиками событий у окон и каких-либо других визуальных элементов должны оставаться в том состоянии, в котором их создала студия.
 namespace CV19WPFTest
 {
     /// <summary>

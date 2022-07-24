@@ -11,6 +11,9 @@ namespace CV19.ViewModels
     // Основная модель представления для главного окна.
     internal class MainWindowViewModel : ViewModel
     {
+        //// При желании можно переопределить метод Dispose и освободить какие-то ресурсы, которые модель захватит вдруг:
+        //protected override void Dispose(bool Disposing) { base.Dispose(Disposing); }
+
         #region Заголовок окна
         // В каждом свойстве должен быть такой код:
         private string _Title = "Анализ статистики CV19";
@@ -56,7 +59,7 @@ namespace CV19.ViewModels
 
         #region CloseApplicationCommand        
         // Команда, закрывающая программу:
-        // НАзвание свойства должно отображать его функционал, а в конце нужно написать "Command", чтобы отличать команду от обычного свойства.
+        // Название свойства должно отображать его функционал, а в конце нужно написать "Command", чтобы отличать команду от обычного свойства.
         public ICommand CloseApplicationCommand { get; }
 
 

@@ -1,9 +1,10 @@
-﻿<Application x:Class="CV19WPFTest.App"
+﻿<!--Вся нижележащая разметка генерирует специальтный класс App, который будет находиться в папке ниже папки debag проекта после компиляции-->
+    <Application x:Class="CV19WPFTest.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:CV19WPFTest"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             StartupUri="MainWindow.xaml">
+             StartupUri="MainWindow.xaml"> <!--Этот параметр указывает, какое окно будет запускаться. Если его удалить, то окно придётся запускать вручную.-->
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
