@@ -1,4 +1,5 @@
 ﻿using CV19.Infrastructure.Commands;
+using CV19.Models;
 using CV19.ViewModels.Base;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,22 @@ namespace CV19.ViewModels
     {
         //// При желании можно переопределить метод Dispose и освободить какие-то ресурсы, которые модель захватит вдруг:
         //protected override void Dispose(bool Disposing) { base.Dispose(Disposing); }
+
+        // Создадим данные для построенияя графика:
+        // Нам потребуется свойство, которое возвращает перечисление точек данных, которые быдем строить на графике. Если в последствии не планируется добавлять или удалять точки,
+        // то можно просто вернуть перечисление EInumerable. Если планируется добавлять или удалять, то нужно возвращать ObservableCollection:
+
+        #region TestDataPoints : IEnumerable<DataPoint> - Текстовый набор для визуализации
+        /// <summary>Текстовый набор для визуализации</summary>
+        private IEnumerable<DataPoint> _TestDataPoints;
+
+        /// <summary>Текстовый набор для визуализации</summary>
+        public IEnumerable<DataPoint> TestDataPoints
+        {
+            get => _TestDataPoints; 
+            set => Set(ref _TestDataPoints, value); 
+        }    // Возвращение такого типа будет достаточно для визуализации графиков OxyPlot (сгенерируем его в конструкторе).
+        #endregion
 
         #region Заголовок окна
         // В каждом свойстве должен быть такой код:
@@ -92,6 +109,18 @@ namespace CV19.ViewModels
             CloseApplicationCommand = new LambdaCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
 
             #endregion
+
+            // Сгенерируем данные для тестового графика:
+            var data_points = new List<DataPoint>((int) (360 / 0.1));
+            for (var x = 0d; x <=360; x+=0.1)
+            {
+                const double to_rad = Math.PI / 180;            // Константа - это не переменная. Её можно писать там, где это необходимо.
+                var y = Math.Sin(x * to_rad);
+
+                data_points.Add(new DataPoint { XValue = x, YValue = y });
+            }    
+
+            TestDataPoints = data_points;
         }
     }
 }

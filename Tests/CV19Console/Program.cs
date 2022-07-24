@@ -56,6 +56,10 @@ namespace CV19Console
                 .First(v => v.Country.Equals("Russia", StringComparison.OrdinalIgnoreCase));
             Console.WriteLine(string.Join("\r\n", GetDates().Zip(russia_data.Counts, (date, count) => $"{date:dd:MM} - {count}")));
 
+            // Итак, ядро бизнес-логики определено. Не будем сейчас включать эту логику в наши программу, а просто посмотрим с тестовыми данными, как их можно визуализировать простыми способами
+            // и создадим модель данных.
+            // Для этого в папке Models создаём структуру моделей данных, из которых у нас всё будет устроено: ConfirmedCount.cs, CountryInfo.cs, DataPoint.cs, PlaceInfo.cs, ProvinceInfo.cs.
+            // А для построения графиков установим пакет OxyPlot.WPF в проект CV19.
 
             Console.ReadLine();
         }
