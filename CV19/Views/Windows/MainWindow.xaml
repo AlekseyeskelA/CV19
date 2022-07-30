@@ -18,12 +18,13 @@
         xmlns:fa="http://schemas.fontawesome.com/icons/"
         xmlns:cmd="clr-namespace:CV19.Infrastructure.Commands"
         xmlns:vm="clr-namespace:CV19.ViewModels"
-        xmlns:local="clr-namespace:CV19"        
+        xmlns:local="clr-namespace:CV19"
+        xmlns:oxy="http://oxyplot.org/wpf"
         Title="{Binding Path=Title}"
         Height="450" Width="800">
     <!--На уровне окна можно добавить команду на закрытие:-->
-    <Window.InputBindings>    
-    <KeyBinding Modifiers="Ctrl" Key="Q" Command="{Binding CloseApplicationCommand}"/>
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Ctrl" Key="Q" Command="{Binding CloseApplicationCommand}"/>
     </Window.InputBindings>
     <!--Внутри любого визуального элемента есть единое свойство DataContext, которое иерархически насдедуется внутри дерева интерфейса.
     То есть, если определить DataContext на уровне окна, то все вложенные элементы получают значение этого самого DataContextа.
@@ -43,15 +44,15 @@
                 <!--Вызов команды из ViewModel:-->
                 <!--<MenuItem Header="Выход" Command="{Binding CloseApplicationCommand}"/>-->
                 <!--Альтернативный вариант написания команды (на примере отдельной команды из Command):-->
-                
-                    <!--Команда "по месту". Здесь в разметку Parser-xaml создаст объект и вставит его в свойство Command. Если какая-то много где используется (например, в других окнах или в шаблонах),
+
+                <!--Команда "по месту". Здесь в разметку Parser-xaml создаст объект и вставит его в свойство Command. Если какая-то много где используется (например, в других окнах или в шаблонах),
                     То такой подход быдет слишком расточителен для памяти, особенно, если используется DataGrid с множеством строк, внутрь каждой строки будет помещён визуальный объект
                     и внутрь этого объекта помещена команда. Во первых они будут очень долго создаваться, а во вторых они съедят много памяти-->
-                    <!--<MenuItem Header="Выход">-->    
-                    <!--<MenuItem.Command>
+                <!--<MenuItem Header="Выход">-->
+                <!--<MenuItem.Command>
                         <cmd:CloseApplicationCommand/>
                     </MenuItem.Command>-->
-                    <!--Поэтому (да и вообще всегда), такие команды имеет смысл вынести в отдельные ресурсы, которые будут доступны той разметке, в которой они нужны.
+                <!--Поэтому (да и вообще всегда), такие команды имеет смысл вынести в отдельные ресурсы, которые будут доступны той разметке, в которой они нужны.
                     То есть если какая-то команда используется исключительно в пределах окна, то имеет смысл в пределах окна создать область ресурсов и туда поместить эту самую команду,
                     которая в последствии внутри всего окна будет использоваться.
                     Если эта команда уровня всего приложения, и она используется в нескольких окнах, тогда имеет смысл завестя словарь ресурсов, и подключить его на уровне всего приложения
@@ -59,7 +60,7 @@
                     То есть она лишь в одном месте будет объявлена, и её можно будет оттуда использовать.
                     Для уровня данного окна, нужно создать ресурс этого окна (см. "Window.Resources" вверху) (ресурсы можно объявить на любом уровне разметки), и после этого используем
                     команду, как ресурс:-->
-                <MenuItem Header="Выход" Command="{StaticResource CloseApplicationCommand}"/>            
+                <MenuItem Header="Выход" Command="{StaticResource CloseApplicationCommand}"/>
             </MenuItem>
             <MenuItem Header="Помощь">
                 <MenuItem Header="О программе"/>
@@ -73,10 +74,13 @@
                 <ProgressBar Width="120" Height="14" Value="30"/>
             </StatusBarItem>
         </StatusBar>
-        <TabControl>
+
+        <!--Модель-представления ничего не должна знать о визуальных элементах, но при этом можно ввести внутрь модели-представления индекс активной вкладки. Для этого возьмём свойство TabControl SelectedIndex
+         и свяжем его с каким-нибудь свойством ViewMosel-->
+        <TabControl SelectedIndex="">
             <!--<TabItem Header="Вкладка 1">-->
-                <!--Свойство Header принимает тип object. Это значит, что его можно развернуть следующим образом и внутри создать разметку:-->
-            <TabItem>
+            <!--Свойство Header принимает тип object. Это значит, что его можно развернуть следующим образом и внутри создать разметку:-->
+            <TabItem Visibility="Collapsed">
                 <TabItem.Header>
                     <!--Обычно это StackPanel горизонтальной ориентации внутри которой лежит текстовый блок и ещё что-нибудь, что нам необходимо, например, иконки:-->
                     <StackPanel Orientation="Horizontal">
@@ -101,30 +105,54 @@
                         <RowDefinition Height="82*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="153*"/>
+                        <ColumnDefinition Width="88*"/>
+                        <ColumnDefinition Width="17*"/>
+                        <ColumnDefinition Width="12*"/>
+                        <ColumnDefinition Width="36*"/>
                         <ColumnDefinition Width="641*"/>
                     </Grid.ColumnDefinitions>
                     <Rectangle Grid.Column="0" Grid.Row="0"
                                Margin="5,7,5,7"
                                Fill="Blue" Stroke="Red"
                                StrokeThickness="3"
-                               RadiusX="5" RadiusY="7"/>
+                               RadiusX="5" RadiusY="7" Grid.ColumnSpan="4"/>
                     <!--У эллипса нет понятия команды (нет свойства "Command"), но мы хотим, чтобы при щелчке по эллипсу срабатывала команда закрытия приложения.
                     К любому визуальному элементу можно добавить привязки ввода (мышка или клавиатура).-->
-                    <Ellipse Grid.Column="1" Grid.Row="0"
+                    <Ellipse Grid.Column="4" Grid.Row="0"
                              Fill="Red" Stroke="Blue"
-                             StrokeThickness="3">
+                             StrokeThickness="3" Margin="0,0,0,309" Grid.RowSpan="2">
                         <Ellipse.InputBindings>
                             <MouseBinding Command="{Binding CloseApplicationCommand}"
                                           MouseAction="LeftDoubleClick"/>
                         </Ellipse.InputBindings>
-                    </Ellipse>                        
-                        <GridSplitter Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
-                                  HorizontalAlignment="Right"
+                    </Ellipse>
+                    <GridSplitter Grid.Column="3" Grid.Row="0" Grid.RowSpan="2"
                                   Width="4"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Вкладка 2"></TabItem>
+            <!--<TabItem Header="{Binding TestDataPoints}"></TabItem>--> 
+            <!--Если написано (Collection), значит там что-то есть...-->
+            <!--<TabItem Header="{Binding TestDataPoints.Count}"></TabItem>-->
+            <!--Будет показывать количество элементов.-->
+            <!--<TabItem Header="{Binding TestDataPoints[400]}"></TabItem>-->
+            <!--Так мы увидим, что это элементы типа DataPoint-->
+            <!--<TabItem Header="{Binding TestDataPoints[400].XValue}"></TabItem>-->
+            <!--Получим значение 400-сотой точки X-->
+            <TabItem Header="График">
+                <!--Предварительно вверху подключим пространство имён OxyPlot: xmlns:oxy="http://oxyplot.org/wpf"-->
+                <oxy:Plot>
+                    <oxy:Plot.Axes>
+                        <oxy:LinearAxis Position="Left"/>
+                        <oxy:LinearAxis Position="Bottom"/>
+                    </oxy:Plot.Axes>
+                    <oxy:LineSeries Color="Red"
+                                    ItemsSource="{Binding TestDataPoints}"
+                                    DataFieldX="XValue"
+                                    DataFieldY="YValue"/>
+                </oxy:Plot>
+
+
+            </TabItem>
         </TabControl>
     </DockPanel>
 

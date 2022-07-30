@@ -19,8 +19,8 @@ namespace CV19.ViewModels
         // Нам потребуется свойство, которое возвращает перечисление точек данных, которые быдем строить на графике. Если в последствии не планируется добавлять или удалять точки,
         // то можно просто вернуть перечисление EInumerable. Если планируется добавлять или удалять, то нужно возвращать ObservableCollection:
 
-        #region TestDataPoints : IEnumerable<DataPoint> - Текстовый набор для визуализации
-        /// <summary>Текстовый набор для визуализации</summary>
+        #region TestDataPoints : IEnumerable<DataPoint> - Тестовый набор для визуализации
+        /// <summary>Тестовый набор для визуализации</summary>
         private IEnumerable<DataPoint> _TestDataPoints;
 
         /// <summary>Текстовый набор для визуализации</summary>
@@ -29,6 +29,7 @@ namespace CV19.ViewModels
             get => _TestDataPoints; 
             set => Set(ref _TestDataPoints, value); 
         }    // Возвращение такого типа будет достаточно для визуализации графиков OxyPlot (сгенерируем его в конструкторе).
+        // Далее идём в разметку окна и проверяем, что в свойстве TestDataPoints что-то есть... Выберем для этого вкладку 2.
         #endregion
 
         #region Заголовок окна
