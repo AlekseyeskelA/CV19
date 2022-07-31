@@ -29,6 +29,19 @@ namespace CV19.ViewModels
             get => _TestDataPoints; 
             set => Set(ref _TestDataPoints, value); 
         }    // Возвращение такого типа будет достаточно для визуализации графиков OxyPlot (сгенерируем его в конструкторе).
+             // Далее идём в разметку окна и проверяем, что в свойстве TestDataPoints что-то есть... Выберем для этого вкладку 2.
+        #endregion
+
+        #region SelectedPageIndex : int - Номер выбранной вкладки
+        /// <summary>Номер выбранной вкладки</summary>
+        private int _SelectedPageIndex;
+
+        /// <summary>Номер выбранной вкладки</summary>
+        public int SelectedPageIndex
+        {
+            get => _SelectedPageIndex;
+            set => Set(ref _SelectedPageIndex, value);
+        }    // Возвращение такого типа будет достаточно для визуализации графиков OxyPlot (сгенерируем его в конструкторе).
         // Далее идём в разметку окна и проверяем, что в свойстве TestDataPoints что-то есть... Выберем для этого вкладку 2.
         #endregion
 
@@ -80,10 +93,6 @@ namespace CV19.ViewModels
         // Название свойства должно отображать его функционал, а в конце нужно написать "Command", чтобы отличать команду от обычного свойства.
         public ICommand CloseApplicationCommand { get; }
 
-
-
-
-
         // Методы (что команда должна делать):
         //  Данный метод будет выполняться в момент, когда команда выполняется:
         private void OnCloseApplicationCommandExecuted(object p)
@@ -97,8 +106,18 @@ namespace CV19.ViewModels
         #endregion
 
 
+        #region ChangeTabIndexCommand  
+        // Команда, чередующая вкладки по нажатию на кнопки со стрелками:
+        public ICommand ChangeTabIndexCommand { get; }
 
+        private bool CanChangeTabIndexCommandExecuted(object p) => _SelectedPageIndex >= 0;
 
+        private void OnChangeTabIndexCommandExecuted(object p)
+        {
+            if (p is null) return;
+            SelectedPageIndex += Convert.ToInt32(p);
+        }
+        #endregion
 
         #endregion
         // Конструктор
@@ -108,7 +127,7 @@ namespace CV19.ViewModels
             #region Команды
 
             CloseApplicationCommand = new LambdaCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
-
+            ChangeTabIndexCommand = new LambdaCommand(OnChangeTabIndexCommandExecuted, CanChangeTabIndexCommandExecuted);
             #endregion
 
             // Сгенерируем данные для тестового графика:

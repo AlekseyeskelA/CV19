@@ -65,6 +65,16 @@
             <MenuItem Header="Помощь">
                 <MenuItem Header="О программе"/>
             </MenuItem>
+            <MenuItem Command="{Binding ChangeTabIndexCommand}" CommandParameter="-1">
+                <MenuItem.Header>
+                    <fa:ImageAwesome Height="12" Icon="Regular_ArrowAltCircleLeft"/>
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem Command="{Binding ChangeTabIndexCommand}" CommandParameter="+1">
+                <MenuItem.Header>
+                    <fa:ImageAwesome Height="12" Icon="Regular_ArrowAltCircleRight"/>
+                </MenuItem.Header>
+            </MenuItem>            
         </Menu>
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBarItem MinWidth="150" MaxWidth="350">
@@ -73,14 +83,16 @@
             <StatusBarItem>
                 <ProgressBar Width="120" Height="14" Value="30"/>
             </StatusBarItem>
+            <StatusBarItem Content="{Binding SelectedPageIndex}"/>
+            <!--Чтобы всё правильно работало и индексы не выходили за количество вкладок, нужно кое-чего добавить (информацию о количестве вкладок).-->
         </StatusBar>
 
         <!--Модель-представления ничего не должна знать о визуальных элементах, но при этом можно ввести внутрь модели-представления индекс активной вкладки. Для этого возьмём свойство TabControl SelectedIndex
-         и свяжем его с каким-нибудь свойством ViewMosel-->
-        <TabControl SelectedIndex="">
+         и свяжем его со свойством SelectedPageIndex во ViewMosel-->
+        <TabControl SelectedIndex="{Binding SelectedPageIndex}">
             <!--<TabItem Header="Вкладка 1">-->
             <!--Свойство Header принимает тип object. Это значит, что его можно развернуть следующим образом и внутри создать разметку:-->
-            <TabItem Visibility="Collapsed">
+            <TabItem>
                 <TabItem.Header>
                     <!--Обычно это StackPanel горизонтальной ориентации внутри которой лежит текстовый блок и ещё что-нибудь, что нам необходимо, например, иконки:-->
                     <StackPanel Orientation="Horizontal">
@@ -153,6 +165,9 @@
 
 
             </TabItem>
+            <TabItem Header="Вкладка 2"></TabItem>
+            <TabItem Header="Вкладка 3"></TabItem>
+            <TabItem Header="Вкладка 4"></TabItem>
         </TabControl>
     </DockPanel>
 
