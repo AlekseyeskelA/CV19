@@ -92,54 +92,31 @@
         <TabControl SelectedIndex="{Binding SelectedPageIndex}">
             <!--<TabItem Header="Вкладка 1">-->
             <!--Свойство Header принимает тип object. Это значит, что его можно развернуть следующим образом и внутри создать разметку:-->
-            <TabItem>
-                <TabItem.Header>
-                    <!--Обычно это StackPanel горизонтальной ориентации внутри которой лежит текстовый блок и ещё что-нибудь, что нам необходимо, например, иконки:-->
-                    <StackPanel Orientation="Horizontal">
-                        <!--Если иконка в виде картинки, то создаём элемент Image, в котором указываем ОТНОСИТЕЛЬНЫЙ (Не абсолютный. Если указать абсолютный путь
-                        и перейти на другой компьютер, то возникнет проблема) путь к самой картинке, и компилятор добавит её как ресурс к приложению:-->
-                        <!--<Image Source="..."></Image>-->
-                        <!--А мы в качестве иконок будем использовать шрифт на fontawesome.com. В этом случае у нас будет векторная иконка. Для этого в разделе "Зависимости" можно подклдючитьм пакет путем
-                        добавления ссылки (щелчок правой кнопкой мыши) (либо, если проект .Net Framework, то есть пакеты всей платформы, либо можно использовать ссылки на проекты внутри наего решения,
-                        либо через раздел "Обзор" можно добавить любую библиотеку, указав, где она расположена). Так делали раньше, пока не появился менеджер пакетов NuGet.
-                        Мы воспользуемся NuGet (Щелчок правой кнопкой мыши на CV19 (если уентрализовано, то на "Решение CV19)) и выберем пакет FontAwesome.WPF (лучше применять для .Net Framework)
-                        или FontAwesome5 (для .Net Core). NuGet подбирает и скачивает последнюю версию пакета и другие пакеты под версию нашего проекта, необходимые для его работы,
-                        а также автоматически добавляет ссылки к нашему приложению. В .Net Framework они будут видны. Также вверху нужно добавить пространство имён пакета FontAwesome5:-->
-                        <!--Обязательно нужно задать высоту, иначе вся разметка "уедет". (У данных пакетов, само собой, есть аналоги, например, MaterialDesignThemes от Google (см. CV19WPFTest).)-->
-                        <fa:ImageAwesome Icon="Regular_File" Height="13" Margin="0,0,5,0"
-                                         Foreground="Red"/>
-                        <TextBlock Text="Вкладка 1"/>
-                    </StackPanel>
-                </TabItem.Header>
+            <TabItem Header="Студенты">
+                <!--У нас подключена View-Model, и по идее там должны быть студенты. Можно заглянуть и посмотреть, чтобы удостовериться, есть там что или нет:-->
+                <!--<TextBlock Text="{Binding Groups}"/>                                    --><!--Удостоверимся, что есть объект Collection-->
+                <!--<TextBlock Text="{Binding Groups.Count}"/>                              --><!--Количество групп-->
+                <!--<TextBlock Text="{Binding Groups[0].Name}"/>                            --><!--Название первой группы-->
+                <!--TextBlock Text="{Binding Groups[1].Students.Count}"/>                --><!--Количество студентов во второй группе-->
+                <!--<TextBlock Text="{Binding Groups[0].Students[0].Name}"/>                    --><!--Имя первого студента первой группы-->
                 <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="15*"/>
-                        <RowDefinition Height="82*"/>
-                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="88*"/>
-                        <ColumnDefinition Width="17*"/>
-                        <ColumnDefinition Width="12*"/>
-                        <ColumnDefinition Width="36*"/>
-                        <ColumnDefinition Width="641*"/>
+                        <!--<ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="7*"/>-->
+                        <ColumnDefinition Width="250"/>
+                        <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Rectangle Grid.Column="0" Grid.Row="0"
-                               Margin="5,7,5,7"
-                               Fill="Blue" Stroke="Red"
-                               StrokeThickness="3"
-                               RadiusX="5" RadiusY="7" Grid.ColumnSpan="4"/>
-                    <!--У эллипса нет понятия команды (нет свойства "Command"), но мы хотим, чтобы при щелчке по эллипсу срабатывала команда закрытия приложения.
-                    К любому визуальному элементу можно добавить привязки ввода (мышка или клавиатура).-->
-                    <Ellipse Grid.Column="4" Grid.Row="0"
-                             Fill="Red" Stroke="Blue"
-                             StrokeThickness="3" Margin="0,0,0,309" Grid.RowSpan="2">
-                        <Ellipse.InputBindings>
-                            <MouseBinding Command="{Binding CloseApplicationCommand}"
-                                          MouseAction="LeftDoubleClick"/>
-                        </Ellipse.InputBindings>
-                    </Ellipse>
-                    <GridSplitter Grid.Column="3" Grid.Row="0" Grid.RowSpan="2"
-                                  Width="4"/>
+                    <GroupBox Grid.Column="0" Header="Группы">
+                        <!--ListBox, когда не знает, что делать с объектом, вызывает у него метод ToString. Поэтому нужно либо переопределить метод ToString в классе.
+                        Либо можно сделать так: У списочных элементов, таких как ComboBox, ListBox, ListView и пр. есть два свойства: DisplayMemberPath и SelectedValuePath.
+                        Поэтому можно установить DisplayMemberPath в свойство Name. В этом случае у нас отобразится имя группы:-->
+                        <ListBox ItemsSource="{Binding Groups}" DisplayMemberPath="Name"/>
+                    </GroupBox>
+                    <GroupBox Grid.Column="1" Header="Студенты">
+                        <!--Возьмём для разнообразия DataGrid - очень мощный элемент для визуализации данных в табличном виде. Можно кастомизировать отдельные ячейки.
+                        Кроме того, он очень быстрый, и предназначен для демонстрации огромных массивов данных (при правильной его подготевке).-->
+                        <DataGrid></DataGrid>
+                    </GroupBox>
                 </Grid>
             </TabItem>
             <!--<TabItem Header="{Binding TestDataPoints}"></TabItem>--> 
