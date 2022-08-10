@@ -110,12 +110,16 @@
                         <!--ListBox, когда не знает, что делать с объектом, вызывает у него метод ToString. Поэтому нужно либо переопределить метод ToString в классе.
                         Либо можно сделать так: У списочных элементов, таких как ComboBox, ListBox, ListView и пр. есть два свойства: DisplayMemberPath и SelectedValuePath.
                         Поэтому можно установить DisplayMemberPath в свойство Name. В этом случае у нас отобразится имя группы:-->
-                        <ListBox ItemsSource="{Binding Groups}" DisplayMemberPath="Name"/>
+                        <ListBox ItemsSource="{Binding Groups}" 
+                                 DisplayMemberPath="Name"
+                                 SelectedItem="{Binding SelectedGroup}"/>
                     </GroupBox>
-                    <GroupBox Grid.Column="1" Header="Студенты">
+                    <GroupBox Grid.Column="1" Header="{Binding SelectedGroup.Name, FallbackValue='Студенты', TargetNullValue='Группа не выбрана'}">
                         <!--Возьмём для разнообразия DataGrid - очень мощный элемент для визуализации данных в табличном виде. Можно кастомизировать отдельные ячейки.
                         Кроме того, он очень быстрый, и предназначен для демонстрации огромных массивов данных (при правильной его подготевке).-->
-                        <DataGrid></DataGrid>
+                        <DataGrid>
+                            
+                        </DataGrid>
                     </GroupBox>
                 </Grid>
             </TabItem>
