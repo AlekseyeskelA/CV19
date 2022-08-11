@@ -110,15 +110,35 @@
                         <!--ListBox, когда не знает, что делать с объектом, вызывает у него метод ToString. Поэтому нужно либо переопределить метод ToString в классе.
                         Либо можно сделать так: У списочных элементов, таких как ComboBox, ListBox, ListView и пр. есть два свойства: DisplayMemberPath и SelectedValuePath.
                         Поэтому можно установить DisplayMemberPath в свойство Name. В этом случае у нас отобразится имя группы:-->
-                        <ListBox ItemsSource="{Binding Groups}" 
+                        <ListBox ItemsSource="{Binding Groups}" SelectedIndex="0"
                                  DisplayMemberPath="Name"
                                  SelectedItem="{Binding SelectedGroup}"/>
                     </GroupBox>
                     <GroupBox Grid.Column="1" Header="{Binding SelectedGroup.Name, FallbackValue='Студенты', TargetNullValue='Группа не выбрана'}">
                         <!--Возьмём для разнообразия DataGrid - очень мощный элемент для визуализации данных в табличном виде. Можно кастомизировать отдельные ячейки.
-                        Кроме того, он очень быстрый, и предназначен для демонстрации огромных массивов данных (при правильной его подготевке).-->
-                        <DataGrid>
-                            
+                        Кроме того, он очень быстрый, и предназначен для демонстрации огромных массивов данных (при правильной его подготевке).
+                        Запретим DataGrid самостоятельно создавать дополнительные колонки: AutoGenerateColumns="False".
+                        После этого нужно указать, какие именно колонки должны отображаться: DataGrid.Columns. По умолчанию достцупны 5 типов колонок, которые можно использовать.
+                        Из них DataGridTextColumn самый главный тип. Он универсальный, и позволяет отображать любые данные в текстовом представлении (это могут быть и численные данные и дата).
+                        Не дадим пользователю редактировать данные: IsReadOnly="True"-->
+                        <DataGrid ItemsSource="{Binding SelectedGroup.Students}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True">
+                            <DataGrid.Columns>
+                                <!--По умолчанию привязка производится к контексту данных. Контекстом данных каждой строки является объект Student, поэтому привязка производится к нему.
+                                При этом, каждый Binding можно отформатировать отдено. Отформатируем дату рождения. Чтобы видеть, как меняется форматирование, временно для отладки в строке
+                                <ListBox ItemsSource="{Binding Groups}" выставим SelectedIndex="0" -->
+                                <DataGridTextColumn Header="Фамилия" Binding="{Binding Surename}"/>
+                                <DataGridTextColumn Header="Имя" Binding="{Binding Name}"/>
+                                <DataGridTextColumn Header="Отчество"  Binding="{Binding Patronymic}"/>
+                                <DataGridTextColumn Header="Рейтинг" Binding="{Binding Rating}"/>
+                                <DataGridTextColumn Header="Дата рождения" Binding="{Binding Birthday, StringFormat=dd.MM.yyy}"/>
+                                <!--Добавим привязку к группе. Сейчас мы находимся в каждой строке (не в колонке) нашей таблицы. Строка находится в контейнере строк DataGrid-а,
+                                котортый наодится в саммом DataGrid-е. Нам надо подняться по этой иерархии вверх до уровня DataGrid. Проблема в том, что в кажой строке установлено свойство DataContext,
+                                а нам необходим DataContext в DataGrid. Будем использовать относительный источник данных RelativeSource, устанавливаем требуемый тип AncestorType=DataGrid.
+                                В этом случае мы будем подниматься вверх по дереву интерфейса до узла DataGrid, и в нём нас будет интересовать DataContext SelectedGroup.Name:-->
+                                <DataGridTextColumn Header="Группа" Binding="{Binding DataContext.SelectedGroup.Name, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                            </DataGrid.Columns>
                         </DataGrid>
                     </GroupBox>
                 </Grid>
