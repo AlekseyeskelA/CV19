@@ -17,6 +17,7 @@
         mc:Ignorable="d"
         xmlns:fa="http://schemas.fontawesome.com/icons/"
         xmlns:cmd="clr-namespace:CV19.Infrastructure.Commands"
+        xmlns:decanat="clr-namespace:CV19.Models.Decanat"
         xmlns:vm="clr-namespace:CV19.ViewModels"
         xmlns:local="clr-namespace:CV19"
         xmlns:oxy="http://oxyplot.org/wpf"
@@ -120,24 +121,49 @@
                         Запретим DataGrid самостоятельно создавать дополнительные колонки: AutoGenerateColumns="False".
                         После этого нужно указать, какие именно колонки должны отображаться: DataGrid.Columns. По умолчанию достцупны 5 типов колонок, которые можно использовать.
                         Из них DataGridTextColumn самый главный тип. Он универсальный, и позволяет отображать любые данные в текстовом представлении (это могут быть и численные данные и дата).
-                        Не дадим пользователю редактировать данные: IsReadOnly="True"-->
+                        Не дадим пользователю редактировать данные: IsReadOnly="True".
+                        Для удаления горихонтальный хилий: HorizontalGridLinesBrush="{x:Null}" или GridLinesVisibility="Vertical"-->
                         <DataGrid ItemsSource="{Binding SelectedGroup.Students}"
                                   AutoGenerateColumns="False"
-                                  IsReadOnly="True">
+                                  IsReadOnly="True"
+                                  GridLinesVisibility="Vertical"
+                                  VerticalGridLinesBrush="DarkGray"
+                                  AlternatingRowBackground="LightGray">
+                            <!--HorizontalGridLinesBrush="{x:Null}"-->
                             <DataGrid.Columns>
                                 <!--По умолчанию привязка производится к контексту данных. Контекстом данных каждой строки является объект Student, поэтому привязка производится к нему.
                                 При этом, каждый Binding можно отформатировать отдено. Отформатируем дату рождения. Чтобы видеть, как меняется форматирование, временно для отладки в строке
-                                <ListBox ItemsSource="{Binding Groups}" выставим SelectedIndex="0" -->
-                                <DataGridTextColumn Header="Фамилия" Binding="{Binding Surename}"/>
+                                <ListBox ItemsSource="{Binding Groups}" выставим SelectedIndex="0". (На сайте CodeProject есть статья по кастомизации DataGrid, включая вставку картинок, измение цвета и т.д.)-->
+                                <DataGridTextColumn Header="Фамилия" Binding="{Binding Surename}" Width="Auto"/>
+                                <!--Width="Auto" - подстройка ширины под контент. C Framework не стабильно работает-->
                                 <DataGridTextColumn Header="Имя" Binding="{Binding Name}"/>
                                 <DataGridTextColumn Header="Отчество"  Binding="{Binding Patronymic}"/>
                                 <DataGridTextColumn Header="Рейтинг" Binding="{Binding Rating}"/>
-                                <DataGridTextColumn Header="Дата рождения" Binding="{Binding Birthday, StringFormat=dd.MM.yyy}"/>
+                                <!--<DataGridTextColumn Header="Дата рождения" Binding="{Binding Birthday, StringFormat=dd.MM.yyy}"/>-->
+                                <!--DataGridTemplateColumn позволяет сконфигурировать колонки так, как нам надо. Внутри установим свойство CellTemplate.-->
+                                <DataGridTemplateColumn Header="Дата рождения">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <!--Многие визуальные элементы позволяют демонстрировать своё содержимое разным специфическим образом.
+                                        Все списочные элементы (ItemsControl - это все списочные элементы представления, такие как список групп;
+                                        TabItems - это тоже списочный элемент управления) обладают свойством ItemsTemplate, которое позволяет указать шаблон визуализации данных. 
+                                        А также есть ContentControl - это все элементы, которые позволяют отображать некоторое содержимое. Нопример, кнопка является элементом ContentControl.
+                                        У таких элементов есть свойство ContentTemplate. В любом случае эти свойства принимают в качестве значения объект скласса DataTemplate. То есть это шаблон визуализации данных,
+                                        внутри которого нужно описать разметку, которая будет применена для того, чтобы нарисовать этот элемент на экране на основе тех данных, которые мы хотим отображать.
+                                        Для DataTemplate жаелательно указывать тип элемента данных с помощью свойства DataType. Если этого не сделать, то студия не будет подсказывать набор свойств самого элемента внутри
+                                        этого шаблона (к) которым можно выполнять привязки к данным. Кроме указания типа элементов нужно указать пространство имён: xmlns:decanat="clr-namespace:CV19.Models.Decanat".
+                                        Таким образом мы конфигурируем DataTemplate на работу с типом данных Student.-->
+                                        <DataTemplate DataType="decanat:Student">
+                                            <!--Строим разметку того, как элемент должен представляться на экране. Элемент DatePicker предназначен для отображения даты в выпадающем списке.-->
+                                            <DatePicker SelectedDate="{Binding Birthday}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                                 <!--Добавим привязку к группе. Сейчас мы находимся в каждой строке (не в колонке) нашей таблицы. Строка находится в контейнере строк DataGrid-а,
                                 котортый наодится в саммом DataGrid-е. Нам надо подняться по этой иерархии вверх до уровня DataGrid. Проблема в том, что в кажой строке установлено свойство DataContext,
                                 а нам необходим DataContext в DataGrid. Будем использовать относительный источник данных RelativeSource, устанавливаем требуемый тип AncestorType=DataGrid.
                                 В этом случае мы будем подниматься вверх по дереву интерфейса до узла DataGrid, и в нём нас будет интересовать DataContext SelectedGroup.Name:-->
-                                <DataGridTextColumn Header="Группа" Binding="{Binding DataContext.SelectedGroup.Name, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                                <!--<DataGridTextColumn Header="Группа" Binding="{Binding DataContext.SelectedGroup.Name, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>-->
+                                <DataGridTextColumn Header="Заметки" Binding="{Binding Description}" Width="*"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </GroupBox>
