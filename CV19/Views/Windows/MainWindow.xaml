@@ -21,6 +21,7 @@
         xmlns:vm="clr-namespace:CV19.ViewModels"
         xmlns:local="clr-namespace:CV19"
         xmlns:oxy="http://oxyplot.org/wpf"
+        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         Title="{Binding Path=Title}"
         Height="450" Width="800">
     <!--На уровне окна можно добавить команду на закрытие:-->
@@ -92,6 +93,95 @@
          и свяжем его со свойством SelectedPageIndex во ViewMosel-->
         <TabControl SelectedIndex="{Binding SelectedPageIndex}">
             <!--<TabItem Header="Вкладка 1">-->
+            <TabItem Header="Разнородные данные" Height="20" VerticalAlignment="Top">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="250"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <GroupBox>
+                        <GroupBox.Header>
+                            <TextBlock Text="Элементы"/>
+                        </GroupBox.Header>
+                        <!--Раньше мы указывали конкретный шаюлон внутри списка. А теперь создадим ресурсы внутри GroupBox. т.е. эти ресурсы будут действовать только на содержимое этого GroupBox:-->
+                        <GroupBox.Resources>
+                            <!--Укажем, что нам нужен DataTemplate, нацеленый на DataType="{x:Type decanat:Group}" (здесь необходимо указывать полноценный тип), и теперь этот шаблон будет
+                            использован для визуализации группы. ListBox, когда он демонстрирует своё содержимое, он бежит по списку, и для элемента данных, которыу ему попали в свойство ItemsSource,
+                            он создаёт ListBoxItem-ы, т.е. контейнеры в которых хранится содержимое каждого элемента. При этом он пытается в ресурсах найти шаблон DataTemplate для визуализации
+                            этого типа данных, и в качестве типа он рассмотривает свойство шаблона DataType. Т.е., если находится такой шаблон, то он применяется для визуализации этого элемента.
+                            Напишем и остальные шаблоны:-->
+                            <DataTemplate DataType="{x:Type decanat:Group}">
+                                <TextBlock Text="{Binding Name, StringFormat=Группа {0}}"/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type decanat:Student}">
+                                <TextBlock Text="{Binding Name, StringFormat=Студент {0}}"/>
+                            </DataTemplate>
+                            <!--Добавим такой-же шаблон для визуализации для отображения системных типов данных. Для этого понадобится пространство имён System (xmlns:sys="clr-namespace:System;assembly=System.Runtime").-->
+                            <DataTemplate DataType="{x:Type sys:String}">
+                                <TextBlock>
+                                    <Run Foreground="Red" FontWeight="Bold">Строка:</Run> <TextBlock Text="{Binding}"/>
+                                </TextBlock>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type sys:Int32}">
+                                <TextBlock>
+                                    Число: <TextBlock Text="{Binding}"/>
+                                </TextBlock>
+                            </DataTemplate>
+                        </GroupBox.Resources>
+                        <ListBox ItemsSource="{Binding CompositeCollection}"
+                                 SelectedItem="{Binding SelectedCompositeValue}">
+                            <!--<ListBox.ItemTemplate>
+                                --><!--Поместим сюда DataTemplate. DataTemplate конкретизируется для работы с группой, и в нутри мы описываем, как мы хотим визуализировать группы.
+                                Если у нас в списке находятся элементы разных типов (например, когда элементы могут быть базового класса, а также классов-наследников), то нужно описать набор шаблонов данных,
+                                которые будут использоваться списком для того, чтобы отобразить элементы:--><!--
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>-->
+                        </ListBox>
+                    </GroupBox>
+                    <GroupBox Grid.Column="1">
+                        <GroupBox.Header>
+                            <TextBlock>Выбранный элемент</TextBlock>
+                        </GroupBox.Header>
+                        <!--Если есть задача отображения разнородных типов данных, то можно построить для них шаблон:-->
+                        <GroupBox.Resources>
+                            <DataTemplate DataType="{x:Type decanat:Group}">
+                                <TextBlock Text="{Binding Name, StringFormat=Группа {0}}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="30"/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type decanat:Student}">
+                                <TextBlock Text="{Binding Name, StringFormat=Студент {0}}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="30"/>
+                            </DataTemplate>                            
+                            <DataTemplate DataType="{x:Type sys:String}">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="30">
+                                    <Run Foreground="Red" FontWeight="Bold">Строка:</Run> <TextBlock Text="{Binding}"/>
+                                </TextBlock>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type sys:Int32}">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="30">
+                                    Число: <TextBlock Text="{Binding}"/>
+                                </TextBlock>
+                            </DataTemplate>
+
+                        </GroupBox.Resources>
+                        <ContentControl Content="{Binding SelectedCompositeValue}"></ContentControl>
+                        <!--Так как ContentControl не знает, как отображать соответствующий тип данных, то он вызывает метод ToString(), в том числе и у числа. Исправим это и консретизируем, как будут
+                        отображатьсяконкретные типы данных. Если во вкладке "Студенты" в ListBox мы просто указали имя отображаемого свойства, то сейчас мы зададим параметр ItemsTemplate (см. ListBox):-->
+                    </GroupBox>
+                </Grid>                
+            </TabItem>
             <!--Свойство Header принимает тип object. Это значит, что его можно развернуть следующим образом и внутри создать разметку:-->
             <TabItem Header="Студенты">
                 <!--У нас подключена View-Model, и по идее там должны быть студенты. Можно заглянуть и посмотреть, чтобы удостовериться, есть там что или нет:-->
@@ -111,9 +201,21 @@
                         <!--ListBox, когда не знает, что делать с объектом, вызывает у него метод ToString. Поэтому нужно либо переопределить метод ToString в классе.
                         Либо можно сделать так: У списочных элементов, таких как ComboBox, ListBox, ListView и пр. есть два свойства: DisplayMemberPath и SelectedValuePath.
                         Поэтому можно установить DisplayMemberPath в свойство Name. В этом случае у нас отобразится имя группы:-->
-                        <ListBox ItemsSource="{Binding Groups}" SelectedIndex="0"
+                        <!--<ListBox ItemsSource="{Binding Groups}" SelectedIndex="0"
                                  DisplayMemberPath="Name"
-                                 SelectedItem="{Binding SelectedGroup}"/>
+                                 SelectedItem="{Binding SelectedGroup}"/>-->
+                        <!--Отображение с помощью DataTemplate:-->
+                        <ListBox ItemsSource="{Binding Groups}" SelectedIndex="0"                                 
+                                 SelectedItem="{Binding SelectedGroup}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate DataType="decanat:Group">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Name}"/>
+                                        <TextBlock Text="{Binding Students.Count, StringFormat=[Студентов:{0}]}" Margin="3,0,0,0"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
                     </GroupBox>
                     <GroupBox Grid.Column="1" Header="{Binding SelectedGroup.Name, FallbackValue='Студенты', TargetNullValue='Группа не выбрана'}">
                         <!--Возьмём для разнообразия DataGrid - очень мощный элемент для визуализации данных в табличном виде. Можно кастомизировать отдельные ячейки.

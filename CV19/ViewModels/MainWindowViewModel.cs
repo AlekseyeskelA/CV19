@@ -23,6 +23,24 @@ namespace CV19.ViewModels
         // Создадим студентов. Для этого создадим коллекцию групп и заполним её в конструкторе:
         public ObservableCollection<Group> Groups { get; }
 
+        // Создадим синтетическую задачу для демонстрации дерева визуализации в XAML-разметке. Предположим, что у нас есть масив класса object (внутри может быть что угодно)
+        // Создадим в эту коллекцию список элементов (см. конструктор):
+        public object[] CompositeCollection { get; }
+
+        #region SelectedCompositeValue : object - Выбранный непонятный элемент
+
+        /// <summary>Выбранный непонятный элемент</summary>
+        private object _SelectedCompositeValue;
+
+        /// <summary>Выбранный непонятный элемент</summary>
+        public object SelectedCompositeValue
+        { 
+            get => _SelectedCompositeValue;
+            set => Set(ref _SelectedCompositeValue, value);
+        }
+
+        #endregion
+
         #region SelectedGroup : Group
         /// <summary>Выбранная группа</summary>
         private Group _SelectedGroup;
@@ -197,6 +215,14 @@ namespace CV19.ViewModels
             //Полученное перечисление скормим ObservableCollection в результате получится по 10 студентов в группе:
             Groups = new ObservableCollection<Group>(groups);
 
+            var data_list = new List<object>();
+            data_list.Add("Hello World");
+            data_list.Add(42);                  // добавим число
+            var group = Groups[1];              // добавим первую группу
+            data_list.Add(group);
+            data_list.Add(group.Students[0]);   // добавим студента
+
+            CompositeCollection = data_list.ToArray();
         }
 
         /*------------------------------------------------------------------------------------------------------------------------------------------*/
