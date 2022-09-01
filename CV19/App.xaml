@@ -10,21 +10,21 @@
         </Style>-->
 
         <!--В качестве типа данных стиля можно указывать не Button, а ButtonBase (базовый класс кнопки). В этом случае данный стиль можно будет применить не только к классу Button,
-        но и ToggleButton (залипающая кнопка):-->
+        но и ToggleButton (залипающая кнопка):--><!--
         <Style x:Key="BtnBase" TargetType="ButtonBase">
             <Setter Property="Foreground" Value="White"/>
         </Style>
 
-        <!--Определение стиля всех кнопок на уровне всего приложения:--><!--
+        --><!--Определение стиля всех кнопок на уровне всего приложения:--><!--
         <Style TargetType="Button">
             <Setter Property="Background" Value="White"/>
         </Style>-->
         
-        <!--После создания базового стиля, наследуем от него стиль по умолчанию для нашей кнопки:-->
+        <!--После создания базового стиля, наследуем от него стиль по умолчанию для нашей кнопки:--><!--
         <Style TargetType="Button" BasedOn="{StaticResource BtnBase}"/>
         <Style TargetType="ToggleButton" BasedOn="{StaticResource BtnBase}"/>
 
-        <!--<Style x:Key="PrimaryBtn" TargetType="Button">
+        --><!--<Style x:Key="PrimaryBtn" TargetType="Button">
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Background" Value="White"/>
         </Style>
@@ -32,7 +32,7 @@
         <Style x:Key="DengerBtn" TargetType="Button">
             <Setter Property="Background" Value="Red"/>
             <Setter Property="Foreground" Value="White"/>
-        </Style>-->
+        </Style>--><!--
 
         <Style x:Key="PrimaryBtn" TargetType="Button" BasedOn="{StaticResource BtnBase}">
             <Setter Property="FontWeight" Value="Bold"/>
@@ -41,7 +41,14 @@
         <Style x:Key="DengerBtn" TargetType="Button" BasedOn="{StaticResource BtnBase}">
             <Setter Property="Background" Value="Red"/>
             <Setter Property="Foreground" Value="White"/>
-        </Style>
+        </Style>-->
+        
+        <!--Кроме того, все стили могут находиться в отдельном словаре ресурсов. Для этого создадим папку: Resources/Styles и добавил туда словарь ресурсов WPF. В него перенесём весь вышеизложенный код.-->
 
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources\Styles\Buttons.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

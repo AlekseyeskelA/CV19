@@ -1,0 +1,24 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--Можно подключать словари ресурсы в том месте, где они нужны, лобо определить этот словарь ресурсов в корневом элементе App.xaml в Application.Resources на уровне всего приложения-->
+    
+    <!--В качестве типа данных стиля можно указывать не Button, а ButtonBase (базовый класс кнопки). В этом случае данный стиль можно будет применить не только к классу Button,
+        но и ToggleButton (залипающая кнопка):-->
+    <Style x:Key="BtnBase" TargetType="ButtonBase">
+        <Setter Property="Background" Value="White"/>
+    </Style>
+
+    <!--После создания базового стиля, наследуем от него стиль по умолчанию для нашей кнопки:-->
+    <Style TargetType="Button" BasedOn="{StaticResource BtnBase}"/>
+    <Style TargetType="ToggleButton" BasedOn="{StaticResource BtnBase}"/>
+
+    <Style x:Key="PrimaryBtn" TargetType="Button" BasedOn="{StaticResource BtnBase}">
+        <Setter Property="FontWeight" Value="Bold"/>
+    </Style>
+
+    <Style x:Key="DengerBtn" TargetType="Button" BasedOn="{StaticResource BtnBase}">
+        <Setter Property="Background" Value="Red"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+</ResourceDictionary>
