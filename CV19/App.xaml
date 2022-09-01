@@ -4,6 +4,44 @@
              xmlns:local="clr-namespace:CV19"
              StartupUri="Views/Windows/MainWindow.xaml">
     <Application.Resources>
-         
+        <!--Стили умеют наследованться друг от друга. Вот базовый стиль кнопки:-->
+        <!--<Style x:Key="BtnBase" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+        </Style>-->
+
+        <!--В качестве типа данных стиля можно указывать не Button, а ButtonBase (базовый класс кнопки). В этом случае данный стиль можно будет применить не только к классу Button,
+        но и ToggleButton (залипающая кнопка):-->
+        <Style x:Key="BtnBase" TargetType="ButtonBase">
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <!--Определение стиля всех кнопок на уровне всего приложения:--><!--
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="White"/>
+        </Style>-->
+        
+        <!--После создания базового стиля, наследуем от него стиль по умолчанию для нашей кнопки:-->
+        <Style TargetType="Button" BasedOn="{StaticResource BtnBase}"/>
+        <Style TargetType="ToggleButton" BasedOn="{StaticResource BtnBase}"/>
+
+        <!--<Style x:Key="PrimaryBtn" TargetType="Button">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+        
+        <Style x:Key="DengerBtn" TargetType="Button">
+            <Setter Property="Background" Value="Red"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>-->
+
+        <Style x:Key="PrimaryBtn" TargetType="Button" BasedOn="{StaticResource BtnBase}">
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style x:Key="DengerBtn" TargetType="Button" BasedOn="{StaticResource BtnBase}">
+            <Setter Property="Background" Value="Red"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
     </Application.Resources>
 </Application>
