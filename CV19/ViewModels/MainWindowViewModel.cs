@@ -154,7 +154,7 @@ namespace CV19.ViewModels
         // Команда, чередующая вкладки по нажатию на кнопки со стрелками:
         public ICommand ChangeTabIndexCommand { get; }
 
-        private bool CanChangeTabIndexCommandExecuted(object p) => _SelectedPageIndex >= 0;
+        private bool CanChangeTabIndexCommandExecute(object p) => _SelectedPageIndex >= 0;
 
         private void OnChangeTabIndexCommandExecuted(object p)
         {
@@ -162,6 +162,42 @@ namespace CV19.ViewModels
             SelectedPageIndex += Convert.ToInt32(p);
         }
         #endregion
+
+
+        #region CreateGroupCommand  
+        public ICommand CreateGroupCommand { get; }
+
+        private bool CanCreateGroupCommandExecute(object p) => true;
+
+        private void OnCreateGroupCommandExecuted(object p)
+        {
+            var group_max_index = Groups.Count + 1;
+            var new_group = new Group
+            {
+                Name = $"Группа {group_max_index}",
+                Students = new ObservableCollection<Student>()
+            };
+            
+            Groups.Add(new_group);
+        }
+        #endregion
+
+
+        #region DeleteGroupCommand  
+        public ICommand DeleteGroupCommand { get; }
+
+        private bool CanDeleteGroupCommandExecute(object p) => p is Group group && Groups.Contains(group);
+
+        private void OnDeleteGroupCommandExecuted(object p)
+        {
+            if (!(p is Group group)) return;
+            var group_index = Groups.IndexOf(group);                // Чтобы после удаления автоматически выделялась предыдущая группа.
+            Groups.Remove(group);
+            if (group_index < Groups.Count)
+                SelectedGroup = Groups[group_index];                // Чтобы после удаления автоматически выделялась предыдущая группа.
+        }
+        #endregion
+
 
         #endregion
 
@@ -174,7 +210,9 @@ namespace CV19.ViewModels
             #region Команды
 
             CloseApplicationCommand = new LambdaCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
-            ChangeTabIndexCommand = new LambdaCommand(OnChangeTabIndexCommandExecuted, CanChangeTabIndexCommandExecuted);
+            ChangeTabIndexCommand = new LambdaCommand(OnChangeTabIndexCommandExecuted, CanChangeTabIndexCommandExecute);
+            CreateGroupCommand = new LambdaCommand(OnCreateGroupCommandExecuted, CanCreateGroupCommandExecute);
+            DeleteGroupCommand = new LambdaCommand(OnDeleteGroupCommandExecuted, CanDeleteGroupCommandExecute);
             #endregion
 
             // Сгенерируем данные для тестового графика:

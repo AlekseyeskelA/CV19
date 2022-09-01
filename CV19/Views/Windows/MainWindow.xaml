@@ -205,17 +205,24 @@
                                  DisplayMemberPath="Name"
                                  SelectedItem="{Binding SelectedGroup}"/>-->
                         <!--Отображение с помощью DataTemplate:-->
-                        <ListBox ItemsSource="{Binding Groups}" SelectedIndex="0"                                 
+                        <DockPanel>
+                            <UniformGrid DockPanel.Dock="Bottom" Rows="1" Margin="0,3">
+                                <!--Margin="3,0" - три пикселя слева и справа, а сверху и снизу будет 0:-->
+                                <Button Content="Добавить" Margin="0,0,3,0" Command="{Binding CreateGroupCommand}"/>
+                                <Button Content="Удалить" Command="{Binding DeleteGroupCommand}" CommandParameter="{Binding SelectedGroup}"/>
+                            </UniformGrid>
+                            <ListBox ItemsSource="{Binding Groups}" SelectedIndex="0"                                 
                                  SelectedItem="{Binding SelectedGroup}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate DataType="decanat:Group">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="{Binding Name}"/>
-                                        <TextBlock Text="{Binding Students.Count, StringFormat=[Студентов:{0}]}" Margin="3,0,0,0"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate DataType="decanat:Group">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Name}"/>
+                                            <TextBlock Text="{Binding Students.Count, StringFormat=[Студентов:{0}]}" Margin="3,0,0,0"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </DockPanel>
                     </GroupBox>
                     <GroupBox Grid.Column="1" Header="{Binding SelectedGroup.Name, FallbackValue='Студенты', TargetNullValue='Группа не выбрана'}">
                         <!--Возьмём для разнообразия DataGrid - очень мощный элемент для визуализации данных в табличном виде. Можно кастомизировать отдельные ячейки.
