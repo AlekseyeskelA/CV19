@@ -114,13 +114,13 @@
                             он создаёт ListBoxItem-ы, т.е. контейнеры в которых хранится содержимое каждого элемента. При этом он пытается в ресурсах найти шаблон DataTemplate для визуализации
                             этого типа данных, и в качестве типа он рассмотривает свойство шаблона DataType. Т.е., если находится такой шаблон, то он применяется для визуализации этого элемента.
                             Напишем и остальные шаблоны:-->
-                            <DataTemplate DataType="{x:Type decanat:Group}">
+                            <!--<DataTemplate DataType="{x:Type decanat:Group}">
                                 <TextBlock Text="{Binding Name, StringFormat=Группа {0}}"/>
                             </DataTemplate>
                             <DataTemplate DataType="{x:Type decanat:Student}">
                                 <TextBlock Text="{Binding Name, StringFormat=Студент {0}}"/>
                             </DataTemplate>
-                            <!--Добавим такой-же шаблон для визуализации для отображения системных типов данных. Для этого понадобится пространство имён System (xmlns:sys="clr-namespace:System;assembly=System.Runtime").-->
+                            --><!--Добавим такой-же шаблон для визуализации для отображения системных типов данных. Для этого понадобится пространство имён System (xmlns:sys="clr-namespace:System;assembly=System.Runtime").--><!--
                             <DataTemplate DataType="{x:Type sys:String}">
                                 <TextBlock>
                                     <Run Foreground="Red" FontWeight="Bold">Строка:</Run> <TextBlock Text="{Binding}"/>
@@ -129,8 +129,17 @@
                             <DataTemplate DataType="{x:Type sys:Int32}">
                                 <TextBlock>
                                     Число: <TextBlock Text="{Binding}"/>
-                                </TextBlock>
-                            </DataTemplate>
+                                </TextBlock>-->
+                            <!--</DataTemplate>-->
+                            <!--Отправим все DataTemplate в отдельный словарь ресурсов Resources\DataTemplates\CompositeListItemsDataTemplates.xaml, добавив туда необходимые пространства емён:
+                                xmlns:decanat="clr-namespace:CV19.Models.Decanat" и xmlns:sys="clr-namespace:System;assembly=System.Runtime". А сюда вставляем ссылку на словарь ресурсов:-->
+                            <ResourceDictionary>
+                                <!--Внутри определяем объединение с другим словарём:-->
+                                <ResourceDictionary.MergedDictionaries>
+                                    <!--Так как мы находимся внутри папки Views/Window, поэтому нужно подняться два уровня наверх:-->
+                                    <ResourceDictionary Source="../../Resources/DataTemplates/CompositeListItemsDataTemplates.xaml"/>
+                                </ResourceDictionary.MergedDictionaries>
+                            </ResourceDictionary>
                         </GroupBox.Resources>
                         <ListBox ItemsSource="{Binding CompositeCollection}"
                                  SelectedItem="{Binding SelectedCompositeValue}">
@@ -150,7 +159,7 @@
                         </GroupBox.Header>
                         <!--Если есть задача отображения разнородных типов данных, то можно построить для них шаблон:-->
                         <GroupBox.Resources>
-                            <DataTemplate DataType="{x:Type decanat:Group}">
+                            <!--<DataTemplate DataType="{x:Type decanat:Group}">
                                 <TextBlock Text="{Binding Name, StringFormat=Группа {0}}"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"
@@ -177,8 +186,14 @@
                                     FontSize="30">
                                     Число: <TextBlock Text="{Binding}"/>
                                 </TextBlock>
-                            </DataTemplate>
-
+                            </DataTemplate>-->
+                            <ResourceDictionary>
+                                <!--Внутри определяем объединение с другим словарём:-->
+                                <ResourceDictionary.MergedDictionaries>
+                                    <!--Так как мы находимся внутри папки Views/Window, поэтому нужно подняться два уровня наверх:-->
+                                    <ResourceDictionary Source="../../Resources/DataTemplates/CompositeItemsControlDataTemplates.xaml"/>
+                                </ResourceDictionary.MergedDictionaries>
+                            </ResourceDictionary>
                         </GroupBox.Resources>
                         <ContentControl Content="{Binding SelectedCompositeValue}"></ContentControl>
                         <!--Так как ContentControl не знает, как отображать соответствующий тип данных, то он вызывает метод ToString(), в том числе и у числа. Исправим это и консретизируем, как будут
