@@ -269,9 +269,19 @@
                                 <ListBox.ItemTemplate>
                                     <DataTemplate DataType="decanat:Group">
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Name}"/>
+                                            <TextBlock Text="{Binding Name}" Name="TextView"/>
                                             <TextBlock Text="{Binding Students.Count, StringFormat=[Студентов:{0}]}" Margin="3,0,0,0"/>
                                         </StackPanel>
+                                        <!--Допустим, что мы хотим, чтобы какая-нибудь группа выделялась другим цветом. У DataTemplate на этот случай есть коллекция триггеров:-->
+                                        <DataTemplate.Triggers>
+                                            <!--Добавим елемент DataTrigger, который предназначен для работы с любыми свойствами всего, чео угодно, включая разметку и модели.
+                                            Его главное свойство - Binding. Привяжем его к количеству студентов, и укажем, чему должно быть равно это свойство, чтобы триггер сработал Value="0".
+                                            Теперь при добавлении группы с 0 студентов, название группы будет выделяться красным шрифтом.-->
+                                            <DataTrigger Binding="{Binding Students.Count}" Value="0">
+                                                <!--Зададим выше для TextBlock имя Name="TextView" и далее привяжемся к нему:-->
+                                                <Setter TargetName="TextView" Property="Foreground" Value="Red"/>
+                                            </DataTrigger>
+                                        </DataTemplate.Triggers>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
@@ -285,22 +295,28 @@
                         Из них DataGridTextColumn самый главный тип. Он универсальный, и позволяет отображать любые данные в текстовом представлении (это могут быть и численные данные и дата).
                         Не дадим пользователю редактировать данные: IsReadOnly="True".
                         Для удаления горихонтальный хилий: HorizontalGridLinesBrush="{x:Null}" или GridLinesVisibility="Vertical"-->
-                        <DataGrid ItemsSource="{Binding SelectedGroup.Students}"
+                        <!--<DataGrid ItemsSource="{Binding SelectedGroup.Students}"
                                   AutoGenerateColumns="False"
                                   CanUserAddRows="False"
                                   GridLinesVisibility="Vertical"
                                   VerticalGridLinesBrush="DarkGray"
+                                  AlternatingRowBackground="LightGray">-->
+                            <DataGrid ItemsSource="{Binding SelectedGroup.Students}"
+                                  AutoGenerateColumns="False"
+                                  GridLinesVisibility="Vertical"
+                                  VerticalGridLinesBrush="DarkGray"
                                   AlternatingRowBackground="LightGray">
-                            <!--HorizontalGridLinesBrush="{x:Null}"-->
+                                <!--HorizontalGridLinesBrush="{x:Null}"-->
                             <DataGrid.Columns>
                                 <!--По умолчанию привязка производится к контексту данных. Контекстом данных каждой строки является объект Student, поэтому привязка производится к нему.
                                 При этом, каждый Binding можно отформатировать отдено. Отформатируем дату рождения. Чтобы видеть, как меняется форматирование, временно для отладки в строке
                                 <ListBox ItemsSource="{Binding Groups}" выставим SelectedIndex="0". (На сайте CodeProject есть статья по кастомизации DataGrid, включая вставку картинок, измение цвета и т.д.)-->
-                                <DataGridTextColumn Header="Фамилия" Binding="{Binding Surename}" Width="Auto" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Фамилия" Binding="{Binding Surename}" Width="Auto" IsReadOnly="False"/>
+                                <DataGridTextColumn Header="Фамилия" Binding="{Binding Surename}" Width="Auto" IsReadOnly="False"/>
                                 <!--Width="Auto" - подстройка ширины под контент. C Framework не стабильно работает-->
-                                <DataGridTextColumn Header="Имя" Binding="{Binding Name}" IsReadOnly="True"/>
-                                <DataGridTextColumn Header="Отчество"  Binding="{Binding Patronymic}" IsReadOnly="True"/>
-                                <DataGridTextColumn Header="Рейтинг" Binding="{Binding Rating}" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Имя" Binding="{Binding Name}" IsReadOnly="False"/>
+                                <DataGridTextColumn Header="Отчество"  Binding="{Binding Patronymic}" IsReadOnly="False"/>
+                                <DataGridTextColumn Header="Рейтинг" Binding="{Binding Rating}" IsReadOnly="False"/>
                                 <!--<DataGridTextColumn Header="Дата рождения" Binding="{Binding Birthday, StringFormat=dd.MM.yyy}"/>-->
                                 <!--DataGridTemplateColumn позволяет сконфигурировать колонки так, как нам надо. Внутри установим свойство CellTemplate.-->
                                 <DataGridTemplateColumn Header="Дата рождения">
