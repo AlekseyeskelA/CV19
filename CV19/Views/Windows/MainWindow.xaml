@@ -80,7 +80,7 @@
                 <MenuItem.Header>
                     <fa:ImageAwesome Height="12" Icon="Regular_ArrowAltCircleRight"/>
                 </MenuItem.Header>
-            </MenuItem>            
+            </MenuItem>
         </Menu>
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBarItem MinWidth="150" MaxWidth="350">
@@ -100,10 +100,11 @@
             <TabItem Header="Разнородные данные" Height="20" VerticalAlignment="Top">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="250"/>
+                        <ColumnDefinition Width="168.053"/>
+                        <ColumnDefinition Width="81.947"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <GroupBox>
+                    <GroupBox Grid.ColumnSpan="2">
                         <GroupBox.Header>
                             <TextBlock Text="Элементы"/>
                         </GroupBox.Header>
@@ -120,7 +121,9 @@
                             <DataTemplate DataType="{x:Type decanat:Student}">
                                 <TextBlock Text="{Binding Name, StringFormat=Студент {0}}"/>
                             </DataTemplate>
-                            --><!--Добавим такой-же шаблон для визуализации для отображения системных типов данных. Для этого понадобится пространство имён System (xmlns:sys="clr-namespace:System;assembly=System.Runtime").--><!--
+                            -->
+                            <!--Добавим такой-же шаблон для визуализации для отображения системных типов данных. Для этого понадобится пространство имён System (xmlns:sys="clr-namespace:System;assembly=System.Runtime").-->
+                            <!--
                             <DataTemplate DataType="{x:Type sys:String}">
                                 <TextBlock>
                                     <Run Foreground="Red" FontWeight="Bold">Строка:</Run> <TextBlock Text="{Binding}"/>
@@ -144,16 +147,18 @@
                         <ListBox ItemsSource="{Binding CompositeCollection}"
                                  SelectedItem="{Binding SelectedCompositeValue}">
                             <!--<ListBox.ItemTemplate>
-                                --><!--Поместим сюда DataTemplate. DataTemplate конкретизируется для работы с группой, и в нутри мы описываем, как мы хотим визуализировать группы.
+                                -->
+                            <!--Поместим сюда DataTemplate. DataTemplate конкретизируется для работы с группой, и в нутри мы описываем, как мы хотим визуализировать группы.
                                 Если у нас в списке находятся элементы разных типов (например, когда элементы могут быть базового класса, а также классов-наследников), то нужно описать набор шаблонов данных,
-                                которые будут использоваться списком для того, чтобы отобразить элементы:--><!--
+                                которые будут использоваться списком для того, чтобы отобразить элементы:-->
+                            <!--
                                 <DataTemplate>
                                     <TextBlock Text="{Binding}"/>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>-->
                         </ListBox>
                     </GroupBox>
-                    <GroupBox Grid.Column="1">
+                    <GroupBox Grid.Column="2">
                         <GroupBox.Header>
                             <TextBlock>Выбранный элемент</TextBlock>
                         </GroupBox.Header>
@@ -199,16 +204,21 @@
                         <!--Так как ContentControl не знает, как отображать соответствующий тип данных, то он вызывает метод ToString(), в том числе и у числа. Исправим это и консретизируем, как будут
                         отображатьсяконкретные типы данных. Если во вкладке "Студенты" в ListBox мы просто указали имя отображаемого свойства, то сейчас мы зададим параметр ItemsTemplate (см. ListBox):-->
                     </GroupBox>
-                </Grid>                
+                </Grid>
             </TabItem>
             <!--Свойство Header принимает тип object. Это значит, что его можно развернуть следующим образом и внутри создать разметку:-->
             <TabItem Header="Студенты">
                 <!--У нас подключена View-Model, и по идее там должны быть студенты. Можно заглянуть и посмотреть, чтобы удостовериться, есть там что или нет:-->
-                <!--<TextBlock Text="{Binding Groups}"/>                                    --><!--Удостоверимся, что есть объект Collection-->
-                <!--<TextBlock Text="{Binding Groups.Count}"/>                              --><!--Количество групп-->
-                <!--<TextBlock Text="{Binding Groups[0].Name}"/>                            --><!--Название первой группы-->
-                <!--TextBlock Text="{Binding Groups[1].Students.Count}"/>                --><!--Количество студентов во второй группе-->
-                <!--<TextBlock Text="{Binding Groups[0].Students[0].Name}"/>                    --><!--Имя первого студента первой группы-->
+                <!--<TextBlock Text="{Binding Groups}"/>                                    -->
+                <!--Удостоверимся, что есть объект Collection-->
+                <!--<TextBlock Text="{Binding Groups.Count}"/>                              -->
+                <!--Количество групп-->
+                <!--<TextBlock Text="{Binding Groups[0].Name}"/>                            -->
+                <!--Название первой группы-->
+                <!--TextBlock Text="{Binding Groups[1].Students.Count}"/>                -->
+                <!--Количество студентов во второй группе-->
+                <!--<TextBlock Text="{Binding Groups[0].Students[0].Name}"/>                    -->
+                <!--Имя первого студента первой группы-->
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <!--<ColumnDefinition Width="3*"/>
@@ -226,21 +236,33 @@
                         <!--Отображение с помощью DataTemplate:-->
                         <DockPanel>
                             <UniformGrid DockPanel.Dock="Bottom" Rows="1" Margin="0,3">
-                                <UniformGrid.Resources>
+                                <!--<UniformGrid.Resources>-->
                                     <!--<Style x:Key="ButtonStyle" TargetType="Button">-->
                                     <!--В случае, если для стиля не указан ключь (x:Key="ButtonStyle"), то ключом становится сам тип данных (Button), и он автоматически применяется
                                     ко всем вложенным элементам этого типа (Button)-->
-                                    <Style TargetType="Button">
+                                    <!--<Style TargetType="Button">
                                         <Setter Property="Margin" Value="3,0"/>
                                         <Setter Property="Padding" Value="3,5"/>
                                         <Setter Property="Background" Value="White"/>
-                                    </Style>
-                                </UniformGrid.Resources>
+                                    </Style>-->
+                                <!--</UniformGrid.Resources>-->
                                 <!--Margin="3,0" - три пикселя слева и справа, а сверху и снизу будет 0:-->
                                 <!--<Button Content="Добавить" Style="{StaticResource ButtonStyle}" Command="{Binding CreateGroupCommand}"/>
                                 <Button Content="Удалить" Style="{StaticResource ButtonStyle}" Command="{Binding DeleteGroupCommand}" CommandParameter="{Binding SelectedGroup}"/>-->
-                                <Button Content="Добавить" Style="{StaticResource PrimaryBtn}" Command="{Binding CreateGroupCommand}"/>
-                                <Button Content="Удалить" Style="{StaticResource DengerBtn}" Command="{Binding DeleteGroupCommand}" CommandParameter="{Binding SelectedGroup}"/>
+                                <!--<Button Style="{StaticResource PrimaryBtn}" Command="{Binding CreateGroupCommand}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <fa:ImageAwesome Height="12" Icon="Solid_Check" Foreground="LightGreen" Margin="0,0,3,0">
+                                            <fa:ImageAwesome.Effect>
+                                                <DropShadowEffect ShadowDepth="1"/>
+                                            </fa:ImageAwesome.Effect>
+                                        </fa:ImageAwesome>
+                                        <TextBlock Text="Добавить"/>
+                                    </StackPanel>
+                                </Button>-->
+                                <Button Content="Добавить" Padding="0,7" Style="{StaticResource CheckButtonStyle}" Command="{Binding CreateGroupCommand}">
+                                </Button>
+                                <!--<Button Content="Удалить" Style="{StaticResource DengerBtn}" Command="{Binding DeleteGroupCommand}" CommandParameter="{Binding SelectedGroup}"/>-->
+                                <Button Content="Удалить" Padding="0,7" Style="{StaticResource RemoveButtonStyle}" Command="{Binding DeleteGroupCommand}" CommandParameter="{Binding SelectedGroup}"/>
                             </UniformGrid>
                             <ListBox ItemsSource="{Binding Groups}" SelectedIndex="0"                                 
                                  SelectedItem="{Binding SelectedGroup}">
@@ -327,7 +349,7 @@
                     </GroupBox>
                 </Grid>
             </TabItem>
-            <!--<TabItem Header="{Binding TestDataPoints}"></TabItem>--> 
+            <!--<TabItem Header="{Binding TestDataPoints}"></TabItem>-->
             <!--Если написано (Collection), значит там что-то есть...-->
             <!--<TabItem Header="{Binding TestDataPoints.Count}"></TabItem>-->
             <!--Будет показывать количество элементов.-->
@@ -351,10 +373,77 @@
 
             </TabItem>
             <TabItem Header="Вкладка 2">
-                <Button VerticalAlignment="Top" HorizontalAlignment="Left"
+                <!--<Button VerticalAlignment="Top" HorizontalAlignment="Left"
                         Content="123" Margin="15,5" Padding="14,5"
-                        Style="{StaticResource DengerBtn}"/>
+                        Style="{StaticResource DengerBtn}"/>-->
+                <!--<Button VerticalAlignment="Top" HorizontalAlignment="Left"
+                        Content="123" Margin="15,5" Padding="14,5"
+                        Style="{StaticResource CustomButtonStyle}"/>-->
 
+                <!--Указываем точку (в относительных координатах от 0(min) до 1(max)), относительно которой будут производиться визуальные трансформации: RenderTransformOrigin="0.5,0.5
+                0.5(ширина по горизонтали),0.5(ширина по вертикали). На кнопке в чентре есть точка, если её двигать, то будут меняться и начальные координаты.-->
+                <!--<Button Margin="20,40" VerticalAlignment="Top" HorizontalAlignment="Left"
+                        Content="123" Padding="14,5"
+                        Style="{StaticResource CheckButtonStyle}"
+                        Width="110" RenderTransformOrigin="0.5,0.5">-->
+                    <Button Margin="20,40" VerticalAlignment="Top" HorizontalAlignment="Left"
+                            Content="123" Padding="14,5" Opacity="1"
+                            Style="{StaticResource CustomButtonStyle}"
+                            Width="110" RenderTransformOrigin="0.5,0.5">
+                        <Button.Background>
+                            <SolidColorBrush Color="White" x:Name="ButtonBrush"/>
+                        </Button.Background>
+                    <Button.RenderTransform>
+                        <!--Зададим визуальному элементу RotateTransform имя в разметке, чтобы к нему можно было обратиться из какого-то другого элемента разметки.
+                        Так как сам элемент не имеет имени, его всегда можно прикрепить с помощью расширения x:Name:-->
+                        <!--<RotateTransform Angle="30" x:Name="ButtonRotate"/>-->
+                        <RotateTransform x:Name="ButtonRotate"/>
+                    </Button.RenderTransform>
+                    <!--Также добавим к самой кнопке триггеры. Но обычныей триггер сюда нельзя добавить. Но можно добавить EventTrigger, то есть триггеры, которые нацеливаются на события,
+                    которые происходят внутри элемента, а внутри прописать нужное событие (перечень доступных событий находится во вкладке "Свойства -> события" после выделения соответствующего элемента):-->
+                    <Button.Triggers>
+                        <EventTrigger RoutedEvent="Button.Click">
+                            <!--Раскадровка анимации:-->
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <!--Существует нескольтипов анимации. Выбираем и указываем тип анимации DoubleAnimation и элемент, который надо анимировать Storyboard.TargetName="ButtonRotate".
+                                    Далее указываем, какое свойство мы слбираемся анимировать: Storyboard.TargetProperty="Angle". Указываем начальное и конечное значение и продолжительность 3 с.
+                                    ТАкже можно указать шаг анимации, например By="0.1", но это не обязательно (по-моему это даже не работает). AutoReverse="True" - Вращение туда у обратно.
+                                    Параметр From="0" можно не указывать, тогда на начальное значение будет взято текущее значение.-->
+                                    <DoubleAnimation Storyboard.TargetName="ButtonRotate"
+                                                     Storyboard.TargetProperty="Angle"
+                                                     From="0" To="360"
+                                                     Duration="0:0:0.5"
+                                                     AutoReverse="True"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <!--Запрограммируем анимацию (плавное изменение) цвета. Но, цвет не является тем, что закрашивает кнопку. Кнопку красит кисть, а для кисти нет анимации. Поэтому:
+                        Выше зададим <Button.Background>, зададим цвет по умолчанию White и зададим имя этой кисти x:Name="ButtonBrush". Далее укажем Storyboard.TargetName="ButtonBrush",
+                        укажем мзменяемое свойство Storyboard.TargetProperty="Color" и укажем в какой цвет должен прийти текущий цвет To="Red"-->
+                        <EventTrigger RoutedEvent="Button.MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Storyboard.TargetName="ButtonBrush"
+                                                    Storyboard.TargetProperty="Color"
+                                                    To="Red"
+                                                    Duration="0:0:0.1"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <!--Второй триггер сделает наоборот, из красного белый цвет:-->
+                        <EventTrigger RoutedEvent="Button.MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Storyboard.TargetName="ButtonBrush"
+                                                    Storyboard.TargetProperty="Color"
+                                                    To="White"
+                                                    Duration="0:0:3"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Button.Triggers>
+                </Button>
             </TabItem>
             <TabItem Header="Вкладка 3"></TabItem>
             <TabItem Header="Вкладка 4"></TabItem>
