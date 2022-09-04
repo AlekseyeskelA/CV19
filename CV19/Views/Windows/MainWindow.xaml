@@ -461,8 +461,6 @@
                     </Button.Triggers>
                 </Button>
             </TabItem>
-            <TabItem Header="Вкладка 3"></TabItem>
-            <TabItem Header="Вкладка 4"></TabItem>
         </TabControl>
     </DockPanel>
 
