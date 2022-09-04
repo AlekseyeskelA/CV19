@@ -96,6 +96,12 @@
                     </Grid.ColumnDefinitions>
                     <GroupBox Grid.Column="0" Header="Группы">
                         <DockPanel>
+                            <!--В данный момент ListBox работает напрямую с коллекцией Groups. Изменим эту привязку. Для этого добавим в разметку объект CollectionViewSource:-->
+                            <DockPanel.Resources>
+                                <!--Объект CollectionViewSource предназначен для решения трёх задач: 1. задача фильтрации; 2. задача сортировки; 3. задача группировки данных в виде визуальных групп.
+                                Это своего рода посредник между источником данных и визуальным представлением, который берёт на себя ответственность перечисленные задачи.-->
+                                <CollectionViewSource x:Key="GroupsCollection" Source="{Binding Groups}"/>
+                            </DockPanel.Resources>
                             <!--Добавим сверху ещё одну Док-панель. По умолчанию она укладывает содержимое слева направа, что нам и нужно:-->
                             <DockPanel DockPanel.Dock="Top" Margin="0,3">
                                 <!--<TextBlock Text="Фильтр:"/>-->
@@ -107,7 +113,8 @@
                                 </Button>
                                 <Button Content="Удалить" Padding="0,7" Style="{StaticResource RemoveButtonStyle}" Command="{Binding DeleteGroupCommand}" CommandParameter="{Binding SelectedGroup}"/>
                             </UniformGrid>
-                            <ListBox ItemsSource="{Binding Groups}" SelectedIndex="0"                                 
+                            <!--Изменим эту привязку ListBox c {Binding Groups} на {Binding Source={StaticResource GroupsCollection}:-->
+                            <ListBox ItemsSource="{Binding Source={StaticResource GroupsCollection}}" SelectedIndex="0"                                 
                                  SelectedItem="{Binding SelectedGroup}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate DataType="decanat:Group">
