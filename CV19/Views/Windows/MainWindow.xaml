@@ -71,16 +71,6 @@
             <MenuItem Header="Помощь">
                 <MenuItem Header="О программе"/>
             </MenuItem>
-            <MenuItem Command="{Binding ChangeTabIndexCommand}" CommandParameter="-1">
-                <MenuItem.Header>
-                    <fa:ImageAwesome Height="12" Icon="Regular_ArrowAltCircleLeft"/>
-                </MenuItem.Header>
-            </MenuItem>
-            <MenuItem Command="{Binding ChangeTabIndexCommand}" CommandParameter="+1">
-                <MenuItem.Header>
-                    <fa:ImageAwesome Height="12" Icon="Regular_ArrowAltCircleRight"/>
-                </MenuItem.Header>
-            </MenuItem>
         </Menu>
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBarItem MinWidth="150" MaxWidth="350">
@@ -97,115 +87,6 @@
          и свяжем его со свойством SelectedPageIndex во ViewMosel-->
         <TabControl SelectedIndex="{Binding SelectedPageIndex}">
             <!--<TabItem Header="Вкладка 1">-->
-            <TabItem Header="Разнородные данные" Height="20" VerticalAlignment="Top">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="168.053"/>
-                        <ColumnDefinition Width="81.947"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <GroupBox Grid.ColumnSpan="2">
-                        <GroupBox.Header>
-                            <TextBlock Text="Элементы"/>
-                        </GroupBox.Header>
-                        <!--Раньше мы указывали конкретный шаюлон внутри списка. А теперь создадим ресурсы внутри GroupBox. т.е. эти ресурсы будут действовать только на содержимое этого GroupBox:-->
-                        <GroupBox.Resources>
-                            <!--Укажем, что нам нужен DataTemplate, нацеленый на DataType="{x:Type decanat:Group}" (здесь необходимо указывать полноценный тип), и теперь этот шаблон будет
-                            использован для визуализации группы. ListBox, когда он демонстрирует своё содержимое, он бежит по списку, и для элемента данных, которыу ему попали в свойство ItemsSource,
-                            он создаёт ListBoxItem-ы, т.е. контейнеры в которых хранится содержимое каждого элемента. При этом он пытается в ресурсах найти шаблон DataTemplate для визуализации
-                            этого типа данных, и в качестве типа он рассмотривает свойство шаблона DataType. Т.е., если находится такой шаблон, то он применяется для визуализации этого элемента.
-                            Напишем и остальные шаблоны:-->
-                            <!--<DataTemplate DataType="{x:Type decanat:Group}">
-                                <TextBlock Text="{Binding Name, StringFormat=Группа {0}}"/>
-                            </DataTemplate>
-                            <DataTemplate DataType="{x:Type decanat:Student}">
-                                <TextBlock Text="{Binding Name, StringFormat=Студент {0}}"/>
-                            </DataTemplate>
-                            -->
-                            <!--Добавим такой-же шаблон для визуализации для отображения системных типов данных. Для этого понадобится пространство имён System (xmlns:sys="clr-namespace:System;assembly=System.Runtime").-->
-                            <!--
-                            <DataTemplate DataType="{x:Type sys:String}">
-                                <TextBlock>
-                                    <Run Foreground="Red" FontWeight="Bold">Строка:</Run> <TextBlock Text="{Binding}"/>
-                                </TextBlock>
-                            </DataTemplate>
-                            <DataTemplate DataType="{x:Type sys:Int32}">
-                                <TextBlock>
-                                    Число: <TextBlock Text="{Binding}"/>
-                                </TextBlock>-->
-                            <!--</DataTemplate>-->
-                            <!--Отправим все DataTemplate в отдельный словарь ресурсов Resources\DataTemplates\CompositeListItemsDataTemplates.xaml, добавив туда необходимые пространства емён:
-                                xmlns:decanat="clr-namespace:CV19.Models.Decanat" и xmlns:sys="clr-namespace:System;assembly=System.Runtime". А сюда вставляем ссылку на словарь ресурсов:-->
-                            <ResourceDictionary>
-                                <!--Внутри определяем объединение с другим словарём:-->
-                                <ResourceDictionary.MergedDictionaries>
-                                    <!--Так как мы находимся внутри папки Views/Window, поэтому нужно подняться два уровня наверх:-->
-                                    <ResourceDictionary Source="../../Resources/DataTemplates/CompositeListItemsDataTemplates.xaml"/>
-                                </ResourceDictionary.MergedDictionaries>
-                            </ResourceDictionary>
-                        </GroupBox.Resources>
-                        <ListBox ItemsSource="{Binding CompositeCollection}"
-                                 SelectedItem="{Binding SelectedCompositeValue}">
-                            <!--<ListBox.ItemTemplate>
-                                -->
-                            <!--Поместим сюда DataTemplate. DataTemplate конкретизируется для работы с группой, и в нутри мы описываем, как мы хотим визуализировать группы.
-                                Если у нас в списке находятся элементы разных типов (например, когда элементы могут быть базового класса, а также классов-наследников), то нужно описать набор шаблонов данных,
-                                которые будут использоваться списком для того, чтобы отобразить элементы:-->
-                            <!--
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding}"/>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>-->
-                        </ListBox>
-                    </GroupBox>
-                    <GroupBox Grid.Column="2">
-                        <GroupBox.Header>
-                            <TextBlock>Выбранный элемент</TextBlock>
-                        </GroupBox.Header>
-                        <!--Если есть задача отображения разнородных типов данных, то можно построить для них шаблон:-->
-                        <GroupBox.Resources>
-                            <!--<DataTemplate DataType="{x:Type decanat:Group}">
-                                <TextBlock Text="{Binding Name, StringFormat=Группа {0}}"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           FontSize="30"/>
-                            </DataTemplate>
-                            <DataTemplate DataType="{x:Type decanat:Student}">
-                                <TextBlock Text="{Binding Name, StringFormat=Студент {0}}"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           FontSize="30"/>
-                            </DataTemplate>                            
-                            <DataTemplate DataType="{x:Type sys:String}">
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    FontSize="30">
-                                    <Run Foreground="Red" FontWeight="Bold">Строка:</Run> <TextBlock Text="{Binding}"/>
-                                </TextBlock>
-                            </DataTemplate>
-                            <DataTemplate DataType="{x:Type sys:Int32}">
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    FontSize="30">
-                                    Число: <TextBlock Text="{Binding}"/>
-                                </TextBlock>
-                            </DataTemplate>-->
-                            <ResourceDictionary>
-                                <!--Внутри определяем объединение с другим словарём:-->
-                                <ResourceDictionary.MergedDictionaries>
-                                    <!--Так как мы находимся внутри папки Views/Window, поэтому нужно подняться два уровня наверх:-->
-                                    <ResourceDictionary Source="../../Resources/DataTemplates/CompositeItemsControlDataTemplates.xaml"/>
-                                </ResourceDictionary.MergedDictionaries>
-                            </ResourceDictionary>
-                        </GroupBox.Resources>
-                        <ContentControl Content="{Binding SelectedCompositeValue}"></ContentControl>
-                        <!--Так как ContentControl не знает, как отображать соответствующий тип данных, то он вызывает метод ToString(), в том числе и у числа. Исправим это и консретизируем, как будут
-                        отображатьсяконкретные типы данных. Если во вкладке "Студенты" в ListBox мы просто указали имя отображаемого свойства, то сейчас мы зададим параметр ItemsTemplate (см. ListBox):-->
-                    </GroupBox>
-                </Grid>
-            </TabItem>
             <!--Свойство Header принимает тип object. Это значит, что его можно развернуть следующим образом и внутри создать разметку:-->
             <TabItem Header="Студенты">
                 <!--У нас подключена View-Model, и по идее там должны быть студенты. Можно заглянуть и посмотреть, чтобы удостовериться, есть там что или нет:-->
@@ -373,7 +254,7 @@
             <!--Так мы увидим, что это элементы типа DataPoint-->
             <!--<TabItem Header="{Binding TestDataPoints[400].XValue}"></TabItem>-->
             <!--Получим значение 400-сотой точки X-->
-            <TabItem Header="График">
+            <TabItem Header="График" Visibility="Collapsed">
                 <!--Предварительно вверху подключим пространство имён OxyPlot: xmlns:oxy="http://oxyplot.org/wpf"-->
                 <oxy:Plot>
                     <oxy:Plot.Axes>
@@ -387,79 +268,6 @@
                 </oxy:Plot>
 
 
-            </TabItem>
-            <TabItem Header="Вкладка 2">
-                <!--<Button VerticalAlignment="Top" HorizontalAlignment="Left"
-                        Content="123" Margin="15,5" Padding="14,5"
-                        Style="{StaticResource DengerBtn}"/>-->
-                <!--<Button VerticalAlignment="Top" HorizontalAlignment="Left"
-                        Content="123" Margin="15,5" Padding="14,5"
-                        Style="{StaticResource CustomButtonStyle}"/>-->
-
-                <!--Указываем точку (в относительных координатах от 0(min) до 1(max)), относительно которой будут производиться визуальные трансформации: RenderTransformOrigin="0.5,0.5
-                0.5(ширина по горизонтали),0.5(ширина по вертикали). На кнопке в чентре есть точка, если её двигать, то будут меняться и начальные координаты.-->
-                <!--<Button Margin="20,40" VerticalAlignment="Top" HorizontalAlignment="Left"
-                        Content="123" Padding="14,5"
-                        Style="{StaticResource CheckButtonStyle}"
-                        Width="110" RenderTransformOrigin="0.5,0.5">-->
-                    <Button Margin="20,40" VerticalAlignment="Top" HorizontalAlignment="Left"
-                            Content="123" Padding="14,5" Opacity="1"
-                            Style="{StaticResource CustomButtonStyle}"
-                            Width="110" RenderTransformOrigin="0.5,0.5">
-                        <Button.Background>
-                            <SolidColorBrush Color="White" x:Name="ButtonBrush"/>
-                        </Button.Background>
-                    <Button.RenderTransform>
-                        <!--Зададим визуальному элементу RotateTransform имя в разметке, чтобы к нему можно было обратиться из какого-то другого элемента разметки.
-                        Так как сам элемент не имеет имени, его всегда можно прикрепить с помощью расширения x:Name:-->
-                        <!--<RotateTransform Angle="30" x:Name="ButtonRotate"/>-->
-                        <RotateTransform x:Name="ButtonRotate"/>
-                    </Button.RenderTransform>
-                    <!--Также добавим к самой кнопке триггеры. Но обычныей триггер сюда нельзя добавить. Но можно добавить EventTrigger, то есть триггеры, которые нацеливаются на события,
-                    которые происходят внутри элемента, а внутри прописать нужное событие (перечень доступных событий находится во вкладке "Свойства -> события" после выделения соответствующего элемента):-->
-                    <Button.Triggers>
-                        <EventTrigger RoutedEvent="Button.Click">
-                            <!--Раскадровка анимации:-->
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <!--Существует нескольтипов анимации. Выбираем и указываем тип анимации DoubleAnimation и элемент, который надо анимировать Storyboard.TargetName="ButtonRotate".
-                                    Далее указываем, какое свойство мы слбираемся анимировать: Storyboard.TargetProperty="Angle". Указываем начальное и конечное значение и продолжительность 3 с.
-                                    ТАкже можно указать шаг анимации, например By="0.1", но это не обязательно (по-моему это даже не работает). AutoReverse="True" - Вращение туда у обратно.
-                                    Параметр From="0" можно не указывать, тогда на начальное значение будет взято текущее значение.-->
-                                    <DoubleAnimation Storyboard.TargetName="ButtonRotate"
-                                                     Storyboard.TargetProperty="Angle"
-                                                     From="0" To="360"
-                                                     Duration="0:0:0.5"
-                                                     AutoReverse="True"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                        <!--Запрограммируем анимацию (плавное изменение) цвета. Но, цвет не является тем, что закрашивает кнопку. Кнопку красит кисть, а для кисти нет анимации. Поэтому:
-                        Выше зададим <Button.Background>, зададим цвет по умолчанию White и зададим имя этой кисти x:Name="ButtonBrush". Далее укажем Storyboard.TargetName="ButtonBrush",
-                        укажем мзменяемое свойство Storyboard.TargetProperty="Color" и укажем в какой цвет должен прийти текущий цвет To="Red"-->
-                        <EventTrigger RoutedEvent="Button.MouseEnter">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <ColorAnimation Storyboard.TargetName="ButtonBrush"
-                                                    Storyboard.TargetProperty="Color"
-                                                    To="Red"
-                                                    Duration="0:0:0.1"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                        <!--Второй триггер сделает наоборот, из красного белый цвет:-->
-                        <EventTrigger RoutedEvent="Button.MouseLeave">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <ColorAnimation Storyboard.TargetName="ButtonBrush"
-                                                    Storyboard.TargetProperty="Color"
-                                                    To="White"
-                                                    Duration="0:0:3"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </Button.Triggers>
-                </Button>
             </TabItem>
         </TabControl>
     </DockPanel>
