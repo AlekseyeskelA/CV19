@@ -89,60 +89,22 @@
             <!--<TabItem Header="Вкладка 1">-->
             <!--Свойство Header принимает тип object. Это значит, что его можно развернуть следующим образом и внутри создать разметку:-->
             <TabItem Header="Студенты">
-                <!--У нас подключена View-Model, и по идее там должны быть студенты. Можно заглянуть и посмотреть, чтобы удостовериться, есть там что или нет:-->
-                <!--<TextBlock Text="{Binding Groups}"/>                                    -->
-                <!--Удостоверимся, что есть объект Collection-->
-                <!--<TextBlock Text="{Binding Groups.Count}"/>                              -->
-                <!--Количество групп-->
-                <!--<TextBlock Text="{Binding Groups[0].Name}"/>                            -->
-                <!--Название первой группы-->
-                <!--TextBlock Text="{Binding Groups[1].Students.Count}"/>                -->
-                <!--Количество студентов во второй группе-->
-                <!--<TextBlock Text="{Binding Groups[0].Students[0].Name}"/>                    -->
-                <!--Имя первого студента первой группы-->
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <!--<ColumnDefinition Width="3*"/>
-                        <ColumnDefinition Width="7*"/>-->
                         <ColumnDefinition Width="250"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <GroupBox Grid.Column="0" Header="Группы">
-                        <!--ListBox, когда не знает, что делать с объектом, вызывает у него метод ToString. Поэтому нужно либо переопределить метод ToString в классе.
-                        Либо можно сделать так: У списочных элементов, таких как ComboBox, ListBox, ListView и пр. есть два свойства: DisplayMemberPath и SelectedValuePath.
-                        Поэтому можно установить DisplayMemberPath в свойство Name. В этом случае у нас отобразится имя группы:-->
-                        <!--<ListBox ItemsSource="{Binding Groups}" SelectedIndex="0"
-                                 DisplayMemberPath="Name"
-                                 SelectedItem="{Binding SelectedGroup}"/>-->
-                        <!--Отображение с помощью DataTemplate:-->
                         <DockPanel>
+                            <!--Добавим сверху ещё одну Док-панель. По умолчанию она укладывает содержимое слева направа, что нам и нужно:-->
+                            <DockPanel DockPanel.Dock="Top" Margin="0,3">
+                                <!--<TextBlock Text="Фильтр:"/>-->
+                                <fa:ImageAwesome Height="12" Icon="Solid_Search" Margin="3,0"/>
+                                <TextBox/>
+                            </DockPanel>
                             <UniformGrid DockPanel.Dock="Bottom" Rows="1" Margin="0,3">
-                                <!--<UniformGrid.Resources>-->
-                                    <!--<Style x:Key="ButtonStyle" TargetType="Button">-->
-                                    <!--В случае, если для стиля не указан ключь (x:Key="ButtonStyle"), то ключом становится сам тип данных (Button), и он автоматически применяется
-                                    ко всем вложенным элементам этого типа (Button)-->
-                                    <!--<Style TargetType="Button">
-                                        <Setter Property="Margin" Value="3,0"/>
-                                        <Setter Property="Padding" Value="3,5"/>
-                                        <Setter Property="Background" Value="White"/>
-                                    </Style>-->
-                                <!--</UniformGrid.Resources>-->
-                                <!--Margin="3,0" - три пикселя слева и справа, а сверху и снизу будет 0:-->
-                                <!--<Button Content="Добавить" Style="{StaticResource ButtonStyle}" Command="{Binding CreateGroupCommand}"/>
-                                <Button Content="Удалить" Style="{StaticResource ButtonStyle}" Command="{Binding DeleteGroupCommand}" CommandParameter="{Binding SelectedGroup}"/>-->
-                                <!--<Button Style="{StaticResource PrimaryBtn}" Command="{Binding CreateGroupCommand}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <fa:ImageAwesome Height="12" Icon="Solid_Check" Foreground="LightGreen" Margin="0,0,3,0">
-                                            <fa:ImageAwesome.Effect>
-                                                <DropShadowEffect ShadowDepth="1"/>
-                                            </fa:ImageAwesome.Effect>
-                                        </fa:ImageAwesome>
-                                        <TextBlock Text="Добавить"/>
-                                    </StackPanel>
-                                </Button>-->
                                 <Button Content="Добавить" Padding="0,7" Style="{StaticResource CheckButtonStyle}" Command="{Binding CreateGroupCommand}">
                                 </Button>
-                                <!--<Button Content="Удалить" Style="{StaticResource DengerBtn}" Command="{Binding DeleteGroupCommand}" CommandParameter="{Binding SelectedGroup}"/>-->
                                 <Button Content="Удалить" Padding="0,7" Style="{StaticResource RemoveButtonStyle}" Command="{Binding DeleteGroupCommand}" CommandParameter="{Binding SelectedGroup}"/>
                             </UniformGrid>
                             <ListBox ItemsSource="{Binding Groups}" SelectedIndex="0"                                 
@@ -155,11 +117,7 @@
                                         </StackPanel>
                                         <!--Допустим, что мы хотим, чтобы какая-нибудь группа выделялась другим цветом. У DataTemplate на этот случай есть коллекция триггеров:-->
                                         <DataTemplate.Triggers>
-                                            <!--Добавим елемент DataTrigger, который предназначен для работы с любыми свойствами всего, чео угодно, включая разметку и модели.
-                                            Его главное свойство - Binding. Привяжем его к количеству студентов, и укажем, чему должно быть равно это свойство, чтобы триггер сработал Value="0".
-                                            Теперь при добавлении группы с 0 студентов, название группы будет выделяться красным шрифтом.-->
                                             <DataTrigger Binding="{Binding Students.Count}" Value="0">
-                                                <!--Зададим выше для TextBlock имя Name="TextView" и далее привяжемся к нему:-->
                                                 <Setter TargetName="TextView" Property="Foreground" Value="Red"/>
                                             </DataTrigger>
                                         </DataTemplate.Triggers>
@@ -169,91 +127,43 @@
                         </DockPanel>
                     </GroupBox>
                     <GroupBox Grid.Column="1" Header="{Binding SelectedGroup.Name, FallbackValue='Студенты', TargetNullValue='Группа не выбрана'}">
-                        <!--Возьмём для разнообразия DataGrid - очень мощный элемент для визуализации данных в табличном виде. Можно кастомизировать отдельные ячейки.
-                        Кроме того, он очень быстрый, и предназначен для демонстрации огромных массивов данных (при правильной его подготевке).
-                        Запретим DataGrid самостоятельно создавать дополнительные колонки: AutoGenerateColumns="False".
-                        После этого нужно указать, какие именно колонки должны отображаться: DataGrid.Columns. По умолчанию достцупны 5 типов колонок, которые можно использовать.
-                        Из них DataGridTextColumn самый главный тип. Он универсальный, и позволяет отображать любые данные в текстовом представлении (это могут быть и численные данные и дата).
-                        Не дадим пользователю редактировать данные: IsReadOnly="True".
-                        Для удаления горихонтальный хилий: HorizontalGridLinesBrush="{x:Null}" или GridLinesVisibility="Vertical"-->
-                        <!--<DataGrid ItemsSource="{Binding SelectedGroup.Students}"
-                                  AutoGenerateColumns="False"
-                                  CanUserAddRows="False"
-                                  GridLinesVisibility="Vertical"
-                                  VerticalGridLinesBrush="DarkGray"
-                                  AlternatingRowBackground="LightGray">-->
+                        <DockPanel>
+                            <DockPanel DockPanel.Dock="Top">
+                                <DockPanel DockPanel.Dock="Top" Margin="0,3">
+                                    <fa:ImageAwesome Height="12" Icon="Solid_Search" Margin="3,0"/>
+                                    <TextBox/>
+                                </DockPanel>
+                            </DockPanel>
                             <DataGrid ItemsSource="{Binding SelectedGroup.Students}"
                                   AutoGenerateColumns="False"
                                   GridLinesVisibility="Vertical"
                                   VerticalGridLinesBrush="DarkGray"
                                   AlternatingRowBackground="LightGray">
-                                <!--HorizontalGridLinesBrush="{x:Null}"-->
-                            <DataGrid.Columns>
-                                <!--По умолчанию привязка производится к контексту данных. Контекстом данных каждой строки является объект Student, поэтому привязка производится к нему.
-                                При этом, каждый Binding можно отформатировать отдено. Отформатируем дату рождения. Чтобы видеть, как меняется форматирование, временно для отладки в строке
-                                <ListBox ItemsSource="{Binding Groups}" выставим SelectedIndex="0". (На сайте CodeProject есть статья по кастомизации DataGrid, включая вставку картинок, измение цвета и т.д.)-->
-                                <DataGridTextColumn Header="Фамилия" Binding="{Binding Surename}" Width="Auto" IsReadOnly="False"/>
-                                <DataGridTextColumn Header="Фамилия" Binding="{Binding Surename}" Width="Auto" IsReadOnly="False"/>
-                                <!--Width="Auto" - подстройка ширины под контент. C Framework не стабильно работает-->
-                                <DataGridTextColumn Header="Имя" Binding="{Binding Name}" IsReadOnly="False"/>
-                                <DataGridTextColumn Header="Отчество"  Binding="{Binding Patronymic}" IsReadOnly="False"/>
-                                <DataGridTextColumn Header="Рейтинг" Binding="{Binding Rating}" IsReadOnly="False"/>
-                                <!--<DataGridTextColumn Header="Дата рождения" Binding="{Binding Birthday, StringFormat=dd.MM.yyy}"/>-->
-                                <!--DataGridTemplateColumn позволяет сконфигурировать колонки так, как нам надо. Внутри установим свойство CellTemplate.-->
-                                <DataGridTemplateColumn Header="Дата рождения">
-                                    <!--<DataGridTemplateColumn.CellTemplate>
-                                        -->
-                                    <!--Многие визуальные элементы позволяют демонстрировать своё содержимое разным специфическим образом.
-                                        Все списочные элементы (ItemsControl - это все списочные элементы представления, такие как список групп;
-                                        TabItems - это тоже списочный элемент управления) обладают свойством ItemsTemplate, которое позволяет указать шаблон визуализации данных. 
-                                        А также есть ContentControl - это все элементы, которые позволяют отображать некоторое содержимое. Нопример, кнопка является элементом ContentControl.
-                                        У таких элементов есть свойство ContentTemplate. В любом случае эти свойства принимают в качестве значения объект скласса DataTemplate. То есть это шаблон визуализации данных,
-                                        внутри которого нужно описать разметку, которая будет применена для того, чтобы нарисовать этот элемент на экране на основе тех данных, которые мы хотим отображать.
-                                        Для DataTemplate жаелательно указывать тип элемента данных с помощью свойства DataType. Если этого не сделать, то студия не будет подсказывать набор свойств самого элемента внутри
-                                        этого шаблона (к) которым можно выполнять привязки к данным. Кроме указания типа элементов нужно указать пространство имён: xmlns:decanat="clr-namespace:CV19.Models.Decanat".
-                                        Таким образом мы конфигурируем DataTemplate на работу с типом данных Student.-->
-                                    <!--
-                                        <DataTemplate DataType="decanat:Student">
-                                            -->
-                                    <!--Строим разметку того, как элемент должен представляться на экране. Элемент DatePicker предназначен для отображения даты в выпадающем списке.-->
-                                    <!--
-                                            <DatePicker SelectedDate="{Binding Birthday}"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>-->
-                                    <!--Теперь слегка поменяем поведение данной колонки, а предыдущее закомментируем и добавим два шаблона: для отображения и редактирования. При этом разрешим редактирование ячеек:
-                                    Уберем строку IsReadOnly="True" и добавим просто запрет на добавление новых строк: CanUserAddRows="Fals". Теперь при двойном клике на ячейке она преобразуется в другой визуальный
-                                    вид, т.е. к ней применяется другой шаблон и отображается DatePicker в котом можно поменять дату.-->
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate DataType="decanat:Student">
-                                            <TextBlock Text="{Binding Birthday, StringFormat='dd.MM.yyyy'}"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                    <DataGridTemplateColumn.CellEditingTemplate>
-                                        <DataTemplate DataType="decanat:Student">
-                                            <DatePicker SelectedDate="{Binding Birthday}"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellEditingTemplate>
-
-                                </DataGridTemplateColumn>
-                                <!--Добавим привязку к группе. Сейчас мы находимся в каждой строке (не в колонке) нашей таблицы. Строка находится в контейнере строк DataGrid-а,
-                                котортый наодится в саммом DataGrid-е. Нам надо подняться по этой иерархии вверх до уровня DataGrid. Проблема в том, что в кажой строке установлено свойство DataContext,
-                                а нам необходим DataContext в DataGrid. Будем использовать относительный источник данных RelativeSource, устанавливаем требуемый тип AncestorType=DataGrid.
-                                В этом случае мы будем подниматься вверх по дереву интерфейса до узла DataGrid, и в нём нас будет интересовать DataContext SelectedGroup.Name:-->
-                                <!--<DataGridTextColumn Header="Группа" Binding="{Binding DataContext.SelectedGroup.Name, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>-->
-                                <DataGridTextColumn Header="Заметки" Binding="{Binding Description}" Width="*"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Фамилия" Binding="{Binding Surename}" Width="Auto" IsReadOnly="False"/>
+                                    <DataGridTextColumn Header="Фамилия" Binding="{Binding Surename}" Width="Auto" IsReadOnly="False"/>
+                                    <DataGridTextColumn Header="Имя" Binding="{Binding Name}" IsReadOnly="False"/>
+                                    <DataGridTextColumn Header="Отчество"  Binding="{Binding Patronymic}" IsReadOnly="False"/>
+                                    <DataGridTextColumn Header="Рейтинг" Binding="{Binding Rating}" IsReadOnly="False"/>
+                                    <DataGridTemplateColumn Header="Дата рождения">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate DataType="decanat:Student">
+                                                <TextBlock Text="{Binding Birthday, StringFormat='dd.MM.yyyy'}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                        <DataGridTemplateColumn.CellEditingTemplate>
+                                            <DataTemplate DataType="decanat:Student">
+                                                <DatePicker SelectedDate="{Binding Birthday}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellEditingTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Заметки" Binding="{Binding Description}" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </DockPanel>
                     </GroupBox>
                 </Grid>
             </TabItem>
-            <!--<TabItem Header="{Binding TestDataPoints}"></TabItem>-->
-            <!--Если написано (Collection), значит там что-то есть...-->
-            <!--<TabItem Header="{Binding TestDataPoints.Count}"></TabItem>-->
-            <!--Будет показывать количество элементов.-->
-            <!--<TabItem Header="{Binding TestDataPoints[400]}"></TabItem>-->
-            <!--Так мы увидим, что это элементы типа DataPoint-->
-            <!--<TabItem Header="{Binding TestDataPoints[400].XValue}"></TabItem>-->
-            <!--Получим значение 400-сотой точки X-->
             <TabItem Header="График" Visibility="Collapsed">
                 <!--Предварительно вверху подключим пространство имён OxyPlot: xmlns:oxy="http://oxyplot.org/wpf"-->
                 <oxy:Plot>
