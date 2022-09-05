@@ -100,13 +100,16 @@
                             <DockPanel.Resources>
                                 <!--Объект CollectionViewSource предназначен для решения трёх задач: 1. задача фильтрации; 2. задача сортировки; 3. задача группировки данных в виде визуальных групп.
                                 Это своего рода посредник между источником данных и визуальным представлением, который берёт на себя ответственность перечисленные задачи.-->
-                                <CollectionViewSource x:Key="GroupsCollection" Source="{Binding Groups}"/>
+                                <CollectionViewSource x:Key="GroupsCollection"
+                                                      Source="{Binding Groups}"
+                                                      Filter="CollectionViewSource_Filter"/>
                             </DockPanel.Resources>
                             <!--Добавим сверху ещё одну Док-панель. По умолчанию она укладывает содержимое слева направа, что нам и нужно:-->
                             <DockPanel DockPanel.Dock="Top" Margin="0,3">
                                 <!--<TextBlock Text="Фильтр:"/>-->
                                 <fa:ImageAwesome Height="12" Icon="Solid_Search" Margin="3,0"/>
-                                <TextBox/>
+                                <!--Обработчик событий TextChanged="GroupNameFilterText_TextChanged" будет вызываться всякий раз, когда будет изменяться текст в поле фильтра выбора групп:-->
+                                <TextBox Name="GroupNameFilterText" TextChanged="GroupNameFilterText_TextChanged"/>
                             </DockPanel>
                             <UniformGrid DockPanel.Dock="Bottom" Rows="1" Margin="0,3">
                                 <Button Content="Добавить" Padding="0,7" Style="{StaticResource CheckButtonStyle}" Command="{Binding CreateGroupCommand}">
@@ -147,7 +150,6 @@
                                   VerticalGridLinesBrush="DarkGray"
                                   AlternatingRowBackground="LightGray">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Фамилия" Binding="{Binding Surename}" Width="Auto" IsReadOnly="False"/>
                                     <DataGridTextColumn Header="Фамилия" Binding="{Binding Surename}" Width="Auto" IsReadOnly="False"/>
                                     <DataGridTextColumn Header="Имя" Binding="{Binding Name}" IsReadOnly="False"/>
                                     <DataGridTextColumn Header="Отчество"  Binding="{Binding Patronymic}" IsReadOnly="False"/>
