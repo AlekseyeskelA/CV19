@@ -38,7 +38,7 @@ namespace CV19
             по ключю x:Key="GroupsCollection" с конвертацией в CollectionViewSource: */
             var text_box = (TextBox)sender;                                                                 // получаем объект TextBox с именем "sender" и создаём переменную данного типа.
             var collection = (CollectionViewSource)text_box.FindResource("GroupsCollection");               // через этот TextBox связываемся с разметкой, находим GroupsCollection и создаём переменную данного типа.
-            collection.View.Refresh();                                                                      // Обновляем GroupsCollection.
+            collection.View.Refresh();                                                                      // Обновляем GroupsCollection (с передачей вводённых данных в строку поиска?...).
         }
     }
 }
