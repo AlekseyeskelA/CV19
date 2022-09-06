@@ -95,7 +95,16 @@
                     <!--<TextBlock Text="{Binding Source={x:Static local:App.IsDesignMode}}"/>-->
                     <!--После того, как свойство IsDesignMode влияет на количество групп, привяжем ListBox к нашему источнику:-->
                     <ListBox HorizontalAlignment="Left" Width="200" Margin="30"
-                             ItemsSource="{Binding TestStudents}">
+                             ItemsSource="{Binding TestStudents}"
+                             VirtualizingPanel.IsVirtualizing="True"
+                             VirtualizingPanel.VirtualizationMode="Recycling"
+                             VirtualizingPanel.IsContainerVirtualizable="True">
+                        <!--Добавление виртуализации:-->
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
                         <!--Отобразим списки 100000 студентов без виртуализации. Этот процесс занимает более 300 Мб памяти.-->
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
@@ -109,7 +118,7 @@
                                         Padding="3">
                                     <!--Для большей загрузки памяти сделаем кэширование каждого визуального элемента:-->
                                     <Border.CacheMode>
-                                        <BitmapCache/>
+                                        <BitmapCache EnableClearType="True" SnapsToDevicePixels="True" RenderAtScale="5"/>
                                     </Border.CacheMode>
                                     <StackPanel>
                                         <TextBlock Text="{Binding Surename}" ToolTip="{Binding Name}"/>
@@ -211,11 +220,18 @@
                                     <TextBox/>
                                 </DockPanel>
                             </DockPanel>
+                            <!--В DataGrid есть свои параметры виртуализации: EnableColumnVirtualization="" и EnableRowVirtualization=""-->
                             <DataGrid ItemsSource="{Binding SelectedGroup.Students}"
-                                  AutoGenerateColumns="False"
-                                  GridLinesVisibility="Vertical"
-                                  VerticalGridLinesBrush="DarkGray"
-                                  AlternatingRowBackground="LightGray">
+                                      AutoGenerateColumns="False"
+                                      GridLinesVisibility="Vertical"
+                                      VerticalGridLinesBrush="DarkGray"
+                                      AlternatingRowBackground="LightGray"
+                                      EnableColumnVirtualization="True">
+                                <!--<DataGrid.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel></VirtualizingStackPanel>
+                                    </ItemsPanelTemplate>
+                                </DataGrid.ItemsPanel>-->
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Фамилия" Binding="{Binding Surename}" Width="Auto" IsReadOnly="False"/>
                                     <DataGridTextColumn Header="Имя" Binding="{Binding Name}" IsReadOnly="False"/>
