@@ -86,6 +86,37 @@
         <!--Модель-представления ничего не должна знать о визуальных элементах, но при этом можно ввести внутрь модели-представления индекс активной вкладки. Для этого возьмём свойство TabControl SelectedIndex
          и свяжем его со свойством SelectedPageIndex во ViewMosel-->
         <TabControl SelectedIndex="{Binding SelectedPageIndex}">
+            <!--Протестируем, как работает виртуализация:-->
+            <TabItem Header="Тестирование виртуализации">
+                <Grid>
+                    <!--Надо заметить, что дизайнер не предназначан для больших нагрузок по отображению огромного количества студентов.
+                    Поэтому, чтобы он не сломался, добавим в приложение в App.xaml.cs специальное свойство, которое будет опрпделять, работаем ли мы в дизайнере, или запущен exe-файл.
+                    Здесь же выполним отображение значения свойства (проверим, работает или нет). Текст привяжем к свойству Text="{Binding Source={x:Static local:App.IsDesignMode}}":-->
+                    <!--<TextBlock Text="{Binding Source={x:Static local:App.IsDesignMode}}"/>-->
+                    <!--После того, как свойство IsDesignMode влияет на количество групп, привяжем ListBox к нашему источнику:-->
+                    <ListBox HorizontalAlignment="Left" Width="200" Margin="30"
+                             ItemsSource="{Binding TestStudents}">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="decanat:Student">
+                                <!--ToolTip="{Binding Name}" - всплывающая подсказка будет привязана к имени.-->
+                                <Border BorderBrush="Blue" BorderThickness="1" CornerRadius="3"
+                                        Padding="3">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Surename}" ToolTip="{Binding Name}"/>
+                                        <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}"/>
+                                        <TextBlock Text="{Binding Patronymic, TargetNullValue=--}" ToolTip="{Binding Name}"/>
+                                    </StackPanel>
+                                </Border>                                
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </TabItem>
             <!--<TabItem Header="Вкладка 1">-->
             <!--Свойство Header принимает тип object. Это значит, что его можно развернуть следующим образом и внутри создать разметку:-->
             <TabItem Header="Студенты">

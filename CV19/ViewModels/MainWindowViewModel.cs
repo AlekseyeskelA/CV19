@@ -34,7 +34,7 @@ namespace CV19.ViewModels
 
         /// <summary>Выбранный непонятный элемент</summary>
         public object SelectedCompositeValue
-        { 
+        {
             get => _SelectedCompositeValue;
             set => Set(ref _SelectedCompositeValue, value);
         }
@@ -68,8 +68,8 @@ namespace CV19.ViewModels
         /// <summary>Текстовый набор для визуализации</summary>
         public IEnumerable<DataPoint> TestDataPoints
         {
-            get => _TestDataPoints; 
-            set => Set(ref _TestDataPoints, value); 
+            get => _TestDataPoints;
+            set => Set(ref _TestDataPoints, value);
         }    // Возвращение такого типа будет достаточно для визуализации графиков OxyPlot (сгенерируем его в конструкторе).
              // Далее идём в разметку окна и проверяем, что в свойстве TestDataPoints что-то есть... Выберем для этого вкладку 2.
         #endregion
@@ -94,7 +94,7 @@ namespace CV19.ViewModels
         // Описание с тегами <summary> (нажать три раза "///"). Таким обрвзом в самом окне в разметке xaml при наведении мышки на Binding Свойство будет видно, что это такое:
         /// <summary>Заголовок окна</summary>
         public string Title
-        {            
+        {
             get => _Title;
             //set
             //{
@@ -121,11 +121,34 @@ namespace CV19.ViewModels
 
         /// <summary>Статус программы</summary>
         public string Status
-        { 
-            get => _Status; 
-            set => Set(ref _Status, value); 
+        {
+            get => _Status;
+            set => Set(ref _Status, value);
         }
         #endregion
+
+        // Для тестирования виртуализации:
+        //public IEnumerable<Student> TestStudents =>   // Создадим свойство, которое будет возвращать перечисление (то есть нам не нужен весь массив на пару миллионов студентов)
+        //                                                                        // При этом будем динамически их (студентов) генерировать при каждом запросе этого свойства спомощью класса Enumerable,
+        //                                                                        // создавая перечисление от 1 до 10000 элементов.
+        //    .Select(i => new Student                                            // для каждого элемента создаём Selectи создаём студентов.
+        //    {
+        //        Name = $"Имя {i}",
+        //        Surename = $"Фамилия {i}"
+
+        //    });
+        
+        // Надо заметить. что дизайнер не предназначан для больших нагрузок по отображению огромного количества студентов. Поэтому, чтобы он не сломался, добавим в приложение в App.xaml.cs
+        // специальное свойство, которое будет опрпделять, работаем ли мы в дизайнере, или запущен exe-файл. Здесь же спеределаем код и сделвем выбор:
+        public IEnumerable<Student> TestStudents =>
+            Enumerable.Range(1, App.IsDesignMode ? 10 : 100_000)                 // Если находимся в режиме DesignMode, то отобразим 10 студентов. Если запущена программа, то 100000
+                .Select(i => new Student
+                {
+                    Name = $"Имя {i}",
+                    Surename = $"Фамилия {i}"
+
+                });
+
 
         /*------------------------------------------------------------------------------------------------------------------------------------------*/
 
