@@ -96,6 +96,7 @@
                     <!--После того, как свойство IsDesignMode влияет на количество групп, привяжем ListBox к нашему источнику:-->
                     <ListBox HorizontalAlignment="Left" Width="200" Margin="30"
                              ItemsSource="{Binding TestStudents}">
+                        <!--Отобразим списки 100000 студентов без виртуализации. Этот процесс занимает более 300 Мб памяти.-->
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -106,6 +107,10 @@
                                 <!--ToolTip="{Binding Name}" - всплывающая подсказка будет привязана к имени.-->
                                 <Border BorderBrush="Blue" BorderThickness="1" CornerRadius="3"
                                         Padding="3">
+                                    <!--Для большей загрузки памяти сделаем кэширование каждого визуального элемента:-->
+                                    <Border.CacheMode>
+                                        <BitmapCache/>
+                                    </Border.CacheMode>
                                     <StackPanel>
                                         <TextBlock Text="{Binding Surename}" ToolTip="{Binding Name}"/>
                                         <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}"/>
