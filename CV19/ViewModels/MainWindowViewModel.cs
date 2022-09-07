@@ -5,9 +5,10 @@ using CV19.ViewModels.Base;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace CV19.ViewModels
@@ -45,16 +46,97 @@ namespace CV19.ViewModels
         /// <summary>Выбранная группа</summary>
         private Group _SelectedGroup;
         /// <summary>Выбранная группа</summary>
+        //public Group SelectedGroup
+        //{
+        //    get => _SelectedGroup;
+        //    set => Set(ref _SelectedGroup, value);
+        //}   // Таким образом теперь мы можем указать визуальному списку, что его свойство SelectedItem будет связано сл свойством SelectedGroup и наша ViewModel будет
+        // ощущуать, когда мы будем переключаться между элементами списка. Каждый раз  в это свойство будет попадать новая выделенная группа,
+        // и в set-ере данного свойства можно определить логику, которая необходима для обработки выбираемой в интерфейсе группы.
+        // Кроме того, внутри логики ViewModel можно манипулировать данным свойством SelectedGroup, и тогда визуальный список будет подчиняться тому, что будет выбрано 
+        // в данном свойстве. Устанавливая в данное свойство значение нужной группы, визуальный список бцдет отрабатывать выбор соответствующего элемента атоматически.
+        // Для этого нужно указать, что свойство визуального списка SelectedItem привязано к свойству SelectedGroup.
+
+        // Для фильтр для студентов через модель-представления:
         public Group SelectedGroup
         {
             get => _SelectedGroup;
-            set => Set(ref _SelectedGroup, value);
-        }   // Таким образом теперь мы можем указать визуальному списку, что его свойство SelectedItem будет связано сл свойством SelectedGroup и наша ViewModel будет
-            // ощущуать, когда мы будем переключаться между элементами списка. Каждый раз  в это свойство будет попадать новая выделенная группа,
-            // и в set-ере данного свойства можно определить логику, которая необходима для обработки выбираемой в интерфейсе группы.
-            // Кроме того, внутри логики ViewModel можно манипулировать данным свойством SelectedGroup, и тогда визуальный список будет подчиняться тому, что будет выбрано 
-            // в данном свойстве. Устанавливая в данное свойство значение нужной группы, визуальный список бцдет отрабатывать выбор соответствующего элемента атоматически.
-            // Для этого нужно указать, что свойство визуального списка SelectedItem привязано к свойству SelectedGroup.
+            set
+            {
+                if(!Set(ref _SelectedGroup, value)) return;         // Если не произошло изменение свойства, то ничего не делаем.
+                _SelectedGroupStudents.Source = value?.Students;    // В противном случае устанавливаем значение объекта _SelectedGroupStudents, равное списку студентов этой группы.
+                                                                    // value?.Students. ? - подразумеваем, что вместо value может передаваться пустая ссылка. В этом случае источником данных CollectionViewSource _SelectedGroupStudents
+                                                                    // будет также пустая ссылка.
+
+                // Теперь выполним уведогмление:
+                OnPropertyChanged(nameof(SelectedGroupStudents));   // Уведомим о том, что у нас изменилось это свойство.
+                // Это пример того, как можно связать два свойства между собой. Есть одно свойство, значение которого изменяется, и изменение значения этого свойства меняет значение
+                // какого-то другого свойства. В Set-ере вызыввется событие OnPropertyChanged(nameof(SelectedGroupStudents)), в котором сообщается, какое свойство изменилось.
+            }
+        }
+        #endregion
+
+        #region SelectedGroupStudents
+        // Реализуем второй фильтр для студентов через модель-представления.
+        // Для этого создадим свойство, которое будет возвращать тип (интерфейс) ICollectionView, то есть представдления.
+        private readonly CollectionViewSource _SelectedGroupStudents = new CollectionViewSource();  // СОздаём источник данных.
+        // Устанавливать значение объекта _SelectedGroupStudents будем в Set-ере свойства SelectedGroup (расположено выше).
+        //public ICollectionView SelectedGroupStudents { get { return _SelectedGroupStudents?.View; } }
+                
+        private void OnStudentFiltered(object sender, FilterEventArgs e)
+        {
+            //throw new NotImplementedException();
+            //if (!(e.Item is Student student)) return;           // Если фильтруетс студент, то нас это не интересует.
+            // Либо:
+            if (!(e.Item is Student student))                   // Для всех записей, которые не являются студентами.
+            {
+                e.Accepted = false;                             // Срываем все записи, не являющиеся студентами.
+                return;
+            }
+
+            var filter_text = _StudentFilterText;               // Захватываем текст фильтра
+            if (string.IsNullOrWhiteSpace(filter_text))
+                return;
+
+            if (student.Name is null || student.Surename is null || student.Patronymic is null)  // Если хоть одно данное поле у студента пусто.
+            {
+                e.Accepted = false;
+                return;
+            }
+
+            // Если хотя бы одно поле софпадает с текстом фильтра, то не отбраковываем такого студента:
+            if (student.Name.Contains(filter_text, StringComparison.OrdinalIgnoreCase)) return;
+            if(student.Surename.Contains(filter_text, StringComparison.OrdinalIgnoreCase)) return;
+            if (student.Patronymic.Contains(filter_text, StringComparison.OrdinalIgnoreCase)) return;
+
+            e.Accepted = false;                                 // Если все три проверки не увенчались успехом, то студент не принимается.
+        }
+              
+        public ICollectionView SelectedGroupStudents => _SelectedGroupStudents?.View;
+        // Выполним привязку к этому свойству в разметке.
+
+        // ПОсле того, как мы настроили представление списка CollectionViewSource _SelectedGroupStudents, в него необходимо добавить фильтр. Сделаем это через конструктор.
+
+        // В фильтре нужно реалтзовать ту же самую логику, что была в файле "MainWindow.xaml.cs". Поэтому, нам понадобится ещё одно свойство: StudentFilterText.
+
+        #endregion
+
+
+        #region StudentFilterText : string - Текст фильтра студентов
+
+        /// <summary>Текст фильтра студентов</summary>
+        private string _StudentFilterText;
+
+        /// <summary>Текст фильтра студентов</summary>
+        public string StudentFilterText
+        {
+            get => _StudentFilterText;
+            set
+            {
+                if (!Set(ref _StudentFilterText, value)) return;
+                _SelectedGroupStudents.View.Refresh();
+            }            
+        }
         #endregion
 
         // Создадим данные для построенияя графика:
@@ -76,7 +158,7 @@ namespace CV19.ViewModels
 
         #region SelectedPageIndex : int - Номер выбранной вкладки
         /// <summary>Номер выбранной вкладки</summary>
-        private int _SelectedPageIndex;
+        private int _SelectedPageIndex = 1;
 
         /// <summary>Номер выбранной вкладки</summary>
         public int SelectedPageIndex
@@ -284,8 +366,18 @@ namespace CV19.ViewModels
             data_list.Add(group.Students[0]);   // добавим студента
 
             CompositeCollection = data_list.ToArray();
-        }
 
+            // Фильтр:
+            _SelectedGroupStudents.Filter += OnStudentFiltered;
+
+            // С помошью объекта CollectionViewSource _SelectedGroupStudents можно не только фильровать, но и упорядочивать элементы:
+            //_SelectedGroupStudents.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Descending)); // Сортировка по имени  в обратном порядке.
+            // Можно указать несколько критериев сортировки. Они будут применены последовательно.
+
+            // Помимо этого можно выполнять группировку данных. Укажем критерий группировки по имени:
+            //_SelectedGroupStudents.GroupDescriptions.Add(new PropertyGroupDescription("Name"));
+            // Для этого надо объяснить DataGrid-у в xaml-разметке, как отображать результаты (<DataGrid.GroupStyle>).
+        }
         /*------------------------------------------------------------------------------------------------------------------------------------------*/
 
     }

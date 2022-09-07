@@ -22,6 +22,7 @@
         xmlns:local="clr-namespace:CV19"
         xmlns:oxy="http://oxyplot.org/wpf"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+        xmlns:cm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         Title="{Binding Path=Title}"
         Height="450" Width="800">
     <!--На уровне окна можно добавить команду на закрытие:-->
@@ -87,7 +88,7 @@
          и свяжем его со свойством SelectedPageIndex во ViewMosel-->
         <TabControl SelectedIndex="{Binding SelectedPageIndex}">
             <!--Протестируем, как работает виртуализация:-->
-            <TabItem Header="Тестирование виртуализации">
+            <TabItem Header="Тестирование виртуализации" Visibility="Collapsed">
                 <Grid>
                     <!--Надо заметить, что дизайнер не предназначан для больших нагрузок по отображению огромного количества студентов.
                     Поэтому, чтобы он не сломался, добавим в приложение в App.xaml.cs специальное свойство, которое будет опрпделять, работаем ли мы в дизайнере, или запущен exe-файл.
@@ -147,7 +148,16 @@
                                 Это своего рода посредник между источником данных и визуальным представлением, который берёт на себя ответственность перечисленные задачи.-->
                                 <CollectionViewSource x:Key="GroupsCollection"
                                                       Source="{Binding Groups}"
-                                                      Filter="CollectionViewSource_Filter"/>
+                                                      Filter="CollectionViewSource_Filter">
+                                    <!--Сортировка:-->
+                                    <CollectionViewSource.SortDescriptions>
+                                        <cm:SortDescription PropertyName="Name" Direction="Descending"/>
+                                    </CollectionViewSource.SortDescriptions>
+                                    <!--Группировка:-->
+                                    <CollectionViewSource.GroupDescriptions>
+                                        <PropertyGroupDescription PropertyName="Students.Count"/>
+                                    </CollectionViewSource.GroupDescriptions>
+                                </CollectionViewSource>
                             </DockPanel.Resources>
                             <!--Добавим сверху ещё одну Док-панель. По умолчанию она укладывает содержимое слева направа, что нам и нужно:-->
                             <DockPanel DockPanel.Dock="Top" Margin="0,3">
@@ -212,16 +222,20 @@
                             </ListBox>
                         </DockPanel>
                     </GroupBox>
+                    <!--Реализуем второй фильтр для студентов через модель-представления. Вся логика должна быть сосредоточена там, а не так как это было сделано у нас ранее
+                    (часть логики работы интерфейса вкладки "Тестирование виртуализации" была вынесена в файл обработчиков собитий исходного кода разметки окна, что не очень хорошо,
+                    хотя этим тоже можно пользоваться)-->
                     <GroupBox Grid.Column="1" Header="{Binding SelectedGroup.Name, FallbackValue='Студенты', TargetNullValue='Группа не выбрана'}">
                         <DockPanel>
                             <DockPanel DockPanel.Dock="Top">
                                 <DockPanel DockPanel.Dock="Top" Margin="0,3">
                                     <fa:ImageAwesome Height="12" Icon="Solid_Search" Margin="3,0"/>
-                                    <TextBox/>
+                                    <!--UpdateSourceTrigger=PropertyChanged - обновление свойства не только при потере фокуса ввода, но и при любом изменении свойства Text:-->
+                                    <TextBox Text="{Binding StudentFilterText, UpdateSourceTrigger=PropertyChanged}"/>
                                 </DockPanel>
                             </DockPanel>
                             <!--В DataGrid есть свои параметры виртуализации: EnableColumnVirtualization="" и EnableRowVirtualization=""-->
-                            <DataGrid ItemsSource="{Binding SelectedGroup.Students}"
+                            <DataGrid ItemsSource="{Binding SelectedGroupStudents}"
                                       AutoGenerateColumns="False"
                                       GridLinesVisibility="Vertical"
                                       VerticalGridLinesBrush="DarkGray"
@@ -232,6 +246,9 @@
                                         <VirtualizingStackPanel></VirtualizingStackPanel>
                                     </ItemsPanelTemplate>
                                 </DataGrid.ItemsPanel>-->
+                                <!--<DataGrid.GroupStyle>
+                                    <GroupStyle/>
+                                </DataGrid.GroupStyle>-->
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Фамилия" Binding="{Binding Surename}" Width="Auto" IsReadOnly="False"/>
                                     <DataGridTextColumn Header="Имя" Binding="{Binding Name}" IsReadOnly="False"/>
