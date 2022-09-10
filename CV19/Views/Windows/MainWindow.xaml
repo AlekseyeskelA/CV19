@@ -153,10 +153,12 @@
                                     <CollectionViewSource.SortDescriptions>
                                         <cm:SortDescription PropertyName="Name" Direction="Descending"/>
                                     </CollectionViewSource.SortDescriptions>
-                                    <!--Группировка:-->
-                                    <CollectionViewSource.GroupDescriptions>
-                                        <PropertyGroupDescription PropertyName="Students.Count"/>
-                                    </CollectionViewSource.GroupDescriptions>
+                                    <!--Группировка (Не получается. Надо читать документацию. Если DataGrid поддерживает группировку автоматически, то d ListBox надо скорее выбирать свойство Groups
+                                    у CollectionViewSource и в нём будут содержаться группы):-->
+                                    <!--<CollectionViewSource.GroupDescriptions>-->
+                                        <!--<PropertyGroupDescription PropertyName="Students.Count"/>-->
+                                        <!--<PropertyGroupDescription PropertyName="Name"/>-->
+                                    <!--</CollectionViewSource.GroupDescriptions>-->
                                 </CollectionViewSource>
                             </DockPanel.Resources>
                             <!--Добавим сверху ещё одну Док-панель. По умолчанию она укладывает содержимое слева направа, что нам и нужно:-->
@@ -172,6 +174,7 @@
                                 <Button Content="Удалить" Padding="0,7" Style="{StaticResource RemoveButtonStyle}" Command="{Binding DeleteGroupCommand}" CommandParameter="{Binding SelectedGroup}"/>
                             </UniformGrid>
                             <!--Изменим эту привязку ListBox c {Binding Groups} на {Binding Source={StaticResource GroupsCollection}:-->
+                            <!--<ListBox ItemsSource="{Binding Groups, Source={StaticResource GroupsCollection}}" SelectedIndex="0"-->
                             <ListBox ItemsSource="{Binding Source={StaticResource GroupsCollection}}" SelectedIndex="0"
                                      SelectedItem="{Binding SelectedGroup}"
                                      VirtualizingPanel.IsContainerVirtualizable="True"
