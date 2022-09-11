@@ -308,6 +308,9 @@
                             </ListBox.ItemTemplate>
                         </ListBox>-->
                         <GroupBox.Resources>
+                            <!--Особенность HierarchicalDataTemplate в отличие от DataTemplate состоит в том, что можно указать источних данных для дочерних элементов ItemsSource="{Binding DirectoryItems}"-->
+                            <!--Иерархические шаблоны также поддерживает Меню. То есть меню можно также организовать с использованием  полностью MVVM, а не вручную в разметке, чтобы она генерировалась
+                            динамически в зависимости от того, какие данные у нас есть. То есть для каждого элемента данных можно динамически скомпоновать элементы меню, используя шаблоны.-->
                             <HierarchicalDataTemplate DataType="{x:Type vm:DirectoryViewModel}"
                                                           ItemsSource="{Binding DirectoryItems}">
                                 <StackPanel Orientation="Horizontal">
