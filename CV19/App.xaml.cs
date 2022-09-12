@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using CV19.Services;
+using System.Linq;
+using System.Windows;
 
 namespace CV19
 {
@@ -12,6 +14,11 @@ namespace CV19
         {
             IsDesignMode = false;
             base.OnStartup(e);
+
+            // Запустим тест для проверки кода в DataService.cs В этом месте это делать не правильно, но всё же...:
+            var service_test = new DataService();
+
+            var countries = service_test.GetData().ToArray();               // Извлечём все данные и сложим их в массив стран.
         }
         // Проверим в xaml-разметке, работает ли флажок IsDesignMode:
     }
