@@ -76,11 +76,18 @@ namespace CV19.Services
             // Но для того, чтобы с ним работать, придётся погружаться в TPL, в асинхронные моменты, что пока не желательно, кроме того придётся подключать дополнительный пакет, чтобы обеспечить
             // взаимодействие с интерфейсом IAsyncEnumerable.
 
-            using var data_stream = GetDataStream().Result;                                            // Внутри метода мы должны получить поток. Здесь произойдет запрос с сервера. Сервер ответит,
+            //using var data_stream = GetDataStream().Result;                                            // Внутри метода мы должны получить поток. Здесь произойдет запрос с сервера. Сервер ответит,
                                                                                                        // и HttpClien скачает только заголовок ответа. ПРи этом всё тело ответа останется пока не принятым.
                                                                                                        // То есть оно либо зависнет в буфере сетевой карты, либо сервер просто остановит передачу данных.
                                                                                                        // После этого ответ "response" вернёт нам поток "Stream", из которого мы сможем читать данные
                                                                                                        // буквально побайтно, и здесь мы его захватываем.
+            
+            using var data_stream = Task.Run(GetDataStream).Result;                                     // Теперь каждый раз при выполнении у нас будет создаваться здесь новая задача в пуле потоков,
+                                                                                                        // и метод GetDataStream будет отрабатывать там, а мы будем ожидать эту задачу из пула потоков,
+                                                                                                        // что в результате освободит контекст синхронизации.
+
+            // Сделаем возможность отслеживания на предмет, есть ли контекст синхррнизации
+
             using var data_reader = new StreamReader(data_stream);                                      // На его основе создать объект, который будет читать из этого потока строковые данные (построчно),
                                                                                                         // и начнёт читать этот поток байт за байтом. При этом мы считываем одну строчку и возвращаем
                                                                                                         // её как результат (строка: yield return line;)
@@ -127,8 +134,44 @@ namespace CV19.Services
             {
                 var province = row[0].Trim();                                       // Провинция. У каждой строки вызываем метод Trim, который будет обрезать всё лишнее (пробелы, нечитаемые спец-символы).
                 var country_name = row[1].Trim(' ', '"');                           // Для названия страны нужно указать, что конкретно мы хотим удалить (пробелы и ковычки).
-                var latitude = double.Parse(row[2]);                                // Добавим информацию о широте и долготе.
-                var longitude = double.Parse(row[3]);
+
+
+                double latitude;
+
+                //latitude = double.Parse(row[2]);                                    // Было у преподавателя.
+
+                // Мой вариант 1:
+                //if (row[2].Contains('.'))
+                //    latitude = double.Parse(row[2].Replace(".", ","));              // Добавим информацию о широте и долготе.  .Replace(".", ",") - моя добавка.
+                //else if (row[2].Length == 0)
+                //    latitude = 0;                                                   // latitude = 0 - моя добавка.
+                //else latitude = double.Parse(row[2]);
+
+                // Мой вариант 2:
+                if (string.IsNullOrWhiteSpace(row[2]))
+                    latitude = 0;
+                else latitude = double.Parse(row[2], CultureInfo.InvariantCulture);     // Замена . на ,
+
+
+
+
+                double longitude;
+
+                //longitude = double.Parse(row[3]);                                    // Было у преподавателя.
+
+                // Мой вариант 1:
+                //if (row[3].Contains('.'))
+                //    longitude = double.Parse(row[3].Replace(".", ","));             // .Replace(".", ",") - моя добавка.      
+                //else if (row[2].Length == 0)
+                //    longitude = 0;                                                  // longitude = 0 - моя добавка.
+                //else longitude = double.Parse(row[3]);
+
+                // Мой вариант 2:
+                if (string.IsNullOrWhiteSpace(row[3]))
+                    longitude = 0;
+                else longitude = double.Parse(row[3], CultureInfo.InvariantCulture);// Замена . на ,
+
+
                 var counts = row.Skip(4).Select(int.Parse).ToArray();               // Первые 4 параметра (страна, провинция, широта, долгота) пропускаем, после чего каждый из элементов превращаем в целое число.
 
                 yield return (province, country_name, (latitude, longitude), counts);
