@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CV19.Services
@@ -82,11 +83,15 @@ namespace CV19.Services
                                                                                                        // После этого ответ "response" вернёт нам поток "Stream", из которого мы сможем читать данные
                                                                                                        // буквально побайтно, и здесь мы его захватываем.
             
-            using var data_stream = Task.Run(GetDataStream).Result;                                     // Теперь каждый раз при выполнении у нас будет создаваться здесь новая задача в пуле потоков,
+            //using var data_stream = Task.Run(GetDataStream).Result;                                     // Теперь каждый раз при выполнении у нас будет создаваться здесь новая задача в пуле потоков,
                                                                                                         // и метод GetDataStream будет отрабатывать там, а мы будем ожидать эту задачу из пула потоков,
                                                                                                         // что в результате освободит контекст синхронизации.
 
-            // Сделаем возможность отслеживания на предмет, есть ли контекст синхррнизации
+            // Сделаем возможность отслеживания на предмет, есть ли контекст синхррнизации, или его нет. Если его нет, то просто выполняем задачу GetDataStream, а еслит он есть, то переходим
+            // в пул потоков, и там работаем. SynchronizationContext.Current is null ? GetDataStream() - если контекст синхронизации пустой, то выполняем метод GetDataStream().
+            // В противном случае формируем задачу: Task.Run(GetDataStream):
+
+            using var data_stream = (SynchronizationContext.Current is null ? GetDataStream() : Task.Run(GetDataStream)).Result;
 
             using var data_reader = new StreamReader(data_stream);                                      // На его основе создать объект, который будет читать из этого потока строковые данные (построчно),
                                                                                                         // и начнёт читать этот поток байт за байтом. При этом мы считываем одну строчку и возвращаем

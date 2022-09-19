@@ -20,6 +20,7 @@
         xmlns:decanat="clr-namespace:CV19.Models.Decanat"
         xmlns:vm="clr-namespace:CV19.ViewModels"
         xmlns:local="clr-namespace:CV19"
+        xmlns:view="clr-namespace:CV19.Views"
         xmlns:oxy="http://oxyplot.org/wpf"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         xmlns:cm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
@@ -86,68 +87,25 @@
 
         <!--Модель-представления ничего не должна знать о визуальных элементах, но при этом можно ввести внутрь модели-представления индекс активной вкладки. Для этого возьмём свойство TabControl SelectedIndex
          и свяжем его со свойством SelectedPageIndex во ViewMosel-->
-        <TabControl SelectedIndex="{Binding SelectedPageIndex}">
-            <!--Протестируем, как работает виртуализация:-->
-            <TabItem Header="Тестирование виртуализации" Visibility="Collapsed">
-                <Grid>
-                    <!--Надо заметить, что дизайнер не предназначан для больших нагрузок по отображению огромного количества студентов.
-                    Поэтому, чтобы он не сломался, добавим в приложение в App.xaml.cs специальное свойство, которое будет опрпделять, работаем ли мы в дизайнере, или запущен exe-файл.
-                    Здесь же выполним отображение значения свойства (проверим, работает или нет). Текст привяжем к свойству Text="{Binding Source={x:Static local:App.IsDesignMode}}":-->
-                    <!--<TextBlock Text="{Binding Source={x:Static local:App.IsDesignMode}}"/>-->
-                    <!--После того, как свойство IsDesignMode влияет на количество групп, привяжем ListBox к нашему источнику:-->
-                    <ListBox HorizontalAlignment="Left" Width="200" Margin="30"
-                             ItemsSource="{Binding TestStudents}"
-                             VirtualizingPanel.IsVirtualizing="True"
-                             VirtualizingPanel.VirtualizationMode="Recycling"
-                             VirtualizingPanel.IsContainerVirtualizable="True">
-                        <!--Добавление виртуализации:-->
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <VirtualizingStackPanel/>
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                        <!--Отобразим списки 100000 студентов без виртуализации. Этот процесс занимает более 300 Мб памяти.-->
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate DataType="decanat:Student">
-                                <!--ToolTip="{Binding Name}" - всплывающая подсказка будет привязана к имени.-->
-                                <Border BorderBrush="Blue" BorderThickness="1" CornerRadius="3"
-                                        Padding="3">
-                                    <!--Для большей загрузки памяти сделаем кэширование каждого визуального элемента:-->
-                                    <Border.CacheMode>
-                                        <BitmapCache EnableClearType="True" SnapsToDevicePixels="True" RenderAtScale="5"/>
-                                    </Border.CacheMode>
-                                    <StackPanel>
-                                        <TextBlock Text="{Binding Surename}" ToolTip="{Binding Name}"/>
-                                        <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}"/>
-                                        <TextBlock Text="{Binding Patronymic, TargetNullValue=--}" ToolTip="{Binding Name}"/>
-                                    </StackPanel>
-                                </Border>                                
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </Grid>
+        <TabControl>
+            <TabItem Header="Статистика">
+                <view:CountriesStatisticView/>
             </TabItem>
-            <!--<TabItem Header="Вкладка 1">-->
             <!--Свойство Header принимает тип object. Это значит, что его можно развернуть следующим образом и внутри создать разметку:-->
             <TabItem Header="Студенты">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="250"/>
+                        <ColumnDefinition Width="38.461"/>
+                        <ColumnDefinition Width="211.539"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <GroupBox Grid.Column="0" Header="Группы">
+                    <GroupBox Grid.Column="0" Header="Группы" Grid.ColumnSpan="2">
                         <DockPanel>
                             <!--В данный момент ListBox работает напрямую с коллекцией Groups. Изменим эту привязку. Для этого добавим в разметку объект CollectionViewSource:-->
                             <DockPanel.Resources>
                                 <!--Объект CollectionViewSource предназначен для решения трёх задач: 1. задача фильтрации; 2. задача сортировки; 3. задача группировки данных в виде визуальных групп.
                                 Это своего рода посредник между источником данных и визуальным представлением, который берёт на себя ответственность перечисленные задачи.-->
                                 <CollectionViewSource x:Key="GroupsCollection"
-                                                      Source="{Binding Groups}"
                                                       Filter="CollectionViewSource_Filter">
                                     <!--Сортировка:-->
                                     <CollectionViewSource.SortDescriptions>
@@ -156,8 +114,8 @@
                                     <!--Группировка (Не получается. Надо читать документацию. Если DataGrid поддерживает группировку автоматически, то d ListBox надо скорее выбирать свойство Groups
                                     у CollectionViewSource и в нём будут содержаться группы):-->
                                     <!--<CollectionViewSource.GroupDescriptions>-->
-                                        <!--<PropertyGroupDescription PropertyName="Students.Count"/>-->
-                                        <!--<PropertyGroupDescription PropertyName="Name"/>-->
+                                    <!--<PropertyGroupDescription PropertyName="Students.Count"/>-->
+                                    <!--<PropertyGroupDescription PropertyName="Name"/>-->
                                     <!--</CollectionViewSource.GroupDescriptions>-->
                                 </CollectionViewSource>
                             </DockPanel.Resources>
@@ -169,14 +127,13 @@
                                 <TextBox Name="GroupNameFilterText" TextChanged="GroupNameFilterText_TextChanged"/>
                             </DockPanel>
                             <UniformGrid DockPanel.Dock="Bottom" Rows="1" Margin="0,3">
-                                <Button Content="Добавить" Padding="0,7" Style="{StaticResource CheckButtonStyle}" Command="{Binding CreateGroupCommand}">
+                                <Button Content="Добавить" Padding="0,7" Style="{StaticResource CheckButtonStyle}">
                                 </Button>
-                                <Button Content="Удалить" Padding="0,7" Style="{StaticResource RemoveButtonStyle}" Command="{Binding DeleteGroupCommand}" CommandParameter="{Binding SelectedGroup}"/>
+                                <Button Content="Удалить" Padding="0,7" Style="{StaticResource RemoveButtonStyle}"/>
                             </UniformGrid>
                             <!--Изменим эту привязку ListBox c {Binding Groups} на {Binding Source={StaticResource GroupsCollection}:-->
                             <!--<ListBox ItemsSource="{Binding Groups, Source={StaticResource GroupsCollection}}" SelectedIndex="0"-->
                             <ListBox ItemsSource="{Binding Source={StaticResource GroupsCollection}}" SelectedIndex="0"
-                                     SelectedItem="{Binding SelectedGroup}"
                                      VirtualizingPanel.IsContainerVirtualizable="True"
                                      VirtualizingPanel.IsVirtualizing="True"
                                      VirtualizingPanel.VirtualizationMode="Recycling">
@@ -228,7 +185,7 @@
                     <!--Реализуем второй фильтр для студентов через модель-представления. Вся логика должна быть сосредоточена там, а не так как это было сделано у нас ранее
                     (часть логики работы интерфейса вкладки "Тестирование виртуализации" была вынесена в файл обработчиков собитий исходного кода разметки окна, что не очень хорошо,
                     хотя этим тоже можно пользоваться)-->
-                    <GroupBox Grid.Column="1" Header="{Binding SelectedGroup.Name, FallbackValue='Студенты', TargetNullValue='Группа не выбрана'}">
+                    <GroupBox Grid.Column="2" Header="{Binding SelectedGroup.Name, FallbackValue='Студенты', TargetNullValue='Группа не выбрана'}">
                         <DockPanel>
                             <DockPanel DockPanel.Dock="Top">
                                 <DockPanel DockPanel.Dock="Top" Margin="0,3">
@@ -290,69 +247,6 @@
                 </oxy:Plot>
 
 
-            </TabItem>
-            <TabItem Header="Файловая система">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="250"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <GroupBox Grid.Column="0" Header="Директории">
-                        <!--<ListBox ItemsSource="{Binding DiskRootDir.DirectoryItems}"
-                                 SelectedItem="{Binding SelectedDirectory}"
-                                 SelectedIndex="0">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate DataType="vm:DirectoryViewModel">
-                                    <TextBlock Text="{Binding Name}" ToolTip="{Binding CreationTime}"/>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>-->
-                        <GroupBox.Resources>
-                            <!--Особенность HierarchicalDataTemplate в отличие от DataTemplate состоит в том, что можно указать источних данных для дочерних элементов ItemsSource="{Binding DirectoryItems}"-->
-                            <!--Иерархические шаблоны также поддерживает Меню. То есть меню можно также организовать с использованием  полностью MVVM, а не вручную в разметке, чтобы она генерировалась
-                            динамически в зависимости от того, какие данные у нас есть. То есть для каждого элемента данных можно динамически скомпоновать элементы меню, используя шаблоны.-->
-                            <HierarchicalDataTemplate DataType="{x:Type vm:DirectoryViewModel}"
-                                                          ItemsSource="{Binding DirectoryItems}">
-                                <StackPanel Orientation="Horizontal">
-                                    <fa:ImageAwesome Height="12" Icon="Regular_Folder" Foreground="Orange" Margin="0,0,3,0"/>
-                                    <TextBlock Text="{Binding Name}"/>
-                                </StackPanel>
-                            </HierarchicalDataTemplate>
-                            <!--Добавим ещё один шаблон для отображения файлов:-->
-                            <DataTemplate DataType="{x:Type vm:FileViewModel}">
-                                <StackPanel Orientation="Horizontal" ToolTip="{Binding CreationTime}">
-                                    <fa:ImageAwesome Height="12" Icon="Regular_File" Foreground="Blue"/>
-                                    <TextBlock Text="{Binding Name}"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </GroupBox.Resources>
-                        <!--TreeView - это компонент, который также представляет собой списочный элемент управления, но у него слегка отличается шаблон. Он позволяет
-                        для каждого узла разворачивать или сворачивать содержимое.-->
-                        <TreeView ItemsSource="{Binding DiskRootDir.DirectoryItems}">
-                            <!--<TreeView.ItemTemplate>-->
-                                <!--<DataTemplate DataType="vm:DirectoryViewModel">
-                                    <TextBlock Text="{Binding Name}" ToolTip="{Binding CreationTime}"/>
-                                </DataTemplate>-->
-                                <!--Обычно для работы с иерархическими данными применяется иерархический шаблон.-->
-                                <!--У HierarchicalDataTemplate есть ещё свойство дочерних элементов (ItemSourse). В этом случает появляются разворачивающиеся элементы-->
-                                <!--Вынесем данный шаблон в ресурсы, дав тем самым возможность самому TreeView выбирать, каким образом она должна будет визуализировать контент.
-                                А скормим мы ей директории и файлы директорий. Для этого выше в GroupBox создадим блок ресурсов.-->
-                                <!--<HierarchicalDataTemplate DataType="vm:DirectoryViewModel"
-                                                          ItemsSource="{Binding DirectoryItems}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <fa:ImageAwesome Height="12" Icon="Regular_Folder" Foreground="Yellow" Margin="0,0,3,0"/>
-                                        <TextBlock Text="{Binding Name}"/>
-                                    </StackPanel>
-                                </HierarchicalDataTemplate>-->
-                            <!--</TreeView.ItemTemplate>-->
-                        </TreeView>
-                    </GroupBox>
-                    <!--<GroupBox Grid.Column="1" Header="Файлы">
-                        <ListBox SelectedItem="{Binding SelectedDirectory.Files, Mode=OneWay}">
-
-                        </ListBox>
-                    </GroupBox>-->
-                </Grid>
             </TabItem>
         </TabControl>
     </DockPanel>

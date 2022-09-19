@@ -21,60 +21,7 @@ namespace CV19.ViewModels
 
         /*------------------------------------------------------------------------------------------------------------------------------------------*/
 
-        // Создадим студентов. Для этого создадим коллекцию групп и заполним её в конструкторе:
-        public ObservableCollection<Group> Groups { get; }
 
-        // Создадим синтетическую задачу для демонстрации дерева визуализации в XAML-разметке. Предположим, что у нас есть масив класса object (внутри может быть что угодно)
-        // Создадим в эту коллекцию список элементов (см. конструктор):
-        public object[] CompositeCollection { get; }
-
-        #region SelectedCompositeValue : object - Выбранный непонятный элемент
-
-        /// <summary>Выбранный непонятный элемент</summary>
-        private object _SelectedCompositeValue;
-
-        /// <summary>Выбранный непонятный элемент</summary>
-        public object SelectedCompositeValue
-        {
-            get => _SelectedCompositeValue;
-            set => Set(ref _SelectedCompositeValue, value);
-        }
-
-        #endregion
-
-        #region SelectedGroup : Group
-        /// <summary>Выбранная группа</summary>
-        private Group _SelectedGroup;
-        /// <summary>Выбранная группа</summary>
-        //public Group SelectedGroup
-        //{
-        //    get => _SelectedGroup;
-        //    set => Set(ref _SelectedGroup, value);
-        //}   // Таким образом теперь мы можем указать визуальному списку, что его свойство SelectedItem будет связано сл свойством SelectedGroup и наша ViewModel будет
-        // ощущуать, когда мы будем переключаться между элементами списка. Каждый раз  в это свойство будет попадать новая выделенная группа,
-        // и в set-ере данного свойства можно определить логику, которая необходима для обработки выбираемой в интерфейсе группы.
-        // Кроме того, внутри логики ViewModel можно манипулировать данным свойством SelectedGroup, и тогда визуальный список будет подчиняться тому, что будет выбрано 
-        // в данном свойстве. Устанавливая в данное свойство значение нужной группы, визуальный список бцдет отрабатывать выбор соответствующего элемента атоматически.
-        // Для этого нужно указать, что свойство визуального списка SelectedItem привязано к свойству SelectedGroup.
-
-        // Для фильтр для студентов через модель-представления:
-        public Group SelectedGroup
-        {
-            get => _SelectedGroup;
-            set
-            {
-                if(!Set(ref _SelectedGroup, value)) return;         // Если не произошло изменение свойства, то ничего не делаем.
-                _SelectedGroupStudents.Source = value?.Students;    // В противном случае устанавливаем значение объекта _SelectedGroupStudents, равное списку студентов этой группы.
-                                                                    // value?.Students. ? - подразумеваем, что вместо value может передаваться пустая ссылка. В этом случае источником данных CollectionViewSource _SelectedGroupStudents
-                                                                    // будет также пустая ссылка.
-
-                // Теперь выполним уведогмление:
-                OnPropertyChanged(nameof(SelectedGroupStudents));   // Уведомим о том, что у нас изменилось это свойство.
-                // Это пример того, как можно связать два свойства между собой. Есть одно свойство, значение которого изменяется, и изменение значения этого свойства меняет значение
-                // какого-то другого свойства. В Set-ере вызыввется событие OnPropertyChanged(nameof(SelectedGroupStudents)), в котором сообщается, какое свойство изменилось.
-            }
-        }
-        #endregion
 
         #region SelectedGroupStudents
         // Реализуем второй фильтр для студентов через модель-представления.
@@ -232,17 +179,6 @@ namespace CV19.ViewModels
                 });
 
 
-        public DirectoryViewModel DiskRootDir { get; } = new DirectoryViewModel("c:\\");
-
-        #region SelectedDirectory: DirectoryViewModel - Выбранная директория
-
-        /// <summary>Выбранная директория</summary>
-        private DirectoryViewModel _SelectedDirectory;
-
-        /// <summary>Выбранная директория</summary>
-        public DirectoryViewModel SelectedDirectory { get => _SelectedDirectory; set => Set(ref _SelectedDirectory, value); }
-
-        #endregion
 
 
         /*------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -282,41 +218,6 @@ namespace CV19.ViewModels
         #endregion
 
 
-        #region CreateGroupCommand  
-        public ICommand CreateGroupCommand { get; }
-
-        private bool CanCreateGroupCommandExecute(object p) => true;
-
-        private void OnCreateGroupCommandExecuted(object p)
-        {
-            var group_max_index = Groups.Count + 1;
-            var new_group = new Group
-            {
-                Name = $"Группа {group_max_index}",
-                Students = new ObservableCollection<Student>()
-            };
-            
-            Groups.Add(new_group);
-        }
-        #endregion
-
-
-        #region DeleteGroupCommand  
-        public ICommand DeleteGroupCommand { get; }
-
-        private bool CanDeleteGroupCommandExecute(object p) => p is Group group && Groups.Contains(group);
-
-        private void OnDeleteGroupCommandExecuted(object p)
-        {
-            if (!(p is Group group)) return;
-            var group_index = Groups.IndexOf(group);                // Чтобы после удаления автоматически выделялась предыдущая группа.
-            Groups.Remove(group);
-            if (group_index < Groups.Count)
-                SelectedGroup = Groups[group_index];                // Чтобы после удаления автоматически выделялась предыдущая группа.
-        }
-        #endregion
-
-
         #endregion
 
         /*------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -329,8 +230,7 @@ namespace CV19.ViewModels
 
             CloseApplicationCommand = new LambdaCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
             ChangeTabIndexCommand = new LambdaCommand(OnChangeTabIndexCommandExecuted, CanChangeTabIndexCommandExecute);
-            CreateGroupCommand = new LambdaCommand(OnCreateGroupCommandExecuted, CanCreateGroupCommandExecute);
-            DeleteGroupCommand = new LambdaCommand(OnDeleteGroupCommandExecuted, CanDeleteGroupCommandExecute);
+
             #endregion
 
             // Сгенерируем данные для тестового графика:
@@ -351,47 +251,7 @@ namespace CV19.ViewModels
             // (в круглые скобки). В этом случае всё пройдёт гораздо быстрее. Сделаем это через Лямбда-выражение:
             // Для групп создадим перечисление целых чисел от 1 в количестве 20 штук, и дальше для каждого числа сделаем преобразование (возьмём число и на его основе создадим группу).
             // Тоже самое сделаем для студентов (их будет 10):
-
-            var student_index = 1;
-            var students = Enumerable.Range(1, 10).Select(i => new Student
-            {
-                Name = $"Name {student_index}",
-                Surename = $"Surename {student_index}",
-                Patronymic = $"Patronymic {student_index++}",   // таким образом переменная student_index будет инкрементироваться для каждого студента.
-                Birthday = DateTime.Now,
-                Rating = 0
-            });
-
-            var groups = Enumerable.Range(1, 20).Select(i => new Group            
-            {
-                Name = $"Группа {i}",
-                Students = new ObservableCollection<Student>(students)
-            });
-
-            //Полученное перечисление скормим ObservableCollection в результате получится по 10 студентов в группе:
-            Groups = new ObservableCollection<Group>(groups);
-
-            var data_list = new List<object>();
-            data_list.Add("Hello World");
-            data_list.Add(42);                  // добавим число
-            var group = Groups[1];              // добавим первую группу
-            data_list.Add(group);
-            data_list.Add(group.Students[0]);   // добавим студента
-
-            CompositeCollection = data_list.ToArray();
-
-            // Фильтр:
-            _SelectedGroupStudents.Filter += OnStudentFiltered;
-
-            // С помошью объекта CollectionViewSource _SelectedGroupStudents можно не только фильровать, но и упорядочивать элементы:
-            //_SelectedGroupStudents.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Descending)); // Сортировка по имени  в обратном порядке.
-            // Можно указать несколько критериев сортировки. Они будут применены последовательно.
-
-            // Помимо этого можно выполнять группировку данных. Укажем критерий группировки по имени:
-            //_SelectedGroupStudents.GroupDescriptions.Add(new PropertyGroupDescription("Name"));
-            // Для этого надо объяснить DataGrid-у в xaml-разметке, как отображать результаты (<DataGrid.GroupStyle>).
         }
         /*------------------------------------------------------------------------------------------------------------------------------------------*/
-
     }
 }
