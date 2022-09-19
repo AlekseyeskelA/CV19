@@ -21,7 +21,9 @@ namespace CV19.ViewModels
 
         /*------------------------------------------------------------------------------------------------------------------------------------------*/
 
+        private readonly CountriesStatisticViewModel _CountriesStatistic;
 
+        /*------------------------------------------------------------------------------------------------------------------------------------------*/
 
         #region SelectedGroupStudents
         // Реализуем второй фильтр для студентов через модель-представления.
@@ -225,6 +227,8 @@ namespace CV19.ViewModels
         // Конструктор
         public MainWindowViewModel()
         {
+            _CountriesStatistic = new CountriesStatisticViewModel(this);
+
             // Создаём команды (объекты коменд) внутри конструктора:
             #region Команды
 
