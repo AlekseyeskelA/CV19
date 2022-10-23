@@ -22,9 +22,10 @@ namespace CV19.ViewModels
         /*------------------------------------------------------------------------------------------------------------------------------------------*/
 
         // В главной вью-модели создаём вторичную:
-        private readonly CountriesStatisticViewModel _CountriesStatistic;
+        //private readonly CountriesStatisticViewModel _CountriesStatistic;
 
-        /*------------------------------------------------------------------------------------------------------------------------------------------*/
+        // Оформим её как свойство, только для чтения и привяжемся к нему в xaml-разметке:
+        public CountriesStatisticViewModel CountriesStatistic { get; }
 
         #region SelectedGroupStudents
         // Реализуем второй фильтр для студентов через модель-представления.
@@ -228,9 +229,10 @@ namespace CV19.ViewModels
         // Конструктор
         public MainWindowViewModel()
         {
-            _CountriesStatistic = new CountriesStatisticViewModel(this);
+            //_CountriesStatistic = new CountriesStatisticViewModel(this);
             // Теперь вью-модели знают друг о друге и смогут общаться друг с другом путём вызова друг у друга методов, передавая, устанавливая значения свойств и другие манипуляции.
 
+            CountriesStatistic = new CountriesStatisticViewModel(this);
 
             // Создаём команды (объекты коменд) внутри конструктора:
             #region Команды
