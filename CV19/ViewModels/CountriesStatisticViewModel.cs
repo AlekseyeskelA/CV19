@@ -14,11 +14,25 @@ namespace CV19.ViewModels
     internal class CountriesStatisticViewModel : ViewModel
     {
         // Здесь будет жить сервис, который будет извлекать данные. Создаём его в конструкторе. В последствии это выльется в инверсию управоения:
-        private DataService _DataService;
+        private readonly DataService _DataService;
 
+        
+        // Свойства:
+        
         // Захватываем информацию о том, что является главной Вью-моделью. Связываем Вью-модели между собой (при этом в главной Вью-модели создаём вторичную).
         // Слделаем это в виде свойства, чтобы в случае чего можно было достучаться из представления вторичной модели до главной модели.
         private MainWindowViewModel MainModel { get; }
+
+        #region SelectedCountry : CountryInfo - Выбранная страна
+
+        /// <summary>Выбранная страна</summary>
+        private CountryInfo _SelectedCountry;
+
+        /// <summary>Выбранная стран</summary>
+        public CountryInfo SelectedCountry { get => _SelectedCountry; set => Set(ref _SelectedCountry, value); }
+
+        #endregion
+
 
         #region Countries : IEnumerable<CountryInfo> - Статистика по странам
 
@@ -35,9 +49,11 @@ namespace CV19.ViewModels
 
         #endregion
 
-        // Создадим команды, которые позволят загрузить данные:
-        #region Команды
 
+
+
+        #region Команды
+        // Создадим команды, которые позволят загрузить данные:
         public ICommand RefreshDataCommand { get; }
 
         // Метод выполнения команды:

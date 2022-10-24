@@ -13,6 +13,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:l="clr-namespace:CV19"
+             xmlns:m="clr-namespace:CV19.Models"
              xmlns:vm="clr-namespace:CV19.ViewModels"
              xmlns:fa="http://schemas.fontawesome.com/icons/"
              d:DataContext="{d:DesignInstance vm:CountriesStatisticViewModel, d:IsDesignTimeCreatable=True}"
@@ -31,7 +32,23 @@
                         <TextBlock Text="Загрузить данные"/>
                     </StackPanel>
                 </Button>
-                <ListBox ItemsSource="{Binding Countries}"/>
+                <ListBox ItemsSource="{Binding Countries}" SelectedItem="{Binding SelectedCountry}">
+                    <ListBox.ItemTemplate>
+                        <!--Укажем, как мы хотим видеть каждую страну в списке:-->
+                        <DataTemplate DataType="m:CountryInfo">
+                            <TextBlock>
+                                <TextBlock Text="{Binding Name}"/>
+                                <!--<TextBlock Text="{Binding Location}"/>-->
+                                <!--Свойство Location имеет тип Piont, а нам нужно не Point, а строка и нужен свой собственный формат преобразования в строку.
+                                Кроме того, мы хотим реализовать свой собственный формат преобразования объекта Point в строку. Для этого есть свойство Converter,
+                                который можно добавить в привязку. В это свойство можно передать объект типа IValueConverter. То есть нам нужно реальзовать
+                                свой собственный класс, который будет реальзовывать интерфейс IValueConverter и в нём описать логику, как один тип данных, 
+                                или одно значение будет преобразовываться в другое.-->
+                                <TextBlock Text="{Binding Location, Converter=}"
+                            </TextBlock>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </DockPanel>
         </GroupBox>
         <GroupBox Grid.Column="1" Header="Информация">
