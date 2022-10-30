@@ -16,8 +16,12 @@
              xmlns:m="clr-namespace:CV19.Models"
              xmlns:vm="clr-namespace:CV19.ViewModels"
              xmlns:fa="http://schemas.fontawesome.com/icons/"
+             xmlns:c="clr-namespace:CV19.Infrastructure.Converters"
              d:DataContext="{d:DesignInstance vm:CountriesStatisticViewModel, d:IsDesignTimeCreatable=True}"
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <c:LocationPointToStr x:Key="LocationConverter"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="230"/>
@@ -43,8 +47,25 @@
                                 Кроме того, мы хотим реализовать свой собственный формат преобразования объекта Point в строку. Для этого есть свойство Converter,
                                 который можно добавить в привязку. В это свойство можно передать объект типа IValueConverter. То есть нам нужно реальзовать
                                 свой собственный класс, который будет реальзовывать интерфейс IValueConverter и в нём описать логику, как один тип данных, 
-                                или одно значение будет преобразовываться в другое.-->
-                                <TextBlock Text="{Binding Location, Converter=}"
+                                или одно значение будет преобразовываться в другое. Для этого в папке Infrastructure добавим папку Converters и класс.-->
+                                <!--Использование конвертера может быть выполнено по разному.
+                                1. Самый дурацкий способ - это развернуть свойство Text и использовать привязку не как расширение, а как элемент,
+                                а дальше установить свойство конвертера (Этот код писать, не нажимая кнопку "Собрать", иначе будет ошибка.).-->
+                                <!--<TextBlock>
+                                    <TextBlock.Text>
+                                        <Binding Path="Location" StringFormat="({0})">
+                                            <Binding.Converter>
+                                                <c:LocationPointToStr/>
+                                            </Binding.Converter>
+                                        </Binding>
+                                    </TextBlock.Text>
+                                </TextBlock>-->
+                                <!--Но, при этом я нас появляется проблема, что, сколько у нас будет создано стран в списке ListBox, столько у ная будет создано
+                                привязок, и в каждой привязке будет создан свой собственный объект конвертации данных, что является пустой тратой памяти.
+                                Поэтому конвертер имеет смысл выносить в статические ресурсы. Добавим ресурсы в верхнюю часть кода (если вынести в DataTemplate, 
+                                то дизайнер подглючивает почему-то) и довавим ниже TextBlock.
+                                Таким образом можно самостоятельно определять алгоритм преобразования одного значения в другое:-->
+                                <TextBlock Text="{Binding Location, Converter={StaticResource LocationConverter}, StringFormat=({0})}"/>
                             </TextBlock>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -53,11 +74,24 @@
         </GroupBox>
         <GroupBox Grid.Column="1" Header="Информация">
             <Grid>
+                <Grid.Resources>
+                    <c:Ratio K="2" x:Key="Ratio2"/>
+                    <c:Linear K="5" B="3" x:Key="Lnear_K5_B3"/>
+                </Grid.Resources>
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <GridSplitter VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
+                <GridSplitter VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Panel.ZIndex="1000"/>
+                <!--Приведём пример применения Конвертера вместе со слайдером:-->
+                <!--ToolTip="{Binding Value, RelativeSource={RelativeSource Self}} - к самому себе делаем привязку и берем свойство Value.-->
+                <Slider Grid.Row="0" Name="ValueSlider" Maximum="100"
+                        ToolTip="{Binding Value, RelativeSource={RelativeSource Self}}"/>
+                <TextBox Grid.Row="0" Margin="0,30,0,0"
+                         VerticalAlignment="Top" HorizontalAlignment="Left" Width="200"
+                           Text="{Binding Value, ElementName=ValueSlider, Converter={StaticResource Ratio2}, UpdateSourceTrigger=PropertyChanged}"/>
+                <!--На данный момент при движении слайдера значение меняется в пределах от 0 до 10.
+                Добавим конвертер, который будет изменять с некоорым коэффициентом это значение. Для этого создадим ещё один конвертер.-->
             </Grid>
         </GroupBox>
     </Grid>

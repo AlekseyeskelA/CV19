@@ -1,6 +1,7 @@
 ﻿using CV19.Services;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media;
 
 namespace CV19
 {
@@ -19,6 +20,14 @@ namespace CV19
             //var service_test = new DataService();
 
             //var countries = service_test.GetData().ToArray();               // Извлечём все данные и сложим их в массив стран.
+
+            //// Пример заморозки объекта:
+            //var brush = new SolidColorBrush(Colors.White);
+            //brush.Freeze();
+            //// Только после клонирования объекта можно будет изменять его свойства:
+            //brush.Clone();
+
+            //brush.IsFrozen
         }
         // Проверим в xaml-разметке, работает ли флажок IsDesignMode:
     }

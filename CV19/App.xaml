@@ -47,6 +47,9 @@
 
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <!--Подключим словарь ресурсов Brushes на уровне всего приложения:-->
+                <ResourceDictionary Source="Resources/Base/Brushes.xaml"/>
+                
                 <ResourceDictionary Source="Resources/Styles/Buttons.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/GridSplitters.xaml"/>
             </ResourceDictionary.MergedDictionaries>

@@ -7,7 +7,7 @@
     <!--В качестве типа данных стиля можно указывать не Button, а ButtonBase (базовый класс кнопки). В этом случае данный стиль можно будет применить не только к классу Button,
         но и ToggleButton (залипающая кнопка):-->
     <Style x:Key="BtnBase" TargetType="ButtonBase">
-        <Setter Property="Background" Value="White"/>
+        <Setter Property="Background" Value="{StaticResource WhiteBrush}"/>
     </Style>
 
     <!--После создания базового стиля, наследуем от него стиль по умолчанию для нашей кнопки:-->
@@ -19,8 +19,8 @@
     </Style>
 
     <Style x:Key="DengerBtn" TargetType="Button" BasedOn="{StaticResource BtnBase}">
-        <Setter Property="Background" Value="Red"/>
-        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Background" Value="{StaticResource RedBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource WhiteBrush}"/>
     </Style>
 
    <!--Стандартная разметка кнопки. Получена кликом правой кнопкой мыши на кнопке Правка шаблона -> Правка копии-->
@@ -97,9 +97,9 @@
                 <!--<Setter Property="Background" TargetName="border" Value="{StaticResource Button.MouseOver.Background}"/>-->
                 <!--<Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.MouseOver.Border}"/>-->
                 <!--<Setter Property="Background" TargetName="border" Value="Blue"/>-->
-                <Setter Property="BorderBrush" TargetName="border" Value="White"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource WhiteBrush}"/>
                 <!--Добавим Foreground:-->
-                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Foreground" Value="{StaticResource WhiteBrush}"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="true">
                 <!--<Setter Property="Background" TargetName="border" Value="{StaticResource Button.Pressed.Background}"/>-->
