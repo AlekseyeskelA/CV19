@@ -89,6 +89,7 @@
                             <c:Linear K="-3" B="10"/>
                         </c:CompositeConverter.Second>
                     </c:CompositeConverter>
+                    <c:ToArray x:Key="ToArrayConverter"/>
                 </Grid.Resources>
                 <Grid.RowDefinitions>
                     <RowDefinition/>
@@ -97,13 +98,30 @@
                 <GridSplitter VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Panel.ZIndex="1000"/>
                 <!--Приведём пример применения Конвертера вместе со слайдером:-->
                 <!--ToolTip="{Binding Value, RelativeSource={RelativeSource Self}} - к самому себе делаем привязку и берем свойство Value.-->
-                <Slider Grid.Row="0" Name="ValueSlider" Maximum="100"
-                        ToolTip="{Binding Value, RelativeSource={RelativeSource Self}}"/>
-                <TextBox Grid.Row="0" Margin="0,30,0,0"
+                <!--<Slider Grid.Row="0" Name="ValueSlider" Maximum="100"
+                        ToolTip="{Binding Value, RelativeSource={RelativeSource Self}}"/>-->
+                <!--<TextBox Grid.Row="0" Margin="0,30,0,0"
                          VerticalAlignment="Top" HorizontalAlignment="Left" Width="200"
-                           Text="{Binding Value, ElementName=ValueSlider, Converter={StaticResource TestConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                           Text="{Binding Value, ElementName=ValueSlider, Converter={StaticResource TestConverter}, UpdateSourceTrigger=PropertyChanged}"/>-->
                 <!--На данный момент при движении слайдера значение меняется в пределах от 0 до 10.
                 Добавим конвертер, который будет изменять с некоорым коэффициентом это значение. Для этого создадим ещё один конвертер.-->
+
+                <StackPanel Grid.Row="0">
+                    <Slider Grid.Row="0" Name="Value1" Maximum="100" ToolTip="{Binding Value, RelativeSource={RelativeSource Self}}"/>
+                    <Slider Grid.Row="0" Name="Value2" Maximum="100" ToolTip="{Binding Value, RelativeSource={RelativeSource Self}}"/>
+                    <Slider Grid.Row="0" Name="Value3" Maximum="100" ToolTip="{Binding Value, RelativeSource={RelativeSource Self}}"/>
+                    <Slider Grid.Row="0" Name="Value4" Maximum="100" ToolTip="{Binding Value, RelativeSource={RelativeSource Self}}"/>
+                </StackPanel>
+                <ListBox Grid.Row="1">
+                    <ListBox.ItemsSource>
+                        <MultiBinding Converter="{StaticResource ToArrayConverter}">
+                            <Binding ElementName="Value1" Path="Value"/>
+                            <Binding ElementName="Value2" Path="Value"/>
+                            <Binding ElementName="Value3" Path="Value"/>
+                            <Binding ElementName="Value4" Path="Value"/>
+                        </MultiBinding>
+                    </ListBox.ItemsSource>
+                </ListBox>
             </Grid>
         </GroupBox>
     </Grid>
