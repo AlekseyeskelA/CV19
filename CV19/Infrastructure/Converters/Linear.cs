@@ -10,6 +10,11 @@ namespace CV19.Infrastructure.Converters
 
     [ValueConversion(typeof(double), typeof(double))]
 
+    /*В ряде случаев при применении расширения раметки, когда оно объявлено в базовом классе (: MarkupExtension), и при этом есть класы-наследники, которые возвращают также
+    сами себя (=> this) через базовый класс, то в этом случае имеет смысл в классе-наследнике прописать, что быдет являться возвращаемым типом значения (с помощь атрибута).
+    В этом случае в разметке будут видны свойства:*/
+    [MarkupExtensionReturnType(typeof(Linear))]
+
     internal class Linear : Converter
     {
         // Свойства:

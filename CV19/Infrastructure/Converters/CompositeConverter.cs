@@ -3,16 +3,32 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Windows.Data;
+using System.Windows.Markup;
 
 namespace CV19.Infrastructure.Converters
 {
+    /*В ряде случаев при применении расширения раметки, когда оно объявлено в базовом классе (: MarkupExtension), и при этом есть класы-наследники, которые возвращают также
+    сами себя (=> this) через базовый класс, то в этом случае имеет смысл в классе-наследнике прописать, что быдет являться возвращаемым типом значения (с помощь атрибута).
+    В этом случае в разметке будут видны свойства:*/
+    [MarkupExtensionReturnType(typeof(CompositeConverter))]
+
     /* Данный конвертер можно применять для композиции, т.е., когда нужно выполнить не одно преобразование, а несколько. С помощью этого конвертера можно комбинировать
     любое количество других конвертеров между собой */
     internal class CompositeConverter : Converter
     {
         // У данного конвертера будет два свойства-конвертера, которые мы поочереди будем вызывать:
+        [ConstructorArgument("First")]
         public IValueConverter First { get; set; }
+        
+        [ConstructorArgument("Second")]
         public IValueConverter Second { get; set; }
+
+
+        // Добавим три конструктора:
+        public CompositeConverter() { }
+        public CompositeConverter(IValueConverter First) => this.First = First;
+        public CompositeConverter(IValueConverter First, IValueConverter Second) : this(First) => this.Second = Second;
+
 
         public override object Convert(object v, Type t, object p, CultureInfo c)
         {

@@ -12,7 +12,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" mc:Ignorable="d" 
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:l="clr-namespace:CV19"             
+             xmlns:l="clr-namespace:CV19"
+             xmlns:common="clr-namespace:CV19.Infrastructure.Common"   
              xmlns:m="clr-namespace:CV19.Models"
              xmlns:vm="clr-namespace:CV19.ViewModels"
              xmlns:fa="http://schemas.fontawesome.com/icons/"
@@ -107,12 +108,22 @@
                 Добавим конвертер, который будет изменять с некоорым коэффициентом это значение. Для этого создадим ещё один конвертер.-->
 
                 <StackPanel Grid.Row="0">
-                    <Slider Grid.Row="0" Name="Value1" Maximum="100" ToolTip="{Binding Value, RelativeSource={RelativeSource Self}}"/>
-                    <Slider Grid.Row="0" Name="Value2" Maximum="100" ToolTip="{Binding Value, RelativeSource={RelativeSource Self}}"/>
-                    <Slider Grid.Row="0" Name="Value3" Maximum="100" ToolTip="{Binding Value, RelativeSource={RelativeSource Self}}"/>
-                    <Slider Grid.Row="0" Name="Value4" Maximum="100" ToolTip="{Binding Value, RelativeSource={RelativeSource Self}}"/>
+                    <Slider Name="Value1" Maximum="100" ToolTip="{Binding Value, RelativeSource={RelativeSource Self}, Converter={c:Linear 5}}"/>
+                    <!--Для совмещения расширения разметки с конвертерами: Для использования конвертеров вместе с расширением разметки дополнитеьно наследуем его от MarkupExtension.
+                    Далее мы идём в разметку, и в том месте, где нужно вставить конвертер, мы прямо его и используем в фигурных скобках. В этом случае конвертер создаётся
+                    прямо на месте и используется. И таким образом конвертер становится частью разметки, и его нет необходимости добавлять в ресурсы. Но при этом надо понимать,
+                    что конвертер создается всякий раз, когда применяется расширение разметки. Ив этом нет необхоимосьи, если конвертеров у нас много.-->
+                    
+                    <!--Используем композитный конвертер в виде расширения разметки. Говорим, что хотим использовать композитный конвертер, указываем первый конвертер и второй конвертер
+                    Таким образом можно компоновать преобразования, делая их в самой разметке, что бывает полезно, однако, нужно понимать, что если это происходит гдето-внутри списочного элемента
+                    для каждого элемента, то можно получить кучу композит-конвертеров, а в нутри ещё кучу линейных, и могут начаться проблемы  памятью. Но для простейших сченариев испольлзования
+                    получается очень удобная вещь, которую можно применятьв разметке, причём не только для численных- преобразований, но и каких-то других. Например, можно написать строковый конвертер,
+                    который будет преобразовывать строку к верхмену или нижнему регистру и т.п.-->
+                    <Slider Name="Value2" Maximum="100" ToolTip="{Binding Value, RelativeSource={RelativeSource Self}, Converter={c:CompositeConverter First={c:Add 5},Second={c:Ratio 7}}}"/>
+                    <Slider Name="Value3" Maximum="100" ToolTip="{Binding Value, RelativeSource={RelativeSource Self}, Converter={c:CompositeConverter {c:Linear 5, 7}, {c:CompositeConverter {c:Ratio 6}, {c:Add 7}}}}"/>
+                    <Slider Name="Value4" Maximum="100" ToolTip="{Binding Value, RelativeSource={RelativeSource Self}}"/>
                 </StackPanel>
-                <ListBox Grid.Row="1">
+                <!--<ListBox Grid.Row="1">
                     <ListBox.ItemsSource>
                         <MultiBinding Converter="{StaticResource ToArrayConverter}">
                             <Binding ElementName="Value1" Path="Value"/>
@@ -121,7 +132,30 @@
                             <Binding ElementName="Value4" Path="Value"/>
                         </MultiBinding>
                     </ListBox.ItemsSource>
-                </ListBox>
+                </ListBox>-->
+                
+                <!--РАсширение размктки (пояснения смотри в Infrastructure/Common/StringToIntArray):-->
+                <!--<ListBox Grid.Row="1" ItemsSource="{common:StringToIntArray '1;2;3;4;5'}">-->
+                <!--<ListBox Grid.Row="1" ItemsSource="{common:StringToIntArray Str='1;2;3;4;5'}">-->
+                    
+                <!--</ListBox>-->
+                <!--<Border Grid.Row="1" DataContext="{common:StringToIntArray '1;2;3;4;5'}">-->
+                <Border Grid.Row="1">
+                    <!--В варианте записи ниже в разметку будет вставлен, как значение свойства DataContext не сам объект, а результат вызова метода ProvadeValue (см. StringToIntArray):-->
+                    <Border.DataContext>
+                        <common:StringToIntArray Str='1;2;3;4;5'/>
+                    </Border.DataContext>
+                    <ListBox Grid.Row="1" ItemsSource="{Binding}">
+                        <!--<ListBox.ItemsSource>
+                            <MultiBinding Converter="{StaticResource ToArrayConverter}">
+                                <Binding ElementName="Value1" Path="Value"/>
+                                <Binding ElementName="Value2" Path="Value"/>
+                                <Binding ElementName="Value3" Path="Value"/>
+                                <Binding ElementName="Value4" Path="Value"/>
+                            </MultiBinding>
+                        </ListBox.ItemsSource>-->
+                    </ListBox>
+                </Border>
             </Grid>
         </GroupBox>
     </Grid>
