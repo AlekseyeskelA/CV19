@@ -25,6 +25,7 @@
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         xmlns:cm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         Title="{Binding Path=Title}"
+        DataContext="{vm:MainWindowViewModel}"
         Height="450" Width="800">
     <!--На уровне окна можно добавить команду на закрытие:-->
     <Window.InputBindings>
@@ -35,9 +36,12 @@
     Если переопределить DataContext где-то уровнем ниже, то всё, что находится ниже по дереву интерфейса, изменит свой контекст данных.
     Можно написать DataContext="" после Title="MainWindow" Height="450" Width="800", а можно развернуть так: <Window.DataContext></Window.DataContext>-->
     <!--Каждый тег <...> - это объект, который рождается в момент загрузки окна.-->
-    <Window.DataContext>
+    <!--После того, как Базовый класс ViewModel унаследовался от MarkupExtention, ниже расположенный DataContext можно убрать, а вверхней части написать
+    DataContext="{vm:MainWindowViewModel}". При этом мы контролируем момент, когда модель встраивается в контекст данных окна, мы можем сделать не совсем хорошую вешь,
+    а именно получить доступ к самомому окну изнутри модели, что MVVM запрещает, но иногда можно:-->
+    <!--<Window.DataContext>
         <vm:MainWindowViewModel/>
-    </Window.DataContext>
+    </Window.DataContext>-->
     <!--В словать ресурсов можно что-то поместить, только указав ключ. Сделаем ключ такой же, как и класс: "CloseApplicationCommand"-->
     <Window.Resources>
         <cmd:CloseApplicationCommand x:Key="CloseApplicationCommand"/>

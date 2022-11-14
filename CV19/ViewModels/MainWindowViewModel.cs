@@ -10,10 +10,12 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Markup;
 
 namespace CV19.ViewModels
 {
     // Основная модель представления для главного окна.
+    [MarkupExtensionReturnType(typeof(MainWindowViewModel))]
     internal class MainWindowViewModel : ViewModel
     {
         //// При желании можно переопределить метод Dispose и освободить какие-то ресурсы, которые модель захватит вдруг:
@@ -200,7 +202,8 @@ namespace CV19.ViewModels
         private void OnCloseApplicationCommandExecuted(object p)
         {
             // Обращаемся к классу Application из пространсва имён System.Windows, внутри вызываем текущее наше приложение (Current), у которого вызываем метод Shutdown():
-            Application.Current.Shutdown();
+            //Application.Current.Shutdown();
+            (RootObject as Window)?.Close();
             // Далее идём в разметру и привязываемся везде, где нужна функциональность закрытия окна.
         }
         // Данная команда будет доступна для выполнения всегда, поэтому возвращаем "true":
