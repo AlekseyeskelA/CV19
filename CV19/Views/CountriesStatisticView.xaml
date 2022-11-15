@@ -20,6 +20,7 @@
              xmlns:c="clr-namespace:CV19.Infrastructure.Converters"
              xmlns:sys="clr-namespace:System;assembly=System.Runtime"
              xmlns:oxy="http://oxyplot.org/wpf"
+             xmlns:map="clr-namespace:MapControl;assembly=MapControl.WPF"
              d:DataContext="{d:DesignInstance vm:CountriesStatisticViewModel, d:IsDesignTimeCreatable=True}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -167,7 +168,19 @@
                     <oxy:LineSeries StrokeThickness="2" Color="Red"
                                     ItemsSource="{Binding SelectedCountry.Counts}"
                                     DataFieldX="Date" DataFieldY="Count"/>
-                </oxy:Plot>
+                </oxy:Plot>                
+                <!--<map:Map Grid.Row="1" ZoomLevel="10" MaxZoomLevel="21" Center="55.75,37.62">-->
+                    <!--Нужно свойство Center привязать к координата мстраны. Но так просто координаты не получается передать. Придётся добавлять конвертер.-->
+                <map:Map Grid.Row="1" ZoomLevel="4" MaxZoomLevel="21" Center="{Binding SelectedCountry.Location, Converter={c:PointToMapLocation}}">
+                    <map:MapScale Margin="4" Opacity="1" Background="Transparent" VerticalAlignment="Bottom"/>
+                    <map:MapGraticule Opacity="0.3" Background="Transparent"/>
+                    <map:Map.MapLayer>
+                        <!--Указывание конкретного адреса карты может регулироваться лицензионной политикой! Нужно быть аккуратнее и смотреть лицензии!-->
+                        <!--<map:MapTileLayer TileSource="http://mt{i}.google.com/maps/vt/lyrc=m@333000000&amp;hl=ru&amp;x={x}&amp;y={y}&amp;z={z}"/>-->
+                        <!--<map:MapTileLayer TileSource="https://{c}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png"/>-->
+                        <map:MapTileLayer TileSource="http://tile.stamen.com/toner-lite/{z}/{x}/{y}.png"/>
+                    </map:Map.MapLayer>
+                </map:Map>
             </Grid>
         </GroupBox>
     </Grid>
