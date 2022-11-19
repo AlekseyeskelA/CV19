@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using System;
 
 namespace CV19
 {
@@ -46,6 +48,35 @@ namespace CV19
             var app = new App();
             app.InitializeComponent();
             app.Run();
+        }
+
+        // Метод, которым мы будем создавать Host. Метод должен быть public, должен иметь имя CreateHostBuilder и должен возвращать интерфейс IHostBuilder. Именно на наличие
+        // этого метода в классе Program нацелены некоторые инструменты .Net Core такие как, например? Entity Framework Core. Он используем этот метод для того,
+        // чтобы создать IHostBuilder:
+        public static IHostBuilder CreateHostBuilder(string[] Args)
+        {
+            var host_builder = Host.CreateDefaultBuilder(Args);
+
+            // Настроим host_builder, добавив ему ряд конфигурационных возможностей:
+            host_builder.UseContentRoot(Environment.CurrentDirectory);                      // Укажем рабочий каталог приложения (пока в лоб).
+            host_builder.ConfigureAppConfiguration((host, cfg) =>                           // Добавляем конфигурацию приложения. Формируем некоторое действие, rоторое конфигурирует
+                                                                                            // систему конфигурации. Получаем ссылку на сам хост (host) и на объект конфигурации (cfg).
+            {
+                cfg.SetBasePath(Environment.CurrentDirectory);                              // Опять добваляем базовый путь (тоже в лоб).
+                cfg.AddJsonFile("appsetings.json", optional: true, reloadOnChange: true);   // Добфвляем файл конфигурации. Файлы конфигурации можно использовать либо  в формате json,
+                                                                                            // любо в других форматах (с подключением дополнительных пакетов).
+                                                                                            // Кроме того, можно указать, что файл является опциаональным (optional: true), т.е.,
+                                                                                            // если его нет, то его можно не загружать. И укажем, что файл нужно перечитать,
+                                                                                            // если он изменился (reloadOnChange: true), т.е. система конфигурации позволяет
+                                                                                            // отслеживать изменения внутри файлов.
+            });
+
+            /* Далее выполним конфигурацию сервисов, рази которых всё затевается. Для этого сделаем так: само сервисы опишем внутри нашего приложения, а не здесь.
+             Для этого вызываем у host_builder метод ConfigureServices()? и внего передаём метод конфигурации сервисов App.ConfigureServices. После этого остаётся только
+            создать этот метод в классе App:*/
+            host_builder.ConfigureServices(App.ConfigureServices);
+    
+            return host_builder;
         }
     }
 }
