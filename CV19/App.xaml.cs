@@ -2,6 +2,7 @@
 using CV19.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -14,13 +15,24 @@ namespace CV19
         // специальное свойство, которое будет опрпделять, работаем ли мы в дизайнере, или запущен exe-файл.
         public static bool IsDesignMode { get; private set; } = true;       // По умолчанию установим true.
 
-        
-        
 
-        protected override void OnStartup(StartupEventArgs e)               // Если выполнится этот метод, то это будет означать, что приложение будет запущено.
+        // Запуск Хоста при старте приложения и остановка его при выходе.
+        // Внутри приложения надо создать хост, который и будет работать:
+        private static IHost __Host;
+        public static IHost Host => __Host ??= Program.CreateHostBuilder(Environment.GetCommandLineArgs()).Build();
+
+        /* Теперь, имея класс App, мы можем через статическое свойство Host всегда обратиться к этому самому хосту. При первом обращении он будет создан (__Host ??= Program...),
+        будут сконфигурированы все его сервисы, и мы сможем им пользоваться.*/
+        /* Теперь нам нужно его запустить. Для этого на понадобятся методы OnStartup (был создан ранее) и метод OnExit. В методе OnStartup мы должны стартовать хост,
+         а в методе OnExit должны его остановить и разрушить:*/
+        protected override async void OnStartup(StartupEventArgs e)          // Если выполнится этот метод, то это будет означать, что приложение будет запущено.
         {
             IsDesignMode = false;
+            var host = Host;                                                // Забираем host из нашего свойства.
             base.OnStartup(e);
+
+            await host.StartAsync().ConfigureAwait(false);                        // Запускаем host. Host запускается в асинхронном режиме, поэтому и метод делаем асинхронным.
+                                                                            // .ConfigureAwait(false) - для того, чтобы не получить м1ртвую блокировку.
 
             //// Запустим тест для проверки кода в DataService.cs В этом месте это делать не правильно, но всё же...:
             //var service_test = new DataService();
@@ -36,6 +48,16 @@ namespace CV19
             //brush.IsFrozen
 
             // Проверим в xaml-разметке, работает ли флажок IsDesignMode.
+        }
+
+        protected override async void OnExit(ExitEventArgs e)
+        { 
+            base.OnExit(e);
+
+            var host = Host;
+            await host.StopAsync().ConfigureAwait(false);                   // Останавливаем host.
+            host.Dispose();                                                 // Разрушаем host.
+            __Host = null;                                                  // Почистим переменную.
         }
 
         public static void ConfigureServices(HostBuilderContext host, IServiceCollection services)
