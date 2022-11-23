@@ -1,11 +1,6 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using CV19.Models.Decanat;
-
-namespace CV19
-{ 
-    public partial class MainWindow : Window
+﻿namespace CV19
+{
+    public partial class MainWindow /*: Window*/
     {
         // В идеале здесь не должно быть никаких обрадотчиков событий из разметки. Всё должно быть в том виде, в каком было создано Visual Studio.
         public MainWindow()
@@ -32,13 +27,13 @@ namespace CV19
         //}
 
         //Обработчик событий TextChanged="GroupNameFilterText_TextChanged" будет вызываться всякий раз, когда будет изменяться текст в поле фильтра выбора групп:
-        private void GroupNameFilterText_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-            /* Почему-то по заданному ранее имени не удалось обратиться к CollectionViewSource, поэтому имя в разметке удалим, и попробуем обратиться через поиск ресурсов
-            по ключю x:Key="GroupsCollection" с конвертацией в CollectionViewSource: */
-            var text_box = (TextBox)sender;                                                                 // получаем объект TextBox с именем "sender" и создаём переменную данного типа.
-            var collection = (CollectionViewSource)text_box.FindResource("GroupsCollection");               // через этот TextBox связываемся с разметкой, находим GroupsCollection и создаём переменную данного типа.
-            collection.View.Refresh();                                                                      // Обновляем GroupsCollection (с передачей вводённых данных в строку поиска?...).
-        }
+        //private void GroupNameFilterText_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        //{
+        //    /* Почему-то по заданному ранее имени не удалось обратиться к CollectionViewSource, поэтому имя в разметке удалим, и попробуем обратиться через поиск ресурсов
+        //    по ключю x:Key="GroupsCollection" с конвертацией в CollectionViewSource: */
+        //    var text_box = (TextBox)sender;                                                                 // получаем объект TextBox с именем "sender" и создаём переменную данного типа.
+        //    var collection = (CollectionViewSource)text_box.FindResource("GroupsCollection");               // через этот TextBox связываемся с разметкой, находим GroupsCollection и создаём переменную данного типа.
+        //    collection.View.Refresh();                                                                      // Обновляем GroupsCollection (с передачей вводённых данных в строку поиска?...).
+        //}
     }
 }
