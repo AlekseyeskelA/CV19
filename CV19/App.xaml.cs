@@ -67,6 +67,8 @@ namespace CV19
             // IServiceCollection services - получаем коллекцию сервисов, в которую добавляем те сервисы, которые анм понадобятся.
             // Добавим все сервисы, которые нам потребуются:
             services.AddSingleton<DataService>();
+
+            services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<CountriesStatisticViewModel>();
 
             /* После того, как контейнер сервисов будет набит под завязку теми сервисами, которые нам понадобятся, коллекция сервисов IServiceCollection services будет скомпилирована
@@ -82,6 +84,8 @@ namespace CV19
         /*Итак. Сделаем хитрость, которая позволит нам извлечь текущий каталог приложения для рабочего кода. В классе App свойство IsDesignMode, которое говорит нам, работаем мы
         под дизайнером или же приложение запущено  в нормальном режиме.Состояние этого свойства меняется при вызове метода OnStartUp(дизайнер не вызывает метод OnStartUp, и
        состояние свойства не меняется. Заведём следующее свойство:*/
+        /*(По сути ниже написанное свойство CurrentDirectory и метод GetSourceCodePath() - это перестраховка, которая имела смысл, по крайней мере, в прежних версиях
+        дизайнера .Net Fraimwork).*/
         public static string CurrentDirectory => IsDesignMode               // Если мы находимся в режиме дизайнера,
             ? Path.GetDirectoryName(GetSourceCodePath())                    // то мы вернём один путь, полученный из метода GetSourceCodePath().
             : Environment.CurrentDirectory;                                 // если программа запущена в нормальном режиме, то вернем путь CurrentDirectory.
