@@ -15,21 +15,21 @@ namespace CV19
 
         /* Здесь саное главное - это параметр FilterEventArgs e, который передаётся в обработчик события. Внутри параметра "e" находится сам элемент Item, который подвергается
         фильтрации на каждом моменте работы CollectionViewSource (он каждый раз вызывает это событие)*/
-        private void CollectionViewSource_Filter(object sender, FilterEventArgs e)
-        {
-            if (!(e.Item is Group group)) return;                                                           // Если объект не является группой, то делать ничего не будем.
-            if (group.Name is null) return;
+        //private void CollectionViewSource_Filter(object sender, FilterEventArgs e)
+        //{
+        //    if (!(e.Item is Group group)) return;                                                           // Если объект не является группой, то делать ничего не будем.
+        //    if (group.Name is null) return;
 
-            var filter_text = GroupNameFilterText.Text;                                                     // Извлечём строку фильтра из разметки.
-            if(filter_text.Length == 0) return;                                                             // Если текст фильтра отсутствует, то пропускаем все элементы.
+        //    var filter_text = GroupNameFilterText.Text;                                                     // Извлечём строку фильтра из разметки.
+        //    if(filter_text.Length == 0) return;                                                             // Если текст фильтра отсутствует, то пропускаем все элементы.
 
-            if (group.Name.Contains(filter_text, System.StringComparison.OrdinalIgnoreCase)) return;        // Если имя группы содержит искомый текст, то мы ничего не делаем ("ленивая" логика).
-            if (group.Description != null
-                && group.Description.Contains(filter_text, System.StringComparison.OrdinalIgnoreCase)) return; // Если описание группы не null содержит искомый текст, то мы ничего не делаем.
+        //    if (group.Name.Contains(filter_text, System.StringComparison.OrdinalIgnoreCase)) return;        // Если имя группы содержит искомый текст, то мы ничего не делаем ("ленивая" логика).
+        //    if (group.Description != null
+        //        && group.Description.Contains(filter_text, System.StringComparison.OrdinalIgnoreCase)) return; // Если описание группы не null содержит искомый текст, то мы ничего не делаем.
 
-            // Если группа не содержит ни в имени, ни в описании искомый текст, то в этом случае в свойство Accepted устанавливаем ЛОЖЬ:
-            e.Accepted = false;
-        }
+        //    // Если группа не содержит ни в имени, ни в описании искомый текст, то в этом случае в свойство Accepted устанавливаем ЛОЖЬ:
+        //    e.Accepted = false;
+        //}
 
         //Обработчик событий TextChanged="GroupNameFilterText_TextChanged" будет вызываться всякий раз, когда будет изменяться текст в поле фильтра выбора групп:
         private void GroupNameFilterText_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
