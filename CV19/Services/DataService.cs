@@ -1,4 +1,5 @@
 ﻿using CV19.Models;
+using CV19.Services.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,8 +13,8 @@ using System.Threading.Tasks;
 
 namespace CV19.Services
 {
-    internal class DataService
-    {
+    internal class DataService : IDataService
+    {     
         /* Метод: выдаёт информацию по всем странам. При вызове этого метода он должен будет провести все манипуляции в файле Programs.cs.
         Путём извлечения данных с удалённого сервера он должен будет получить информацию, а дальше создать на основе каждого пункта, полученного в
         var russia_data = GetData().First(v => v.Country.Equals("Russia", StringComparison.OrdinalIgnoreCase)) он должен будет создать элементы CountryInfo.
@@ -21,6 +22,11 @@ namespace CV19.Services
 
         // Сохраняем адрес с данными о COVID19 из GitHub института Джона Хопкинса:
         private const string _DataSourceAddress = @"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv";
+
+        public DataService()
+        {
+
+        }
 
         // Метод 1. Формирует поток байт данных. В его основе лежит специальный класс HttpClient, который позволяет делать удалённые запросы к серверам по указанным адресам.
         private static async Task<Stream> GetDataStream()

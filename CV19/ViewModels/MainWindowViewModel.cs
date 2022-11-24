@@ -259,17 +259,17 @@ namespace CV19.ViewModels
 
             #endregion
 
-            // Сгенерируем данные для тестового графика:
-            var data_points = new List<DataPoint>((int) (360 / 0.1));
-            for (var x = 0d; x <=360; x+=0.1)
-            {
-                const double to_rad = Math.PI / 180;            // Константа - это не переменная. Её можно писать там, где это необходимо.
-                var y = Math.Sin(x * to_rad);
+            //// Сгенерируем данные для тестового графика:
+            //var data_points = new List<DataPoint>((int) (360 / 0.1));
+            //for (var x = 0d; x <=360; x+=0.1)
+            //{
+            //    const double to_rad = Math.PI / 180;            // Константа - это не переменная. Её можно писать там, где это необходимо.
+            //    var y = Math.Sin(x * to_rad);
 
-                data_points.Add(new DataPoint { XValue = x, YValue = y });
-            }    
+            //    data_points.Add(new DataPoint { XValue = x, YValue = y });
+            //}    
 
-            TestDataPoints = data_points;
+            //TestDataPoints = data_points;
 
             // Создаём объект ObservableCollection. Есть два способа, как набить его данными:
             // 1. СОздавать по одной группе и добавлять. Но это долго. На каждую новукю группу ObservableCollection будет вызывать у себя системe событий, что будет сильно тормозить работу.

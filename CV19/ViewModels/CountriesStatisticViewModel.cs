@@ -1,7 +1,9 @@
 ﻿using CV19.Infrastructure.Commands;
 using CV19.Models;
 using CV19.Services;
+using CV19.Services.Interfaces;
 using CV19.ViewModels.Base;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +16,7 @@ namespace CV19.ViewModels
     internal class CountriesStatisticViewModel : ViewModel
     {
         // Здесь будет жить сервис, который будет извлекать данные. Создаём его в конструкторе. В последствии это выльется в инверсию управоения:
-        private readonly DataService _DataService;
+        private readonly IDataService _DataService;
 
         
         // Свойства:
@@ -102,12 +104,46 @@ namespace CV19.ViewModels
                                                                             // Связываем вью-модели между собой. А в главной вью-модели создаём вторичную.
         //public CountriesStatisticViewModel()
         // Перестанем создавать DataService вручную, а будем требовать выдать нам его:
-        public CountriesStatisticViewModel(DataService DataService)
+        public CountriesStatisticViewModel(IDataService DataService)
         {
             //this.MainModel = MainModel;
 
             //_DataService = new DataService();
             _DataService = DataService;
+
+            ///*При обращении к сервисам мы можем у контейнера сервисов создать область видимости сервисов, и запрашивать сервисы уже не у самого контейнера, а у этой области:*/
+            //var scope = App.Host.Services.CreateScope();
+
+            //var data = scope.ServiceProvider.GetRequiredService<IDataService>();
+
+            ///*В этом случае, как только область схлопнется, т.е. у неё будет вызван метод Dispose, то в этом случае все объекты, которые выдавались контейнером сервиса,
+            // * будут уничтоженыю. У тех классов, у которых определён интерфейс IDisposable, у них будет вызван метод Dispose соответственно, :*/
+            //scope.Dispose();
+
+            // Работать можно в следующем режиме:
+            //using (var scope = App.Host.Services.CreateScope())
+            //{
+            //    var data = scope.ServiceProvider.GetRequiredService<IDataService>();
+            //}
+            /*Т.е., мы создаём область (using (var scope = App.Host.Services.CreateScope())), в которой хотим поарботать с какими-то сервисами, которые потом будут больше не нужны.
+             После этого мы извлекаем ныжные нам сервисы (var data = ) из контернера, раьботаем в ними, дальше закрываем область using. Она автоматически удаляет всё,
+            что нами было извлечено из контейнера*/
+
+            /*Когда мы напрямую создаём объекты, ты мы должны заботиться о том, чтобы освободить их ресурсы, чтобы вызвать у них метод Dispose. Но если мы работаем с контейнером
+             сервисов, то обязанность и ответственность за освобождение ресурсов полностью берёт на себя контейнер, т.е. если мы достали какой-то ресурс из этого контейнера,
+            который подразумевает необходимость освобождения ресурсов, то после использования этого объекта мы не должны освобождать эти ресурсы самостоятельно. За это отвечает
+            именно контейнер сервисов*/
+
+            // Проверка на то, создаются ли разные объекты, или используются ранее созданные (Урок 5, Время 1:58:40) :
+            //var data = App.Host.Services.GetRequiredService<IDataService>();
+            //var are_ref_equal = ReferenceEquals(DataService, data);
+
+            //using (var scope = App.Host.Services.CreateScope())
+            //{
+            //    var data2 = scope.ServiceProvider.GetRequiredService<IDataService>();
+            //    var are_ref_equal2 = ReferenceEquals(DataService, data2);
+            //    var are_ref_equal3 = ReferenceEquals(data, data2);
+            //}
 
             #region Команды
 
