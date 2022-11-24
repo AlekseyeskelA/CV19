@@ -79,7 +79,7 @@ namespace CV19.ViewModels.Base
 
             return this;
         }
-
+        
         // Здесть сохраним результаты метода OnInitialized.
         // Однако, если мы просто напишем вот так:
         //private object _Target;
