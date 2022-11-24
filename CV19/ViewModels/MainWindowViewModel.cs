@@ -2,6 +2,7 @@
 using CV19.Models;
 using CV19.Models.Decanat;
 using CV19.ViewModels.Base;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -230,12 +231,25 @@ namespace CV19.ViewModels
         /*------------------------------------------------------------------------------------------------------------------------------------------*/
 
         // Конструктор
-        public MainWindowViewModel()
+        //public MainWindowViewModel()
+        public MainWindowViewModel(CountriesStatisticViewModel Statistic)
         {
             //_CountriesStatistic = new CountriesStatisticViewModel(this);
             // Теперь вью-модели знают друг о друге и смогут общаться друг с другом путём вызова друг у друга методов, передавая, устанавливая значения свойств и другие манипуляции.
 
-            CountriesStatistic = new CountriesStatisticViewModel(this);
+            //CountriesStatistic = new CountriesStatisticViewModel(this);
+
+            // С контейнером сервисов:
+            /*CountriesStatistic = App.Host.Services.GetRequiredService<CountriesStatisticViewModel>();*/
+            /*Но, при этом, тем, кто будет использовать CountriesStatisticViewModel (пытаться её получить, описать, создать, изменить), будет непонятно, что происходит внутри.
+             Внутри происходит неявная связь с другим классом. И имоеео это является АНТИПАТТЕРНОМ. Т.е., по идее, мы все зависимости должны вынести в конструктор, т.е. наша
+            главная Вью-Модель должна получать дополнительную Вью-Модель через конструктор. Сделаем это:*/
+            CountriesStatistic = Statistic;
+            /* НО, при таком подходе у нас появляется проблема следующего характера: У нас главную Вью-Модель будет создавать контейнер сервисов. Он увидит, что, Для того,
+            чтобы её создать, сперва нужно сождать CountriesStatisticViewModel, а для её создания нужно создать MainWindowViewModel. И тогда получится StackOverflow
+            и циклическая зависимость между сервисами. Нам её надо разорвать. Разорвём её самым жёстким способом, удалив зависимость из CountriesStatisticViewModel.*/
+            // После того, как основная модель получит зависимостьЮ она установит себя как MainModel:
+            Statistic.MainModel = this;
 
             // Создаём команды (объекты коменд) внутри конструктора:
             #region Команды
@@ -245,17 +259,17 @@ namespace CV19.ViewModels
 
             #endregion
 
-            // Сгенерируем данные для тестового графика:
-            var data_points = new List<DataPoint>((int) (360 / 0.1));
-            for (var x = 0d; x <=360; x+=0.1)
-            {
-                const double to_rad = Math.PI / 180;            // Константа - это не переменная. Её можно писать там, где это необходимо.
-                var y = Math.Sin(x * to_rad);
+            //// Сгенерируем данные для тестового графика:
+            //var data_points = new List<DataPoint>((int) (360 / 0.1));
+            //for (var x = 0d; x <=360; x+=0.1)
+            //{
+            //    const double to_rad = Math.PI / 180;            // Константа - это не переменная. Её можно писать там, где это необходимо.
+            //    var y = Math.Sin(x * to_rad);
 
-                data_points.Add(new DataPoint { XValue = x, YValue = y });
-            }    
+            //    data_points.Add(new DataPoint { XValue = x, YValue = y });
+            //}    
 
-            TestDataPoints = data_points;
+            //TestDataPoints = data_points;
 
             // Создаём объект ObservableCollection. Есть два способа, как набить его данными:
             // 1. СОздавать по одной группе и добавлять. Но это долго. На каждую новукю группу ObservableCollection будет вызывать у себя системe событий, что будет сильно тормозить работу.
