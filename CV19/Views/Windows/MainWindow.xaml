@@ -24,7 +24,7 @@
         xmlns:oxy="http://oxyplot.org/wpf"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         xmlns:system="clr-namespace:System;assembly=System.Runtime.Extensions"
-        xmlns:cm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:cm="clr-namespace:System.ComponentModel;assembly=WindowsBase" xmlns:components="clr-namespace:CV19.Components"
         Title="{Binding Path=Title}"
         DataContext="{Binding MainWindowModel, Source={StaticResource Locator}}"
         Height="450" Width="800">
@@ -105,10 +105,18 @@
             Проблема в том, что рабочим каталогом приложения, запущенного нормальным образом и запущенного под отладчиком будут разными. Выведем путь каталога, задействованного 
             под отладчиком:-->
             <TabItem Header="Отладка">
-                <TextBlock Text="{x:Static system:Environment.CurrentDirectory}"/>
+                <!--<TextBlock Text="{x:Static system:Environment.CurrentDirectory}"/>-->
                 <!--Изменим это: Сделаем хитрость, которая позволит нам извлечь текущий каталог приложения для рабочего кода. В классе App свойство IsDesignMode, которое говорит нам, работаем мы
                 под дизайнером или же приложение запущено  в нормальном режиме. Состояние этого свойства меняется при вызове метода OnStartUp (дизайнер не вызывает метод OnStartUp, и 
                 состояние свойства не меняется. Далее см. класс App, свойство CurrentDirectory).-->
+                <Grid>
+                    <!--<components:GaugeIndicator VerticalAlignment="Top" HorizontalAlignment="Left"
+                                               Width="80" Height="80" Value="{Binding FuelCount}"/>-->
+                    <components:GaugeIndicator VerticalAlignment="Top" HorizontalAlignment="Left"
+                                               Width="80" Height="80" Angle="{Binding FuelCount}"/>
+                    <Slider VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="90,0,0,0" Height="30"
+                            Minimum="0" Maximum="100" Value="{Binding FuelCount}"/>
+                </Grid>
             </TabItem>
         </TabControl>
     </DockPanel>

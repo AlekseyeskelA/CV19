@@ -60,7 +60,13 @@
                         <!--<RotateTransform Angle="30"/>-->
                         <TransformGroup>
                             <RotateTransform Angle="-50"/>
-                            <RotateTransform Angle="100"/>
+                            <!--<RotateTransform Angle="100" x:Name="ArrowRotator"/>-->
+                            <!--Имя x:Name="ArrowRotator" в приниципе уже не нужно, и его можно удалить. Берём GaugeIndicator, и у него берём свойство Value:-->
+                            <!--<RotateTransform Angle="{Binding Value, RelativeSource={RelativeSource AncestorType=local:GaugeIndicator}}"
+                                             x:Name="ArrowRotator"/>-->
+                            <RotateTransform Angle="{Binding Angle, RelativeSource={RelativeSource AncestorType=local:GaugeIndicator}}"
+                                             x:Name="ArrowRotator"/>
+                            <!--Теперь всё работает исключительно по средствам привязок к данным, т.е. всё связано теперь у нас теперь внутри системы свойств-зависимости.-->
                         </TransformGroup>
                     </Line.RenderTransform>
                 </Line>
