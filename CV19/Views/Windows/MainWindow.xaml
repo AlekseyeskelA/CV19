@@ -20,11 +20,13 @@
         xmlns:decanat="clr-namespace:CV19.Models.Decanat"
         xmlns:vm="clr-namespace:CV19.ViewModels"
         xmlns:local="clr-namespace:CV19"
-        xmlns:view="clr-namespace:CV19.Views"
+        xmlns:view="clr-namespace:CV19.Views"        
         xmlns:oxy="http://oxyplot.org/wpf"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         xmlns:system="clr-namespace:System;assembly=System.Runtime.Extensions"
         xmlns:cm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:components="clr-namespace:CV19.Components"
+        xmlns:converters="clr-namespace:CV19.Infrastructure.Converters"
         Title="{Binding Path=Title}"
         DataContext="{Binding MainWindowModel, Source={StaticResource Locator}}"
         Height="450" Width="800">
@@ -105,10 +107,39 @@
             Проблема в том, что рабочим каталогом приложения, запущенного нормальным образом и запущенного под отладчиком будут разными. Выведем путь каталога, задействованного 
             под отладчиком:-->
             <TabItem Header="Отладка">
-                <TextBlock Text="{x:Static system:Environment.CurrentDirectory}"/>
+                <!--<TextBlock Text="{x:Static system:Environment.CurrentDirectory}"/>-->
                 <!--Изменим это: Сделаем хитрость, которая позволит нам извлечь текущий каталог приложения для рабочего кода. В классе App свойство IsDesignMode, которое говорит нам, работаем мы
                 под дизайнером или же приложение запущено  в нормальном режиме. Состояние этого свойства меняется при вызове метода OnStartUp (дизайнер не вызывает метод OnStartUp, и 
                 состояние свойства не меняется. Далее см. класс App, свойство CurrentDirectory).-->
+                <Grid>
+                    <Grid.Resources>
+                        <converters:ParametricMultiplicityValueConverter x:Key="Mult" Value="{Binding Coefficient}"/>
+                    </Grid.Resources>
+                    <components:GaugeIndicator VerticalAlignment="Top" HorizontalAlignment="Left"
+                                               Width="80" Height="80">
+                        <components:GaugeIndicator.Value>
+                            <!--<Binding Path="FuelCount">
+                                <Binding.Converter>
+                                    <converters:ParametricMultiplicityValueConverter Value="{Binding Coefficient, Converter={converters:DebugConverter}}"/>
+                                </Binding.Converter>
+                            </Binding>-->
+                            <Binding Path="FuelCount" Converter="{StaticResource Mult}"/>
+                        </components:GaugeIndicator.Value>
+                    </components:GaugeIndicator>
+                    <!--<components:GaugeIndicator VerticalAlignment="Top" HorizontalAlignment="Left"
+                                               Width="80" Height="80" Angle="{Binding FuelCount}" Grid.ColumnSpan="3"/>-->
+                    <Slider VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="90,0,0,0"
+                            Minimum="0" Maximum="100" Value="{Binding FuelCount}"
+                            ToolTip="{Binding FuelCount}"/>
+                    <Slider VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="90,40,0,0"
+                            Minimum="-10" Maximum="10" SmallChange="0.1"
+                            Value="{Binding Coefficient}"
+                            ToolTip="{Binding Coefficient}"/>
+                    <!--Привязка к мультипликатору не работает потому, что в строке <converters:ParametricMultiplicityValueConverter... в сам элемент не попадает DataContext.
+                    DataContext может передается от базового элемента Grid, только если он находится в ресурсах в корне Grid. Кроме того, для передачи DataContext
+                    недостаточно просто использовать DependencyObject в качетсве наследника. Если нам нужно работать с контекстом данных, то потребуется объект-наследник
+                    класса Freezable и реализовать метод CreateInstanceCore().-->
+                </Grid>
             </TabItem>
         </TabControl>
     </DockPanel>

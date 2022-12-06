@@ -1,0 +1,76 @@
+﻿<UserControl x:Class="CV19.Components.GaugeIndicator"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" mc:Ignorable="d" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CV19.Components"             
+             d:DesignHeight="100" d:DesignWidth="100">
+    <!--<Grid Background="{x:Null}"> - состояние цвета Grid. (У него нет цвета)-->
+    <Grid>
+        <!--Заёдём в класс к этой кнопке: у кнопки есть набор свойств, таких как Команда, Контент и др. (все свойства можно увидеть, открыв вкладку "Свойства").
+                Мы привыкли к тому, чтоЮ когда мы создаём свойства в классе, то у нас есть конструкция, которая позволяет указать просто два метода: get и set.
+                Дополнительно можно задать поле, в котором это свойство хранит данные. Для ленивых придумали автоматические свойства, где можно даже поле не указывать,
+                а просто указать get, set и всё. В WPF под понятием свойств вводится более сложная конструкция, чем просто свойство языка C#. Они являются чем-то вроде
+                базы данных свойств (описание см. Урок 5, 2:08:37.). В конечном итоге есть свойства get и set, которые определены в классе DependencyObject - самом
+                базовом классе всех объектов WPF.-->
+        <!--Если мы хотим создавать полноценные объекты WPF, которые на равне со всеми элементами в разметке могут работать с привязками, то нужно
+                обязательно унаследоваться от класса DependencyObject, и реализовать свои свойства аналогичным способом. Также могут быть пополнительные мотоды, которые
+                можно внутри указывать. Попробыуем что-то подобное изобразить, наапример, стрелочный индикатор. Добавим Components, а в него добавим пользовательский
+                элемент управления.-->
+        <!--Для рисования векторной графики используется элемент Path (с помощью него, кстати можно рисовать иконки). Он позволяет рисовать геометрические объекты
+        по координатам с помощью линий:-->
+        <!--Вариант 1. Воспользуемся так называемым WPF-микроязыком (см. урок 5, 2:18:45) (Data=...). Он очень простой, особенно, если рисовать линии:-->
+        <Path Stroke="Red" StrokeThickness="2" Data="M0,0 L5,7 L30,60 L20,0 H30 V40 Z" Fill="Blue" Visibility="Collapsed">
+            <!--<Path.Data>
+                <EllipseGeometry RadiusX="10" RadiusY="20"/>
+            </Path.Data>-->            
+        </Path>
+        <!--Вариант 2 рисования - Poligon. Позволяет отслвать фигуру по точкам:-->
+        <!--<Polygon Stroke="Red" StrokeThickness="2" Fill="Blue"
+                 Points="0,0 5,7 4,8 10,2"/>-->
+        <!--Вариант 3. Polyline:-->
+        <!--<Polyline Stroke="Red" StrokeThickness="2" Fill="Blue"
+                  Points="5,7 10,12 40,10"/>-->
+        <!--Вариант 4.Line:-->
+        <!--<Line Stroke="Red" StrokeThickness="2"
+              X1="5" Y1="7" X2="50" Y2="50"/>-->
+        <!--Чтобы линия автоматически растягивалась, её нужно поместить в Grid и сделать привязку к самому себе и указать актуальную ширину, т.е. ширину, взятую после того,
+        как элемент определит свою геометрию перед началом рендеринга, т.е. обычная ширина Width, а есть AtualWidth, которая вычисляетяс после того, как элемент бкдет размещён
+        в контейнере:-->
+        <!--<Line StrokeThickness="2" Stroke="Red"
+              X1="{Binding ActualWidth, RelativeSource={RelativeSource Self}}"
+              Y1="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"/>-->
+        <!--Вариант 5. Border:-->
+        <!--<Border BorderThickness="0,4,0,0" BorderBrush="Red" CornerRadius="5,5,0,0"/>-->
+
+        <!--Элемент Viewbox позволяет выполнять автоматическую визуальную трансформацию координат внутри и вовне, при том, что расположенные внктри элементы продолжают
+        функционировать как и прежде:-->
+        <Viewbox>
+            <!--<Grid Width="500" Height="500">
+                <Button Width="200" Height="300"></Button>
+                --><!--Т.е., у нас весь контейнер 100х100, а внутри лежит кнопка 200х300,и она автоматически отмасштабированав соответствии с размерами контейнера 500х500--><!--
+            </Grid>-->
+            <Grid Width="100" Height="100">
+                <!--Если сместить центральную точку на линии (относительно этой точки будет происходить трансформация), то появится свойство RenderTransformOrigin,
+                где указываются относительные координаты в процентах от размера всей фигуры:-->
+                <Line StrokeThickness="2" Stroke="Red"
+                      X1="50" X2="50"
+                      Y1="80" Y2="20" RenderTransformOrigin="0.5,0.8">
+                    <Line.RenderTransform>
+                        <!--<RotateTransform Angle="30"/>-->
+                        <TransformGroup>
+                            <RotateTransform Angle="-50"/>
+                            <!--<RotateTransform Angle="100" x:Name="ArrowRotator"/>-->
+                            <!--Имя x:Name="ArrowRotator" в приниципе уже не нужно, и его можно удалить. Берём GaugeIndicator, и у него берём свойство Value:-->
+                            <RotateTransform Angle="{Binding Value, RelativeSource={RelativeSource AncestorType=local:GaugeIndicator}}"
+                                             x:Name="ArrowRotator"/>
+                            <!--<RotateTransform Angle="{Binding Angle, RelativeSource={RelativeSource AncestorType=local:GaugeIndicator}}"
+                                             x:Name="ArrowRotator"/>-->
+                            <!--Теперь всё работает исключительно по средствам привязок к данным, т.е. всё связано теперь у нас теперь внутри системы свойств-зависимости.-->
+                        </TransformGroup>
+                    </Line.RenderTransform>
+                </Line>
+            </Grid>
+        </Viewbox>
+    </Grid>
+</UserControl>

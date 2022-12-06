@@ -163,6 +163,25 @@ namespace CV19.ViewModels
         }
         #endregion
 
+
+        #region : FuelCount : double - Количество непонятно чего
+
+        /// <summary>Количество непонятно чего</summary>
+        private double _FuelCount;
+
+        public double FuelCount { get => _FuelCount; set => Set(ref _FuelCount, value); }
+        #endregion
+
+        #region Coefficient : double - Коэффициент
+
+        /// <summary>Коэффициент</summary>
+        private double _Coefficient = 1;        // По умолчанию 1, чтобы ничего не обнулилось.
+
+        /// <summary>Коэффициент</summary>
+        public double Coefficient { get => _Coefficient; set => Set(ref _Coefficient, value); }
+
+        #endregion
+
         // Для тестирования виртуализации:
         //public IEnumerable<Student> TestStudents =>   // Создадим свойство, которое будет возвращать перечисление (то есть нам не нужен весь массив на пару миллионов студентов)
         //                                                                        // При этом будем динамически их (студентов) генерировать при каждом запросе этого свойства спомощью класса Enumerable,
@@ -173,7 +192,7 @@ namespace CV19.ViewModels
         //        Surename = $"Фамилия {i}"
 
         //    });
-        
+
         // Надо заметить. что дизайнер не предназначан для больших нагрузок по отображению огромного количества студентов. Поэтому, чтобы он не сломался, добавим в приложение в App.xaml.cs
         // специальное свойство, которое будет опрпделять, работаем ли мы в дизайнере, или запущен exe-файл. Здесь же спеределаем код и сделвем выбор:
         public IEnumerable<Student> TestStudents =>
