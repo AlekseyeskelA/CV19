@@ -95,8 +95,8 @@ namespace CV19.ViewModels.Base
         private WeakReference _RootRef;         // Ссылка на корень.
 
         // Делаем свойства, которые позволяяют получать доступ к этим объектам через ссылки:
-        public object TargetObject => _TargetRef.Target;
-        public object RootObject => _RootRef.Target;
+        public object TargetObject => _TargetRef?.Target;
+        public object RootObject => _RootRef?.Target;
 
         protected virtual void OnInitialized(object Target, object Property, object Root)
         {
