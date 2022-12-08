@@ -1,6 +1,7 @@
 ﻿using CV19.Infrastructure.Commands;
 using CV19.Models;
 using CV19.Models.Decanat;
+using CV19.Services.Interfaces;
 using CV19.ViewModels.Base;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -19,6 +20,8 @@ namespace CV19.ViewModels
     [MarkupExtensionReturnType(typeof(MainWindowViewModel))]
     internal class MainWindowViewModel : ViewModel
     {
+        private IAsyncDataService _AsyncData;
+
         //// При желании можно переопределить метод Dispose и освободить какие-то ресурсы, которые модель захватит вдруг:
         //protected override void Dispose(bool Disposing) { base.Dispose(Disposing); }
 
@@ -232,8 +235,9 @@ namespace CV19.ViewModels
 
         // Конструктор
         //public MainWindowViewModel()
-        public MainWindowViewModel(CountriesStatisticViewModel Statistic)
+        public MainWindowViewModel(CountriesStatisticViewModel Statistic, IAsyncDataService AsyncData)
         {
+            _AsyncData = AsyncData;
             //_CountriesStatistic = new CountriesStatisticViewModel(this);
             // Теперь вью-модели знают друг о друге и смогут общаться друг с другом путём вызова друг у друга методов, передавая, устанавливая значения свойств и другие манипуляции.
 

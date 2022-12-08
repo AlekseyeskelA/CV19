@@ -63,33 +63,37 @@ namespace CV19
             __Host = null;                                                  // Почистим переменную.
         }
 
-        public static void ConfigureServices(HostBuilderContext host, IServiceCollection services)
-        {
-            // IServiceCollection services - получаем коллекцию сервисов, в которую добавляем те сервисы, которые анм понадобятся.
-            // Добавим все сервисы, которые нам потребуются:
-            services.AddSingleton<IDataService, DataService>();             // Теперь любой, кто запросит интерфейс IDataService будет иметь дело с реализацией сервиса DataService.
-            //services.AddTransient<IDataService, DataService>();
-            //services.AddScoped<IDataService, DataService>();
+        //public static void ConfigureServices(HostBuilderContext host, IServiceCollection services)
+        //{
+        //    // IServiceCollection services - получаем коллекцию сервисов, в которую добавляем те сервисы, которые анм понадобятся.
+        //    // Добавим все сервисы, которые нам потребуются:
+        //    //services.AddSingleton<IDataService, DataService>();             // Теперь любой, кто запросит интерфейс IDataService будет иметь дело с реализацией сервиса DataService.
+        //    //services.AddTransient<IDataService, DataService>();
+        //    //services.AddScoped<IDataService, DataService>();
 
-            services.AddSingleton<MainWindowViewModel>();
-            services.AddSingleton<CountriesStatisticViewModel>();
+        //    //services.AddSingleton<MainWindowViewModel>();
+        //    //services.AddSingleton<CountriesStatisticViewModel>();
 
-            /* - AddSingleton - объект быдет создан единожды при первом его запросе. Т.е., как только кто-то потребует объект с интерфейсом IDataService, этот объект будет создан,
-            и будет храниться внутри контейнера сервисов, на случай если он ещё где-либо пригодится.
-            - AddTransient - позволяет зарегистрировать временный объект. Каждый раз, когда понадобится объект с интерфейсом IDataService, у нас будет создаваться новый объект
-            класса DataService.
-            - AddScoped - позволяет зарегистрировать сервис в режиме области видимости.*/
+        //    /* - AddSingleton - объект быдет создан единожды при первом его запросе. Т.е., как только кто-то потребует объект с интерфейсом IDataService, этот объект будет создан,
+        //    и будет храниться внутри контейнера сервисов, на случай если он ещё где-либо пригодится.
+        //    - AddTransient - позволяет зарегистрировать временный объект. Каждый раз, когда понадобится объект с интерфейсом IDataService, у нас будет создаваться новый объект
+        //    класса DataService.
+        //    - AddScoped - позволяет зарегистрировать сервис в режиме области видимости.*/
 
-            /* После того, как контейнер сервисов будет набит под завязку теми сервисами, которые нам понадобятся, коллекция сервисов IServiceCollection services будет скомпилирована
-            уже в сервис-менеджера, который позволит получать сервисы из него просто по их типам. Т.е. мы укажем, что нам нужен сервис, например, с типом DataServices, и нам будет
-            выдан объект этого типа. Но, так как у нас всё хранится в одной Вью-Модели, то у нас будет один объект на всё приложение. Но, если он кому-то ещё потребуется,
-            то будет создан новый.*/
+        //    /* После того, как контейнер сервисов будет набит под завязку теми сервисами, которые нам понадобятся, коллекция сервисов IServiceCollection services будет скомпилирована
+        //    уже в сервис-менеджера, который позволит получать сервисы из него просто по их типам. Т.е. мы укажем, что нам нужен сервис, например, с типом DataServices, и нам будет
+        //    выдан объект этого типа. Но, так как у нас всё хранится в одной Вью-Модели, то у нас будет один объект на всё приложение. Но, если он кому-то ещё потребуется,
+        //    то будет создан новый.*/
 
-            // Теперь  в любом месте программы мы сможем обратиться к нашему хосту, напимер здесь:
-            //App.Host.Services.GetRequiredService<DataService>().GetData();  // Запрашиваем DataService через Host и коллекцию сервисов Services, которая хранится внутри
-            // спомощью GetRequiredService, указав тип, который нам нужен. И после этого можем получить данные
-            // из него GetData().
-        }
+        //    // Теперь  в любом месте программы мы сможем обратиться к нашему хосту, напимер здесь:
+        //    //App.Host.Services.GetRequiredService<DataService>().GetData();  // Запрашиваем DataService через Host и коллекцию сервисов Services, которая хранится внутри
+        //    // спомощью GetRequiredService, указав тип, который нам нужен. И после этого можем получить данные
+        //    // из него GetData().
+        //}
+
+        public static void ConfigureServices(HostBuilderContext host, IServiceCollection services) => services
+            .RegisterServices()
+            .RegisterViewModels();
 
         /*Итак. Сделаем хитрость, которая позволит нам извлечь текущий каталог приложения для рабочего кода. В классе App свойство IsDesignMode, которое говорит нам, работаем мы
         под дизайнером или же приложение запущено  в нормальном режиме.Состояние этого свойства меняется при вызове метода OnStartUp(дизайнер не вызывает метод OnStartUp, и
