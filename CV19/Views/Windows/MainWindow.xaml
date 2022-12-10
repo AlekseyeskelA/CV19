@@ -109,6 +109,19 @@
                 <!--Изменим это: Сделаем хитрость, которая позволит нам извлечь текущий каталог приложения для рабочего кода. В классе App свойство IsDesignMode, которое говорит нам, работаем мы
                 под дизайнером или же приложение запущено  в нормальном режиме. Состояние этого свойства меняется при вызове метода OnStartUp (дизайнер не вызывает метод OnStartUp, и 
                 состояние свойства не меняется. Далее см. класс App, свойство CurrentDirectory).-->
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Margin="5,5,5,0">
+                        <UniformGrid DockPanel.Dock="Left" HorizontalAlignment="Left" Rows="1">
+                            <Button Margin="5" Padding="20,5" Content="Запуск" Command="{Binding StartProcessCommand}"/>
+                            <Button Margin="5" Padding="20,5" Content="Остановка"/>
+                        </UniformGrid>
+                        <ProgressBar DockPanel.Dock="Top" Margin="10"/>
+                    </DockPanel>
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center"
+                               Text="{Binding DataValue}"
+                               FontSize="30"
+                               />
+                </DockPanel>
             </TabItem>
         </TabControl>
     </DockPanel>
