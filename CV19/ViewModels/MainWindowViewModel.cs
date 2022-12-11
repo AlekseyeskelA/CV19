@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -189,6 +190,7 @@ namespace CV19.ViewModels
                 });
 
         #region DataValue : string - Результат длительной асинхронной операции
+        // Добавим свойство, в которое будем записывать результат: 
 
         /// <summary>Результат длительной асинхронной операции</summary>
         private string _DataValue;
@@ -245,6 +247,20 @@ namespace CV19.ViewModels
 
         /// <summary>Логика выполнения - Запуск процесса</summary>
         private void OnStartProcessCommandExecuted(object p)
+        {
+            //DataValue = _AsyncData.GetResult(DateTime.Now);     // При этом, при нажатии кнопки Пуск при ложение заивсает на 7 секунд. Возможно, что через 30 секунд
+                                                                // Windows сообщит, что приложение зависло.
+            // Вынесем эту операцию в отдельный поток.
+            // Создадим отдельный метод ComputeValue(), к который перебросим вышеуказанный код, а этот метод запустим в виде потока:
+            new Thread(ComputeValue).Start();
+            // При этом форма становится активной в процессе вычисления и появляется результат.
+            /* При этом, проблем с виду вроде никаких нет, но данная реализация на самомо деле очень не стабильна в плане работы в разных Фрейиворках. 
+             * Раньше в .Net Framework в версии 4.6 и ранее возникала ошибка, связанная с тем, что интерфейс был недоволен, что мы обращаемся к нему не из его
+             * собственногопотока. Подобное может возникнуть и в WinForms-приложениях. В .Net Core данная проблема, когда мы устанавливаем значение свойства
+             * из другого потока в модели-представления, исправлена. Сэммитируем данную проблему в тестовом проекте CV19WPFTest.*/
+        }
+
+        private void ComputeValue()
         {
             DataValue = _AsyncData.GetResult(DateTime.Now);
         }

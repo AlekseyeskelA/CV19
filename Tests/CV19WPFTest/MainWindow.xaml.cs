@@ -1,17 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 // В сдеале файлы прилагаемого кода .cs с обработчиками событий у окон и каких-либо других визуальных элементов должны оставаться в том состоянии, в котором их создала студия.
 namespace CV19WPFTest
@@ -19,11 +8,63 @@ namespace CV19WPFTest
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void StartButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Запускаем новый поток, в котором выполняем LongProcess, и сразу записываем его в ResultBlock.
+            // При этом форма становится активной в процессе вычисления и появляется результат.
+            /* При этом, проблем с виду вроде никаких нет, но данная реализация на самомо деле очень не стабильна в плане работы в разных Фрейиворках. 
+             * Раньше в .Net Framework в версии 4.6 и ранее возникала ошибка, связанная с тем, что интерфейс был недоволен, что мы обращаемся к нему не из его
+             * собственногопотока. Подобное может возникнуть и в WinForms-приложениях. В .Net Core данная проблема, когда мы устанавливаем значение свойства
+             * из другого потока в модели-представления, исправлена..*/
+            //new Thread(() => ResultBlock.Text = LongProcess(DateTime.Now)).Start();
+            /* В результате мы получаем ошибку: "Вызывающий поток не может получить доступ к данному объекту, так как владельцем этого объекта является другой поток".
+             * При этом, если посмотреть контрольные значения Thread.CurrentThread.ManagedThreadId, то будет виден номер текущего потока 11, а ResultBlock был
+             * создан в потоке 1 (ResultBlock > Dispetcher > Thread > ManagedThreadId). То есть визуальный элемент, когда мы пытаемся установить его свойство Text,
+             * он сравнивает идентификатор текущего потока с идентификатором, который указан у него в диспетчере, и если они не совпадают, то получается исключение.*/
+            // Исправим эту ситуацию. Создадим отдельный метод ComputeValue(), к который перебросим вышеуказанный код, а этот метод запустим в виде потока:
+            new Thread(ComputeValue).Start();
+        }
+
+        private void ComputeValue()
+        {
+            /* Используем Диспетчер объекта. У любого визуального элемента, в том числе и у ResultBlock и у всеё формы есть диспетчер (один и тот же).*/
+            var value = LongProcess(DateTime.Now);
+            if (ResultBlock.Dispatcher.CheckAccess())                               // Если диспетчер блока говорит нам CheckAccess(),
+                ResultBlock.Text = value;                                           // ... то мы просто устанавливаем значение свойства Text.
+                                                                                    // (ResultBlock.Dispatcher.CheckAccess() выдаём нам false?
+                                                                                    // (выделить ResultBlock.Dispatcher.CheckAccess() и нажать Shift + F9),...т.е. мы
+                                                                                    // пытаемся обратиться к элементу не из его потока, следовательно
+                                                                                    // нам нужно воспользоваться диспетчером вызова потока для диспетчеризации
+                                                                                    // вызова к нему).                                                                                    
+            else
+                ResultBlock.Dispatcher.Invoke(() => ResultBlock.Text = value);      // Иначе вызываем диспетчер этого объекта и перемещаемся к нему в поток
+                                                                                    // (вызываем метод Invoke()), и в этом методе устанавливаем значение свойства Text.
+
+            /* Делая синхронный вызов методом Invoke(), мы застрянем на  строке  ResultBlock.Dispatcher.Invoke(() => ResultBlock.Text = value) до тех пор, 
+             * пока метод Invoke(() => ResultBlock.Text = value) не отработает весь целиком, и только после этого продолжится дальнейшее выполнеиие.*/
+
+            /* Второй вариант, это мотод BeginInvoke() (асинхронный вызов). Он немного сложнее, но делает тоже самое. Идея его заключается в принципе "Вызвал и забыл". 
+             * Т.е. после вызова BeginInvoke действие new Action(() => ResultBlock.Text = value) планируется на следующий этап выполнения диспетчером,
+             * и наш метод дальше идёт заниматься своими делами. А как только у диспетчера найдётся свободное время, он выполнит вызов 
+             * Action(() => ResultBlock.Text = value)*/
+            //ResultBlock.Dispatcher.BeginInvoke(new Action(() => ResultBlock.Text = value));
+            
+            // Это касается работы с диспетчером в WPF-приложении. Если мы работаем с MVVM, то там всё немного проще, но и немного сложнее.
+        }
+
+        // Сэммитируем длительную операцию:
+        private static string LongProcess(DateTime Time)
+        {
+            Thread.Sleep(3000);
+
+            return $"Value: {Time}";
         }
     }
 }
