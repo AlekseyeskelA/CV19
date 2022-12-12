@@ -4,6 +4,7 @@ using System.ComponentModel;                    // Для INotifyPropertyChanged
 using System.Runtime.CompilerServices;          // Для [CallerMemberName]
 using System.Text;
 using System.Windows.Markup;
+using System.Windows.Threading;
 using System.Xaml;
 
 namespace CV19.ViewModels.Base
@@ -24,8 +25,6 @@ namespace CV19.ViewModels.Base
         // Событие:
         public event PropertyChangedEventHandler PropertyChanged;
 
-
-
         //// Методы: Средства генерации собятия, чтобы все наследники смогли им воспользоваться, чтобы не генерировать собитие вручную:
 
         // Метод 1: В нём важно передать имя свойства PropertyName и сгенерировать внутри событие:
@@ -39,7 +38,34 @@ namespace CV19.ViewModels.Base
             //PropertyChangedEventHandler handler = PropertyChanged;
 
             // Генерация события (из обучения):
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
+            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
+
+            /* Интерфейс, когда будет использовать нашу Вью-Модель, он будет добавлять в свойство (событие) PropertyChanged свои обработчики событий. 
+             * Мы будем вызывать метод OnPropertyChanged из любых потоков, а наша задача будет вызвать в результате каждый из обработчиков, которые появяятся в PropertyChanged, 
+             * в его собственном потоке, если это требуется. Поэтому переделаем этот метод:*/
+            var handlers = PropertyChanged;                             // Извлекаем все обработчики, которые прикрепились к нашему событию.
+            if (handlers is null) return;                               // Если их нет, ты мы просто завершаем работу.
+
+            var invokation_list = handlers.GetInvocationList();         // Теперь извлекаем все обработчики, которые внутри события находятся. Получаем список делегатов, которые надо вызвать.
+
+            // Пробежимся по этому списку спомощью цикла и вызовим каждый из этих обработчиков:
+            var arg = new PropertyChangedEventArgs(PropertyName);   // Аргумент события создадим отдельно.
+            foreach (var action in invokation_list)
+            {
+                /* При этом необходимо контролировать, кем является тип обработчика. У каждого делегата есть целевой объект, тот, кто, собственно, и является владельцем метода,
+                 * у кого будет вызван этот делегат (например, это может быть окно или кнопка или Вью-Модель). У каждого делегата есть свойство Terget.*/
+                if (action.Target is DispatcherObject disp_object)      // Если очередной обработчик является диспетчеризуемым объектом, т.е. в нём есть диспетчер,...
+                {
+                    disp_object.Dispatcher.Invoke(action, this, arg);   // ... то вызов к нему надо сделать через этот диспетчер.
+                }
+                else
+                    action.DynamicInvoke(this, arg);                    // В противном случае мы можем просто вызвать это действие. Т.е., если объект является не диспетчеризуемым,
+                                                                        // т.е. не является элементом визуального интерфейса (у него нет диспетчера), то мы просто так
+                                                                        // вызываем этот делегат.
+            }
+            /* Таким образом можно избавиться от ряда проблм, связанных с межпотоковым взаимодействием с элементами интерфейса. Особнно на это плх реагируют всякие 
+             * визуальные коллкции, т.е. всякие списки, например, ObservableCollection, очень не любит, когда в него во втором потоке добавляют элементы. При этом,
+             * список начинает ругаться, что вызовы к нему приходят не из его собственного потока.*/
         }
 
 
