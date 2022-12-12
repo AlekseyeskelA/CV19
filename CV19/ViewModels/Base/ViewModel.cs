@@ -4,6 +4,7 @@ using System.ComponentModel;                    // Для INotifyPropertyChanged
 using System.Runtime.CompilerServices;          // Для [CallerMemberName]
 using System.Text;
 using System.Windows.Markup;
+using System.Windows.Threading;
 using System.Xaml;
 
 namespace CV19.ViewModels.Base
@@ -23,8 +24,6 @@ namespace CV19.ViewModels.Base
     {
         // Событие:
         public event PropertyChangedEventHandler PropertyChanged;
-
-
 
         //// Методы: Средства генерации собятия, чтобы все наследники смогли им воспользоваться, чтобы не генерировать собитие вручную:
 
