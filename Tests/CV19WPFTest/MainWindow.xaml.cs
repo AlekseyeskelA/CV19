@@ -56,7 +56,7 @@ namespace CV19WPFTest
              * Action(() => ResultBlock.Text = value)*/
             //ResultBlock.Dispatcher.BeginInvoke(new Action(() => ResultBlock.Text = value));
             
-            // Это касается работы с диспетчером в WPF-приложении. Если мы работаем с MVVM, то там всё немного проще, но и немного сложнее.
+            // Это касается работы с диспетчером в WPF-приложении.
         }
 
         // Сэммитируем длительную операцию:
