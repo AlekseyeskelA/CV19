@@ -1,6 +1,7 @@
 ﻿using CV19.Infrastructure.Commands;
 using CV19.Models;
 using CV19.Models.Decanat;
+using CV19.Services.Interfaces;
 using CV19.ViewModels.Base;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -19,6 +21,8 @@ namespace CV19.ViewModels
     [MarkupExtensionReturnType(typeof(MainWindowViewModel))]
     internal class MainWindowViewModel : ViewModel
     {
+        private IAsyncDataService _AsyncData;
+
         //// При желании можно переопределить метод Dispose и освободить какие-то ресурсы, которые модель захватит вдруг:
         //protected override void Dispose(bool Disposing) { base.Dispose(Disposing); }
 
@@ -185,7 +189,16 @@ namespace CV19.ViewModels
 
                 });
 
+        #region DataValue : string - Результат длительной асинхронной операции
+        // Добавим свойство, в которое будем записывать результат: 
 
+        /// <summary>Результат длительной асинхронной операции</summary>
+        private string _DataValue;
+
+        /// <summary>Результат длительной асинхронной операции</summary>
+        public string DataValue { get => _DataValue; private set => Set(ref _DataValue, value); }    // private set - запретим его изменять с интерфейса, заблокируем set-ер извне.
+
+        #endregion
 
 
         /*------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -211,7 +224,6 @@ namespace CV19.ViewModels
         private bool CanCloseApplicationCommandExecute(object p) => true;
         #endregion
 
-
         #region ChangeTabIndexCommand  
         // Команда, чередующая вкладки по нажатию на кнопки со стрелками:
         public ICommand ChangeTabIndexCommand { get; }
@@ -225,6 +237,51 @@ namespace CV19.ViewModels
         }
         #endregion
 
+        #region Command StartProcessCommand - Запуск процесса
+
+        /// <summary>Запуск процесса</summary>
+        public ICommand StartProcessCommand { get; }
+
+        /// <summary>Проверка возможности выполнения - Запуск процесса</summary>
+        private static bool CanStartProcessCommandExecute(object p) => true;
+
+        /// <summary>Логика выполнения - Запуск процесса</summary>
+        private void OnStartProcessCommandExecuted(object p)
+        {
+            //DataValue = _AsyncData.GetResult(DateTime.Now);     // При этом, при нажатии кнопки Пуск при ложение заивсает на 7 секунд. Возможно, что через 30 секунд
+                                                                // Windows сообщит, что приложение зависло.
+            // Вынесем эту операцию в отдельный поток.
+            // Создадим отдельный метод ComputeValue(), к который перебросим вышеуказанный код, а этот метод запустим в виде потока:
+            new Thread(ComputeValue).Start();
+            // При этом форма становится активной в процессе вычисления и появляется результат.
+            /* При этом, проблем с виду вроде никаких нет, но данная реализация на самомо деле очень не стабильна в плане работы в разных Фрейиворках. 
+             * Раньше в .Net Framework в версии 4.6 и ранее возникала ошибка, связанная с тем, что интерфейс был недоволен, что мы обращаемся к нему не из его
+             * собственногопотока. Подобное может возникнуть и в WinForms-приложениях. В .Net Core данная проблема, когда мы устанавливаем значение свойства
+             * из другого потока в модели-представления, исправлена. Сэммитируем данную проблему в тестовом проекте CV19WPFTest.*/
+        }
+
+        private void ComputeValue()
+        {
+            DataValue = _AsyncData.GetResult(DateTime.Now);
+        }
+
+        #endregion
+
+        #region Command StopProcessCommand - Остановка процесса
+
+        /// <summary>Остановка процесса</summary>
+        public ICommand StopProcessCommand { get; }
+
+        /// <summary>Проверка возможности выполнения - Остановка процесса</summary>
+        private static bool CanStopProcessCommandExecute(object p) => true;
+
+        /// <summary>Логика выполнения - Остановка процесса</summary>
+        private void OnStopProcessCommandExecuted(object p)
+        {
+
+        }
+
+        #endregion
 
         #endregion
 
@@ -232,8 +289,9 @@ namespace CV19.ViewModels
 
         // Конструктор
         //public MainWindowViewModel()
-        public MainWindowViewModel(CountriesStatisticViewModel Statistic)
+        public MainWindowViewModel(CountriesStatisticViewModel Statistic, IAsyncDataService AsyncData)
         {
+            _AsyncData = AsyncData;
             //_CountriesStatistic = new CountriesStatisticViewModel(this);
             // Теперь вью-модели знают друг о друге и смогут общаться друг с другом путём вызова друг у друга методов, передавая, устанавливая значения свойств и другие манипуляции.
 
@@ -256,6 +314,9 @@ namespace CV19.ViewModels
 
             CloseApplicationCommand = new LambdaCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
             ChangeTabIndexCommand = new LambdaCommand(OnChangeTabIndexCommandExecuted, CanChangeTabIndexCommandExecute);
+
+            StartProcessCommand = new LambdaCommand(OnStartProcessCommandExecuted, CanStartProcessCommandExecute);
+            StopProcessCommand = new LambdaCommand(OnStopProcessCommandExecuted, CanStopProcessCommandExecute);
 
             #endregion
 
