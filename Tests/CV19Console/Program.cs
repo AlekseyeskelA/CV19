@@ -54,7 +54,19 @@ namespace CV19Console
             /* В классе Thread можно передать информацию внутрь потока при его старте. Для этого можно воспользоваться перегрузкой конструктора,
              * которая принимает другой тип делегата. Т.е. делегат может принимать объект с качестве параметра. Параметр при этом нужно передать
              * методу Start(). Дале в методе потока нужно приводить его в нужному типу:*/
-            thread.Start("d");
+            
+            thread.Start(42);
+
+            /* Допустим, что у нас есть набор данных, и нам эти данные нужно передать в метод PrintMethod потока: */
+
+            var count = 5;
+            var msg = "HelloWolrd!";
+            var timeout = 150;
+
+            /* Создаём объект Thread, не записывая его не в какие переменные (его сборщик мусора не удалит, пока поток не завершится). 
+             Используем внутри лямба-выражение, с помощью которого вызываем метод: */
+
+            new Thread(() => PrintMethod(msg, count, timeout)) { IsBackground = true }.Start();
 
             CheckThread();
 
@@ -92,6 +104,16 @@ namespace CV19Console
             {
                 Thread.Sleep(100);
                 Console.Title = DateTime.Now.ToString();
+            }
+        }
+
+        private static void PrintMethod(string Massage, int Count, int Timeout)
+        {
+            for (var i = 0; i < Count; i++)
+            {
+                Console.WriteLine(Massage);
+                Thread.Sleep(Timeout);
+                Console.WriteLine(i);
             }
         }
 
