@@ -3,6 +3,7 @@
 
 using System;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace CV19.Web
 {
@@ -119,6 +120,7 @@ namespace CV19.Web
             var listener = _Listener;
             listener.Start();                               // Запускаем процесс прослушивания.
 
+            HttpListenerContext context = null;
             // Цикл, который будет выполняться до тех пор, пока ы методе public void Stop() не будет сброшен флаг _Enabled:
             while (_Enabled)
             {
@@ -127,16 +129,16 @@ namespace CV19.Web
                  * GetContextAsync() и поэтому сам метод Listen() сделаем асинхронным. На каждой итерации цикла мы извлекаем контекст из
                  * соединения listener:*/
 
-                var context = await listener.GetContextAsync().ConfigureAwait(false);
-
-                ProcerssRequest(context);
+                var get_context_task = listener.GetContextAsync();
+                if (context != null)
+                    ProcessRequestAsync(context);
+                context = await get_context_task.ConfigureAwait(false);
             }
-
             listener.Stop();                                // После того, как сервер будет остановлен, вызовем метод Stop() для закрытия порта.
         }
 
         //Метод, в котором будет выполняться обработка контекста:
-        private void ProcerssRequest(HttpListenerContext context)
+        private void ProcessRequestAsync(HttpListenerContext context)
         {
             RequestRecieved?.Invoke(this, new RequestRecieverEventArgs(context));
         }
@@ -186,13 +188,10 @@ namespace CV19.Web
         public void Start()
         {
             if (_Enabled) return;
-
             lock (_SyncRoot)
             {
                 if (_Enabled) return;
-
                 _Listener = new HttpListener();
-
                 _Listener.Prefixes.Add($"http://*:{_Port}/");    /* В консоль нужно ввести эту команду netsh http add urlacl url=http://*:8080/ user=user_name,
                                                                  * которая добавит разрешение на использование префикса * с указанным потром для указанного
                                                                  * пользователя. Для этого понадобится консоль с правами администратора. user_name = 1blin*/
@@ -200,9 +199,7 @@ namespace CV19.Web
                                                                 /* В консоль нужно ввести эту команду netsh http add urlacl url=http://+:8080/ user=user_name,
                                                                  * которая добавит разрешение на использование префикса * с указанным потром для указанного
                                                                  * пользователя. Для этого понадобится консоль с правами администратора. user_name = 1blin*/
-
                 _Enabled = true;                            // Говорим, что вервер включён.
-
                 ListenAsync();                              // Запускаем процесс прослушивания.
             }
         }
@@ -210,11 +207,9 @@ namespace CV19.Web
         public void Stop()                                  // Остановка сервера.
         {
             if (!_Enabled) return;
-
             lock (_SyncRoot)
             {
                 if (!_Enabled) return;
-
                 _Listener = null;                           // Обнулим ссылку на _Listner.
                 _Enabled = false;                           // Остановим. Это мягкая остановка.
             }
@@ -225,18 +220,20 @@ namespace CV19.Web
             var listener = _Listener;
             listener.Start();                               // Запускаем процесс прослушивания.
 
+            HttpListenerContext context = null;
             while (_Enabled)
             {
-                var context = await listener.GetContextAsync().ConfigureAwait(false);
-
-                ProcerssRequest(context);
+                var get_context_task = listener.GetContextAsync();
+                if (context != null)
+                    ProcessRequestAsync(context);
+                context = await get_context_task.ConfigureAwait(false);
             }
 
             listener.Stop();                                // После того, как сервер будет остановлен, вызовем метод Stop() для закрытия порта.
         }
 
         #endregion
-        private void ProcerssRequest(HttpListenerContext context)
+        private void ProcessRequestAsync(HttpListenerContext context)
         {
             RequestRecieved?.Invoke(this, new RequestRecieverEventArgs(context));
         }
@@ -247,9 +244,7 @@ namespace CV19.Web
     public class RequestRecieverEventArgs : EventArgs 
     {
         public HttpListenerContext Context { get; }
-
-        public RequestRecieverEventArgs(HttpListenerContext context) => Context = context;
-        
+        public RequestRecieverEventArgs(HttpListenerContext context) => Context = context;        
     }
 #endif
 }
