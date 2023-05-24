@@ -1,11 +1,20 @@
-﻿using System.Net;
+﻿//#define Код_с_комментариями
+#define Код
+
+using System;
+using System.Net;
 
 namespace CV19.Web
 {
+#if Код_с_комментариями
     /* Класс, который был создан при добавлении решения CV19.Web мы удалили. Вместо него создали новый. Будем по возможности использовать netstandard2.0.
      * Чем ниже цифру поставить, тем более широкий охват аудитории мы получим в плане платформ, на которых можно использовать нашу библиотеку.*/
+
     public class WebServer
     {
+        // Событие, которое мы будем генерировать, передавая в него объект RequestRecieverEventArgs:
+        public event EventHandler<RequestRecieverEventArgs> RequestRecieved;
+
         // Web-сервер можно реализовать двумя способами: простым и сложным.
 
         /* Сложный способ заключается в использовании класса TcpListener. Это непосредственная реализация протокола TCP для входящих соединений.
@@ -51,8 +60,6 @@ namespace CV19.Web
              * то это условие нас тут же выкинет из метода:*/
             if (_Enabled) return;
 
-            if (_Enabled) return;
-
             /* Блокируемся на объекте блокировки критической секции, и весь внутренний код в скобках выполняется уже как критическая секция
              * В ряде случаев можно видеть, что для блокировки используется сам объект (this). Но в этом случае может возникнуть проблема:
              * наш объект кто-то может использовать для блокировки точно-также, и в этом случае у нас может возникнуть deadlock, когда
@@ -77,12 +84,18 @@ namespace CV19.Web
                  * запущен, то повторный вызов метода Start() нам заного запустит второй процесс прослушивания, и скорее всего он завершится
                  * падением, потому что два раза открыть один и тот же порт операционная система не даст.*/
 
-                _Listener.Prefixes.Add($"http://*:{_Port}");
-                _Listener.Prefixes.Add($"http://+:{_Port}");    // Что это значит, преподаватель не помнит.
+                _Listener.Prefixes.Add($"http://*:{_Port}/");    /* В консоль нужно ввести эту команду netsh http add urlacl url=http://*:8080/ user=user_name,
+                                                                 * которая добавит разрешение на использование префикса * с указанным потром для указанного
+                                                                 * пользователя. Для этого понадобится консоль с правами администратора. user_name = 1blin*/
+                _Listener.Prefixes.Add($"http://+:{_Port}/");    // Что это значит, преподаватель не помнит.
+                                                                /* В консоль нужно ввести эту команду netsh http add urlacl url=http://+:8080/ user=user_name,
+                                                                 * которая добавит разрешение на использование префикса * с указанным потром для указанного
+                                                                 * пользователя. Для этого понадобится консоль с правами администратора. user_name = 1blin*/
 
                 _Enabled = true;                            // Говорим, что вервер включён.
+                ListenAsync();                              // Запускаем процесс прослушивания.
+
             }
-            Listen();                                       // Запускаем процесс прослушивания.
         }
 
         public void Stop()                                  // Остановка сервера.
@@ -93,13 +106,150 @@ namespace CV19.Web
             {
                 if (!_Enabled) return;
 
-                _Listener = null;                               // Обнулим ссылку на _Listner.
-                _Enabled = false;                               // Остановим. Это мягкая остановка.
+                _Listener = null;                           // Обнулим ссылку на _Listner.
+                _Enabled = false;                           // Остановим. Это мягкая остановка.
             }
         }
-        private void Listen()
-        {
 
+        private async void ListenAsync()
+        {
+            /* Захватываем внутри метода поле в локальную переменную для того, чтобы, если вдруг снаружи этого метода кто-то изменит состояние
+             * этого поля, чтобы мы не потеряли ссылку на него и смогли с ним продолжить работать:*/
+
+            var listener = _Listener;
+            listener.Start();                               // Запускаем процесс прослушивания.
+
+            // Цикл, который будет выполняться до тех пор, пока ы методе public void Stop() не будет сброшен флаг _Enabled:
+            while (_Enabled)
+            {
+                /* Объект _Listener реализован асинхронно. Его основной метод - GetContext. Есть две вариации: это метод GetContext и GetContextAsync.
+                 * Также есть две старые реализации DeginGetContext и EndGetContext с использованием тап-подхода. Воспользуемся асинхронным методом
+                 * GetContextAsync() и поэтому сам метод Listen() сделаем асинхронным. На каждой итерации цикла мы извлекаем контекст из
+                 * соединения listener:*/
+
+                var context = await listener.GetContextAsync().ConfigureAwait(false);
+
+                ProcerssRequest(context);
+            }
+
+            listener.Stop();                                // После того, как сервер будет остановлен, вызовем метод Stop() для закрытия порта.
+        }
+
+        //Метод, в котором будет выполняться обработка контекста:
+        private void ProcerssRequest(HttpListenerContext context)
+        {
+            RequestRecieved?.Invoke(this, new RequestRecieverEventArgs(context));
         }
     }
+
+    public class RequestRecieverEventArgs : EventArgs 
+    {
+        public HttpListenerContext Context { get; }
+
+        public RequestRecieverEventArgs(HttpListenerContext context) => Context = context;
+        
+    }
+
+
+
+
+
+#elif Код
+    public class WebServer
+    {
+        public event EventHandler<RequestRecieverEventArgs> RequestRecieved;
+
+        #region ================== Поля ==================
+        private HttpListener _Listener;
+        private readonly int _Port;                         // Порт, который будем прослушивать.
+        private bool _Enabled;
+        private readonly object _SyncRoot = new object();   // Объект блокировки. Readonly - чтобы никто не смог изменить значение этого поля. 
+        #endregion
+
+
+
+        #region ================== Конструктор ==================
+        public WebServer(int Port) => _Port = Port;
+        #endregion
+
+
+
+        #region ================== Свойства ==================
+        public int Port => _Port;                           // Порт менять будет нельзя.
+
+        public bool Enabled { get => _Enabled; set { if (value) Start(); else Stop(); } }
+        #endregion
+
+
+
+        #region ================== Методы ==================
+        public void Start()
+        {
+            if (_Enabled) return;
+
+            lock (_SyncRoot)
+            {
+                if (_Enabled) return;
+
+                _Listener = new HttpListener();
+
+                _Listener.Prefixes.Add($"http://*:{_Port}/");    /* В консоль нужно ввести эту команду netsh http add urlacl url=http://*:8080/ user=user_name,
+                                                                 * которая добавит разрешение на использование префикса * с указанным потром для указанного
+                                                                 * пользователя. Для этого понадобится консоль с правами администратора. user_name = 1blin*/
+                _Listener.Prefixes.Add($"http://+:{_Port}/");    // Что это значит, преподаватель не помнит.
+                                                                /* В консоль нужно ввести эту команду netsh http add urlacl url=http://+:8080/ user=user_name,
+                                                                 * которая добавит разрешение на использование префикса * с указанным потром для указанного
+                                                                 * пользователя. Для этого понадобится консоль с правами администратора. user_name = 1blin*/
+
+                _Enabled = true;                            // Говорим, что вервер включён.
+
+                ListenAsync();                              // Запускаем процесс прослушивания.
+            }
+        }
+
+        public void Stop()                                  // Остановка сервера.
+        {
+            if (!_Enabled) return;
+
+            lock (_SyncRoot)
+            {
+                if (!_Enabled) return;
+
+                _Listener = null;                           // Обнулим ссылку на _Listner.
+                _Enabled = false;                           // Остановим. Это мягкая остановка.
+            }
+        }
+
+        private async void ListenAsync()
+        {
+            var listener = _Listener;
+            listener.Start();                               // Запускаем процесс прослушивания.
+
+            while (_Enabled)
+            {
+                var context = await listener.GetContextAsync().ConfigureAwait(false);
+
+                ProcerssRequest(context);
+            }
+
+            listener.Stop();                                // После того, как сервер будет остановлен, вызовем метод Stop() для закрытия порта.
+        }
+
+        #endregion
+        private void ProcerssRequest(HttpListenerContext context)
+        {
+            RequestRecieved?.Invoke(this, new RequestRecieverEventArgs(context));
+        }
+    }
+
+
+
+    public class RequestRecieverEventArgs : EventArgs 
+    {
+        public HttpListenerContext Context { get; }
+
+        public RequestRecieverEventArgs(HttpListenerContext context) => Context = context;
+        
+    }
+#endif
 }

@@ -5,7 +5,8 @@
 //#define Мягкая_остановка_потока
 //#define Прямая_или_жёсткая_остановка_потока
 //#define Базовые_примитивы_блокировки_и_взаимной_синхронизации_потоков
-#define Защита_метода_от_многопоточности
+//#define Защита_метода_от_многопоточности
+#define Запуск_CV19Web_WebServer
 
 using System;
 using System.Collections.Generic;
@@ -418,6 +419,10 @@ namespace CV19Console
 
             /*Все эти сценарии сейчас можно реализовать с помощью TPL, но с накладными расходами.*/
         }
+
+
+
+
 #elif Защита_метода_от_многопоточности
         /* Чтобы защитить метод, сделать его атомарным для выпотнениянескольких потоков, нужно добавить атрибут [MethodImpl]. У этого
          * атрибута есть много флагов. При добавлении флага (MethodImplOptions.Synchronized), вокруг метода компилятором создаётся
@@ -428,6 +433,19 @@ namespace CV19Console
         [MethodImpl(MethodImplOptions.Synchronized)]
         private static void ThreadtMethod()
         {
+        }
+
+
+
+
+#elif Запуск_CV19Web_WebServer
+        /* Для возможности запуска CV19.Web/WebServer из консольно тестового проекта, предварительно нужно в в папке Tests/CV19Console/Зависимости
+         * добавить ссылку на проект у поставить галочку напротив CV19Web*/
+
+        static void Main(string[] args)
+        {
+            WebServerTest.Run();
+            return;
         }
 #endif
     }
