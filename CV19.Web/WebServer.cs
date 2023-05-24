@@ -1,11 +1,16 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 
 namespace CV19.Web
 {
     /* Класс, который был создан при добавлении решения CV19.Web мы удалили. Вместо него создали новый. Будем по возможности использовать netstandard2.0.
-     * Чем ниже цифру поставить, тем более широкий охват аудитории мы получим в плане платформ, на которых можно использовать нашу библиотеку.*/
+     * Чем ниже цифру поставить, тем более широкий охват аудитории мы получим в плане платформ, на которых можно использовать нашу библиотеку.*/    
+
     public class WebServer
     {
+        // Событие, которое мы будем генерировать, передавая в него объект RequestRecieverEventArgs:
+        private event EventHandler<RequestRecieverEventArgs> RequestReciever;
+
         // Web-сервер можно реализовать двумя способами: простым и сложным.
 
         /* Сложный способ заключается в использовании класса TcpListener. Это непосредственная реализация протокола TCP для входящих соединений.
@@ -81,8 +86,9 @@ namespace CV19.Web
                 _Listener.Prefixes.Add($"http://+:{_Port}");    // Что это значит, преподаватель не помнит.
 
                 _Enabled = true;                            // Говорим, что вервер включён.
+                ListenAsync();                              // Запускаем процесс прослушивания.
+
             }
-            Listen();                                       // Запускаем процесс прослушивания.
         }
 
         public void Stop()                                  // Остановка сервера.
@@ -93,13 +99,47 @@ namespace CV19.Web
             {
                 if (!_Enabled) return;
 
-                _Listener = null;                               // Обнулим ссылку на _Listner.
-                _Enabled = false;                               // Остановим. Это мягкая остановка.
+                _Listener = null;                           // Обнулим ссылку на _Listner.
+                _Enabled = false;                           // Остановим. Это мягкая остановка.
             }
         }
-        private void Listen()
-        {
 
+        private async void ListenAsync()
+        {
+            /* Захватываем внутри метода поле в локальную переменную для того, чтобы, если вдруг снаружи этого метода кто-то изменит состояние
+             * этого поля, чтобы мы не потеряли ссылку на него и смогли с ним продолжить работать:*/
+
+            var listener = _Listener;
+            listener.Start();                               // Запускаем процесс прослушивания.
+
+            // Цикл, который будет выполняться до тех пор, пока ы методе public void Stop() не будет сброшен флаг _Enabled:
+            while (_Enabled)
+            {
+                /* Объект _Listener реализован асинхронно. Его основной метод - GetContext. Есть две вариации: это метод GetContext и GetContextAsync.
+                 * Также есть две старые реализации DeginGetContext и EndGetContext с использованием тап-подхода. Воспользуемся асинхронным методом
+                 * GetContextAsync() и поэтому сам метод Listen() сделаем асинхронным. На каждой итерации цикла мы извлекаем контекст из
+                 * соединения listener:*/
+
+                var context = await listener.GetContextAsync().ConfigureAwait(false);
+
+                ProcerssRequest(context);
+            }
+
+            listener.Stop();                                // После того, как сервер будет остановлен, вызовем метод Stop() для закрытия порта.
         }
+
+        //Метод, в котором будет выполняться обработка контекста:
+        private void ProcerssRequest(HttpListenerContext context)
+        {
+            RequestReciever?.Invoke(this, new RequestRecieverEventArgs(context));
+        }
+    }
+
+    public class RequestRecieverEventArgs : EventArgs 
+    {
+        public HttpListenerContext Context { get; }
+
+        public RequestRecieverEventArgs(HttpListenerContext context) => Context = context;
+        
     }
 }
