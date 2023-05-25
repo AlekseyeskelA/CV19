@@ -239,8 +239,6 @@ namespace CV19.Web
         }
     }
 
-
-
     public class RequestRecieverEventArgs : EventArgs 
     {
         public HttpListenerContext Context { get; }
