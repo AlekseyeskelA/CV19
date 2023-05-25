@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using CV19.ViewModels.Base;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CV19.ViewModels
 {
@@ -9,6 +10,7 @@ namespace CV19.ViewModels
             // Здесь зарегистрируем все Вью-Модели:
             services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<CountriesStatisticViewModel>();
+            services.AddSingleton<WebServerViewModel>();
 
             return services;
         }
