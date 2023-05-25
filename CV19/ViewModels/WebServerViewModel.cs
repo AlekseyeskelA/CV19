@@ -14,8 +14,18 @@ namespace CV19.ViewModels.Base
 
 
         #region Enabled
-        private bool _Enabled;
-        public bool Enabled { get => _Enabled; set => Set(ref _Enabled, value); }
+        //private bool _Enabled;
+        //public bool Enabled { get => _Enabled; set => Set(ref _Enabled, value); }
+
+        public bool Enabled
+        { 
+            get => _Server.Enabled;
+            set
+            {
+                _Server.Enabled = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
 
@@ -23,10 +33,12 @@ namespace CV19.ViewModels.Base
         private ICommand _StartCommand;
         public ICommand StartCommand => _StartCommand
             ??= new LambdaCommand(OnStartComandExecuted, CanStartCommandExecute);
-        public bool CanStartCommandExecute(object p) => !_Enabled;      // Запустить сервер можно только когдатон не включён.
+        public bool CanStartCommandExecute(object p) => /*!_Enabled*/ !Enabled;      // Запустить сервер можно только когдатон не включён.
         public void OnStartComandExecuted(object p)
         {
-            Enabled = true;
+            //Enabled = true;
+            _Server.Start();
+            OnPropertyChanged(nameof(Enabled));     // При старте сервера нам необходимо сгенерировать событие Enabled, чтобы интерфейс его перечитал.
         }
         #endregion
 
@@ -35,10 +47,12 @@ namespace CV19.ViewModels.Base
         private ICommand _StopCommand;
         public ICommand StopCommand => _StopCommand
             ??= new LambdaCommand(OnStopComandExecuted, CanStopCommandExecute);
-        public bool CanStopCommandExecute(object p) => _Enabled;        // Остановить сервер можно только когдатон включён.
+        public bool CanStopCommandExecute(object p) => Enabled;        // Остановить сервер можно только когдатон включён.
         public void OnStopComandExecuted(object p)
         {
-            Enabled = false;
+            //Enabled = false;
+            _Server.Stop();
+            OnPropertyChanged(nameof(Enabled));
         }
         #endregion
     }
