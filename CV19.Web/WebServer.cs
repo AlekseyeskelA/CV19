@@ -1,5 +1,5 @@
-﻿#define Код_с_комментариями
-//#define Код
+﻿//#define Код_с_комментариями
+#define Код
 
 using System;
 using System.Net;
@@ -269,9 +269,9 @@ namespace CV19.Web
         }
 
         #endregion
-        private void ProcessRequestAsync(HttpListenerContext context)
+        private async void ProcessRequestAsync(HttpListenerContext context)
         {
-            RequestRecieved?.Invoke(this, new RequestRecieverEventArgs(context));
+            await Task.Run(() => RequestRecieved?.Invoke(this, new RequestRecieverEventArgs(context)));
         }
     }
 

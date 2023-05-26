@@ -2,6 +2,7 @@
 using CV19.Web;
 using System;
 using System.IO;
+using System.Threading;
 
 namespace CV19.Services
 {
@@ -23,6 +24,7 @@ namespace CV19.Services
 
         private static void OnRequestRecieved(object sender, RequestRecieverEventArgs e)
         {
+            Thread.Sleep(3000);     // Эффект задержки при формировании данных, имитирующий работу сервера, как будто он что-то обрабатывает.
             using var writer = new StreamWriter(e.Context.Response.OutputStream);
             writer.WriteLine("CV-19 Application - " + DateTime.Now);
         }
