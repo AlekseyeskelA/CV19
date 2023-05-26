@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+	  <!--Чем ниже цифра (netstandard2.0), тем больший охват аудитории мы получим:-->
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
