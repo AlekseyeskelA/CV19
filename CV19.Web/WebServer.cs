@@ -1,5 +1,5 @@
-﻿//#define Код_с_комментариями
-#define Код
+﻿#define Код_с_комментариями
+//#define Код
 
 using System;
 using System.Net;
@@ -87,11 +87,13 @@ namespace CV19.Web
 
                 _Listener.Prefixes.Add($"http://*:{_Port}/");    /* В консоль нужно ввести эту команду netsh http add urlacl url=http://*:8080/ user=user_name,
                                                                  * которая добавит разрешение на использование префикса * с указанным потром для указанного
-                                                                 * пользователя. Для этого понадобится консоль с правами администратора. user_name = 1blin*/
+                                                                 * пользователя. Для этого понадобится консоль с правами администратора. user_name = 1blin.
+                                                                  Это основной недостаток данного способа.*/
                 _Listener.Prefixes.Add($"http://+:{_Port}/");    // Что это значит, преподаватель не помнит.
                                                                 /* В консоль нужно ввести эту команду netsh http add urlacl url=http://+:8080/ user=user_name,
                                                                  * которая добавит разрешение на использование префикса * с указанным потром для указанного
-                                                                 * пользователя. Для этого понадобится консоль с правами администратора. user_name = 1blin*/
+                                                                 * пользователя. Для этого понадобится консоль с правами администратора. user_name = 1blin.
+                                                                  Это основной недостаток данного способа.*/
 
                 _Enabled = true;                            // Говорим, что вервер включён.
                 ListenAsync();                              // Запускаем процесс прослушивания.
@@ -112,6 +114,44 @@ namespace CV19.Web
             }
         }
 
+        //private async void ListenAsync()
+        //{
+        //    /* Захватываем внутри метода поле в локальную переменную для того, чтобы, если вдруг снаружи этого метода кто-то изменит состояние
+        //     * этого поля, чтобы мы не потеряли ссылку на него и смогли с ним продолжить работать:*/
+
+        //    var listener = _Listener;
+        //    listener.Start();                               // Запускаем процесс прослушивания.
+
+        //    // Цикл, который будет выполняться до тех пор, пока ы методе public void Stop() не будет сброшен флаг _Enabled:
+        //    while (_Enabled)
+        //    {
+        //        /* Объект _Listener реализован асинхронно. Его основной метод - GetContext. Есть две вариации: это метод GetContext и GetContextAsync.
+        //         * Также есть две старые реализации DeginGetContext и EndGetContext с использованием тап-подхода. Воспользуемся асинхронным методом
+        //         * GetContextAsync() и поэтому сам метод Listen() сделаем асинхронным. На каждой итерации цикла мы извлекаем контекст из
+        //         * соединения listener:*/
+
+        //        var context = await listener.GetContextAsync().ConfigureAwait(false);                
+        //        ProcessRequest(context);
+        //    }
+        //    listener.Stop();                                // После того, как сервер будет остановлен, вызовем метод Stop() для закрытия порта.
+        //}
+
+        ////Метод, в котором будет выполняться обработка контекста:
+        //private void ProcessRequest(HttpListenerContext context)
+        //{
+        //    RequestRecieved?.Invoke(this, new RequestRecieverEventArgs(context));
+        //}
+
+
+
+        /* При этом сервер у нас получился не совсем асинхронный. Проблема в том, что когда у нас один клиент подключается, к нашему Web-серверу,
+         * мы получаем контекст подключения в методе ListenAsync() в переменной var context, и начинаем его обрабатывать. Далее формируем ответ
+         * и отправляем ему. После того, как отправили, унас завершается цикл while (_Enabled) и переходит на другую итерацию, и мы можем
+         * получить следующий контекст. Таким образом у нас получается однопоточная обработка всех входящих соединений. Исправим это, сделав
+         * сервер многопоточным. Сейчас мы берём объект listener, вызываем метод GetContextAsync(), формируя тем самым задачу получения контекста,
+         * после чего начинаем её ожидать (await). После завершения задачи мы получаем контекст и начинаем его обрабатывать. Слегка рассинхронизируем
+         * этот момент: сделаем сперва получение залдачи, потом обработку контекста, а потом получение контекста из этой задачи, т.е. слегка
+         * перепутаем строчки. Эти изменения помогут сделать нас сервер быстрее:*/
         private async void ListenAsync()
         {
             /* Захватываем внутри метода поле в локальную переменную для того, чтобы, если вдруг снаружи этого метода кто-то изменит состояние
@@ -120,28 +160,24 @@ namespace CV19.Web
             var listener = _Listener;
             listener.Start();                               // Запускаем процесс прослушивания.
 
-            HttpListenerContext context = null;
-            // Цикл, который будет выполняться до тех пор, пока ы методе public void Stop() не будет сброшен флаг _Enabled:
+            HttpListenerContext context = null;             // Для этого нужно context вынести в отдельную переменную.
             while (_Enabled)
             {
-                /* Объект _Listener реализован асинхронно. Его основной метод - GetContext. Есть две вариации: это метод GetContext и GetContextAsync.
-                 * Также есть две старые реализации DeginGetContext и EndGetContext с использованием тап-подхода. Воспользуемся асинхронным методом
-                 * GetContextAsync() и поэтому сам метод Listen() сделаем асинхронным. На каждой итерации цикла мы извлекаем контекст из
-                 * соединения listener:*/
-
-                var get_context_task = listener.GetContextAsync();
-                if (context != null)
-                    ProcessRequestAsync(context);
-                context = await get_context_task.ConfigureAwait(false);
+                var get_context_task = listener.GetContextAsync();  // Запускаем процесс извлечения очередного контекста.
+                if (context != null)                        // Данная проверка нужна, так как на первом этапе context = null.
+                    ProcessRequestAsync(context);           /* Пока процесс извлеченияидёт, мы обрабатываем контекст, который был обработан 
+                                                             * на предыдущей итерации этого цикла.*/
+                context = await get_context_task.ConfigureAwait(false); /* После того, как ProcessRequestAsync(context) завершится, мы
+                                                                         * извлекаем следующий контекст из задачи.*/
             }
             listener.Stop();                                // После того, как сервер будет остановлен, вызовем метод Stop() для закрытия порта.
         }
 
         //Метод, в котором будет выполняться обработка контекста:
-        private void ProcessRequestAsync(HttpListenerContext context)
+        private async void ProcessRequestAsync(HttpListenerContext context)
         {
-            RequestRecieved?.Invoke(this, new RequestRecieverEventArgs(context));
-        }
+            await Task.Run(() => RequestRecieved?.Invoke(this, new RequestRecieverEventArgs(context)));
+        }        
     }
 
     public class RequestRecieverEventArgs : EventArgs 
