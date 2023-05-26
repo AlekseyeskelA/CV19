@@ -75,6 +75,15 @@
                     команду, как ресурс:-->
                 <MenuItem Header="Выход" Command="{StaticResource CloseApplicationCommand}"/>
             </MenuItem>
+            <MenuItem Header="Сервис">
+                <MenuItem Header="Веб-сервер" DataContext="{Binding WebServer}">
+                    <!--Отображает активность сервера: включён или нет.-->
+                    <MenuItem Header="Включён" IsCheckable="False" IsChecked="{Binding Enabled}"/>
+                    <Separator/>
+                    <MenuItem Header="Включить" Command="{Binding StartCommand}"/>
+                    <MenuItem Header="Выключить" Command="{Binding StopCommand}"/>
+                </MenuItem>
+            </MenuItem>
             <MenuItem Header="Помощь">
                 <MenuItem Header="О программе"/>
             </MenuItem>

@@ -34,6 +34,8 @@ namespace CV19.ViewModels
         // Оформим её как свойство, только для чтения и привяжемся к нему в xaml-разметке:
         public CountriesStatisticViewModel CountriesStatistic { get; }
 
+        public WebServerViewModel WebServer { get; }
+
         #region SelectedGroupStudents
         // Реализуем второй фильтр для студентов через модель-представления.
         // Для этого создадим свойство, которое будет возвращать тип (интерфейс) ICollectionView, то есть представдления.
@@ -289,7 +291,7 @@ namespace CV19.ViewModels
 
         // Конструктор
         //public MainWindowViewModel()
-        public MainWindowViewModel(CountriesStatisticViewModel Statistic, IAsyncDataService AsyncData)
+        public MainWindowViewModel(CountriesStatisticViewModel Statistic, IAsyncDataService AsyncData, WebServerViewModel WebServer)
         {
             _AsyncData = AsyncData;
             //_CountriesStatistic = new CountriesStatisticViewModel(this);
@@ -308,6 +310,8 @@ namespace CV19.ViewModels
             и циклическая зависимость между сервисами. Нам её надо разорвать. Разорвём её самым жёстким способом, удалив зависимость из CountriesStatisticViewModel.*/
             // После того, как основная модель получит зависимостьЮ она установит себя как MainModel:
             Statistic.MainModel = this;
+
+            this.WebServer = WebServer;
 
             // Создаём команды (объекты коменд) внутри конструктора:
             #region Команды

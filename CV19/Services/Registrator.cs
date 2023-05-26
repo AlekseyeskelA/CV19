@@ -16,6 +16,7 @@ namespace CV19.Services
             //services.AddScoped<IDataService, DataService>();
             
             services.AddTransient<IAsyncDataService, AsyncDataService>();   // Регистрируем новый сервис и подключим его во главной Вью-Модели.
+            services.AddTransient<IWebServerService, HttpListenerWebServer>();
 
             return services;
         }
