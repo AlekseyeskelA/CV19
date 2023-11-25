@@ -1,5 +1,5 @@
-﻿//#define Код_с_комментариями
-#define Код
+﻿#define Код_с_комментариями
+//#define Код
 
 using System;
 using System.Net;
