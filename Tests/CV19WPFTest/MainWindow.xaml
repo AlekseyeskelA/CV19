@@ -8,6 +8,8 @@
         Title="MainWindow"
         Height="224" Width="354">
     <Grid>
+        <!--Помимо триггеров, важная ячасть этого пакета - это поведение. Посмотрим, как использовать обработчики событий в интерфейсе WPF, не нарушая при этом
+        шаблона MVVM.-->
         <Button VerticalAlignment="Center" HorizontalAlignment="Center"
                 Content="Start"
                 Padding="30,20"
