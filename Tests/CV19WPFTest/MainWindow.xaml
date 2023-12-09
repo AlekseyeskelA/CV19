@@ -3,18 +3,53 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" mc:Ignorable="d"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:l="clr-namespace:CV19WPFTest"        
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"            
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:l="clr-namespace:CV19WPFTest"
+        xmlns:b="clr-namespace:CV19WPFTest.Behaviors"
         Title="MainWindow"
         Height="224" Width="354">
     <Grid>
         <!--Помимо триггеров, важная ячасть этого пакета - это поведение. Посмотрим, как использовать обработчики событий в интерфейсе WPF, не нарушая при этом
-        шаблона MVVM.-->
+        шаблона MVVM. Добавим в Grid Canvas, который растянется на всю поверхность окна и ляжет над всеми остальными элементами. Внурть положим Ellipse.
+        Обеспечим возможность перетаскивания его мышкой, а также при этом иметь возможность отследить координаты эллипса, в последствии вывести их
+        в текстовую метку с помощью системы привязок к данным. Для этих целей подключим пакет Behaviors.Wpf в CV19WPFTest. После этого в Эллипс
+        можно добавить интерактивность. Теперь можно, например, перетаскивать его. Добавим перетаскивание также и в текстовый блок.
+        
+        Как же это использовать? В разработке интерфейса пользователя мы стараемся применять шаблон MVVM, который требует, чтобы логика поведения интерфейса
+        была отделена от самого интерфейса и выделена в отдельный класс, который, который мы называем ViewModel, и при жёстком следовании этому пути,
+        файл прилагаемого кода обработчиков событий (MainWindow.xaml.cs) должен быть пустым.  В нём должен быть только конструктор с вызовом метода InitializeComponent(),
+        который и формирует внешний вид интерфейса. Все обработчики воздействия на интерфейс должны быть собраны внутри ViewModel в виде команд, или привящок к данным
+        в виде свойства ViewModel-и. Однако, может сложиться ситуация, когда существует необходимость написать обработчик события и прикрепить его к какому то
+        визуальному элементу, и.е. сделать реакцию визуального элемента на какое-то событие, например, MouseLeftButtonDown, чтобы реализовать чтобы реальзовать
+        ту же самую функцию перетаскивания. В этом случае мы получим обработчик события, который будет находитьяс в файле MainWindow.xaml.cs. Именно для того,
+        чтобы избежать этого, и была создана система поведений Interaction.Behaviors. Все обработчики событий, которые нам надо использовать для визуальных элементов,
+        можно собрать внутри объекта, и по сути этот объект будет обработчиком некоторого сложного поведения, реакции на ккакой-то комплекс событий, который
+        может возникать в визуальном элементе.
+        
+        Для того, чтобы создать свой собственный обработчик события (поведения), создадим папку Behaviors и в ней добавим класс DragInCanvas, который позволит
+        перемещать элемент внутри контейнера Canvas.-->
         <Button VerticalAlignment="Center" HorizontalAlignment="Center"
                 Content="Start"
                 Padding="30,20"
                 Click="StartButton_Click"/>
 
-        <TextBlock Name="ResultBlock" HorizontalAlignment="Center" VerticalAlignment="Top" Text="None"/>
+        <TextBlock Name="ResultBlock" HorizontalAlignment="Center" VerticalAlignment="Top" Text="None">            
+                <i:Interaction.Behaviors>
+                    <i:MouseDragElementBehavior/>
+                </i:Interaction.Behaviors>
+        </TextBlock>
+
+        <Canvas>
+            <Ellipse Canvas.Left="30" Canvas.Top="10"
+                     Stroke="Red" StrokeThickness="2"
+                     Fill="DarkBlue"
+                     Width="20" Height="20">
+                <i:Interaction.Behaviors>
+                    <!--<i:MouseDragElementBehavior/>-->
+                    <b:DragInCanvas/>
+                </i:Interaction.Behaviors>
+            </Ellipse>
+        </Canvas>
     </Grid>
 </Window>
