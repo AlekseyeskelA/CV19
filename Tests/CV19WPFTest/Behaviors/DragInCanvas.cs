@@ -2,6 +2,7 @@
 using Microsoft.Xaml.Behaviors;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -104,6 +105,39 @@ namespace CV19WPFTest.Behaviors
             /* Выполняем установку значения свойств. По сути мы устанавливаем значения свойств Canvas.Left= Canvas.Top= в элементе Ellipse вручную: */
             obj.SetValue(Canvas.LeftProperty, delta.X);
             obj.SetValue(Canvas.TopProperty, delta.Y);
+
+            PositionX = delta.X;
+            PositionY = delta.Y;
         }
+
+        #region PositionX : double - Горизонтальное положение
+        /// <summary>Горизонтальное смещение</summary>
+        public static readonly DependencyProperty PositionXProperty =
+            DependencyProperty.Register(
+                nameof(PositionX),
+                typeof(double),
+                typeof(DragInCanvas),
+                new PropertyMetadata(default(double)));
+
+        /// <summary>Горизонтальное положение</summary>
+        //[Category("")]
+        [Description("Горизонтальное положение")]
+        public double PositionX { get => (double)GetValue(PositionXProperty); set => SetValue(PositionXProperty, value); }
+        #endregion
+
+        #region PositionY : double - Вертикальное положение
+        /// <summary>Вертикальное положение</summary>
+        public static readonly DependencyProperty PositionYProperty =
+            DependencyProperty.Register(
+                nameof(PositionY),
+                typeof(double),
+                typeof(DragInCanvas),
+                new PropertyMetadata(default(double)));
+
+        /// <summary>Вертикальное положение</summary>
+        //[Category("")]
+        [Description("Вертикальное положение")]
+        public double PositionY { get => (double)GetValue(PositionYProperty); set => SetValue(PositionYProperty, value); }
+        #endregion
     }
 }
