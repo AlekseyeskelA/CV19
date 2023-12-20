@@ -1,12 +1,13 @@
 ﻿<Window x:Class="CV19.Views.Windows.TestWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" mc:Ignorable="d"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CV19.Views.Windows"
-        mc:Ignorable="d"
+        Style="{StaticResource CV19WindowStyle}"
         Title="TestWindow" Height="450" Width="800">
     <Grid>
-        <!--Чтобы хапускалось это окно, в файле App.xaml временно заменим запись MainWindow на TestWindow-->
+        <!--Чтобы хапускалось это окно, в файле App.xaml временно заменим запись MainWindow на TestWindow, затем добавим стиль окна в резурсы. В ничале этого файла добавим
+        только что созданный стиль окна.-->
     </Grid>
 </Window>
