@@ -28,9 +28,39 @@
                 <!--Разместим контент окна. ContentPresenter указывает, где конкретно внутри этого шаблона будет размещено содержимое окна. Т.е., снаружи у нас будет общая таблица
                 Grid,потом в эту таблицу будет помещена рамка окна потом будет размещена Grid, закрашенная в цвет фона окна, и внутри уже буде размещём специальный элемент
                 ContentPresenter, который бцдет отображать само содержимое этого окна.-->
-                <AdornerDecorator>
-                    <ContentPresenter/>
-                </AdornerDecorator>
+                <!--AdornerDecorator позволяет добавлять какие-то дополнительные визуальные элементы. Мы его добавляем вокруг ContentPresenter, чтобы в последствии другие
+                системы смогли как-то декорировать содержимое окна.-->
+                <!--Добавим заголовок окна с кнопками, а также какие-нибудь визуальные элементы, которые могут пригодиться для управления окном. В DockPanel мы сможем
+                в разные части окна пристыковывать разные элементы:-->
+                <DockPanel>
+                    <Grid Name="PART_Titlebar" DockPanel.Dock="Top" Background="WhiteSmoke">
+                        <DockPanel Height="32">
+
+                            <!--В файле TestWindow.xaml в начале прописываем путь к нашей картинке Icon="../../Resources/WindowIcon.png".-->
+                            <Image Name="PART_Icon" DockPanel.Dock="Left"
+                                   Source="{TemplateBinding Icon}"/>
+
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                <Button>Min</Button>
+                                <Button>Max</Button>
+                                <Button>Close</Button>
+                            </StackPanel>
+                            
+                            <!--<TextBlock Name="PART_Title" Text="123"/>-->
+
+                            <!--Свойство Text элемента TextBlock привяжем к свойству Title:--> 
+                            <TextBlock Name="PART_Title"
+                                       Text="{TemplateBinding Title}"
+                                       FontSize="12"
+                                       FontFamily="Segoe UI"
+                                       Margin="4,0,0,0"
+                                       VerticalAlignment="Center"/>
+                        </DockPanel>
+                    </Grid>
+                    <AdornerDecorator>
+                        <ContentPresenter/>
+                    </AdornerDecorator>
+                </DockPanel>
             </Grid>
         </Grid>
     </ControlTemplate>

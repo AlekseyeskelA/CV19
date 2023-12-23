@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CV19.Views.Windows"
         Style="{StaticResource CV19WindowStyle}"
+        Icon="../../Resources/WindowIcon.png"
         Title="TestWindow" Height="450" Width="800">
+    <!--Icon="../../Resources/WindowIcon.png" - Преподаватеть в свойствах файла WindowIcon.png в пункте "Дествия при сборке" поменял "Нет" на "Ресурс", но помоему, и так всё работает.-->
     <Grid>
         <!--Чтобы хапускалось это окно, в файле App.xaml временно заменим запись MainWindow на TestWindow, затем добавим стиль окна в резурсы. В ничале этого файла добавим
         только что созданный стиль окна. Для того, чтобы  нарисовать своё собственное окно так, как нам захочется, необходимо у окна выстаивть свойство,которое называется
