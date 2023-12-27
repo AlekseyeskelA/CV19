@@ -1,5 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+                    xmlns:b="clr-namespace:CV19.Infrastructure.Behaviors">
 
     <!--Определим стиль для всех кнопок:-->
     <Style x:Key="CV19WindowHeaderButtonStyle" TargetType="{x:Type Button}">
@@ -106,6 +108,9 @@
                                     <Path Data="{StaticResource MaximizeToMaxButtonIconGeometry}"/>
                                 </Button>
                                 <Button Foreground="Red">
+                                    <i:Interaction.Behaviors>
+                                        <b:CloseWindow/>
+                                    </i:Interaction.Behaviors>
                                     <Path Data="{StaticResource CloseButtonIconGeometry}"/>
                                 </Button>
                             </StackPanel>
