@@ -37,6 +37,6 @@ namespace CV19WPFTest.Behaviors
                 obj = parent;
             }
             while (true);
-        }
+        }        
     }
 }
