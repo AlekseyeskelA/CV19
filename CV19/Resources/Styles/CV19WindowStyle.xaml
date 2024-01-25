@@ -78,6 +78,9 @@
                 в разные части окна пристыковывать разные элементы:-->
                 <DockPanel>
                     <Grid Name="PART_Titlebar" DockPanel.Dock="Top" Background="WhiteSmoke">
+                        <i:Interaction.Behaviors>
+                            <b:WindowsTitleBarBehavior/>
+                        </i:Interaction.Behaviors>
                         <DockPanel Height="32">
 
                             <!--В файле TestWindow.xaml в начале прописываем путь к нашей картинке Icon="../../Resources/WindowIcon.png".-->
