@@ -85,7 +85,12 @@
 
                             <!--В файле TestWindow.xaml в начале прописываем путь к нашей картинке Icon="../../Resources/WindowIcon.png".-->
                             <Image Name="PART_Icon" DockPanel.Dock="Left"
-                                   Source="{TemplateBinding Icon}"/>
+                                   Source="{TemplateBinding Icon}">
+                                <i:Interaction.Behaviors>
+                                    <b:WindowSystemIconBehavior/>
+                                </i:Interaction.Behaviors>
+                            </Image>
+
 
                             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
                                 <!--<Button>Min</Button>
