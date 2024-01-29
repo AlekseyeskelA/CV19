@@ -17,10 +17,17 @@ namespace System.Windows
         private const string user32 = "user32.dll";
 
         /* Для этого определяем внешнюю функцию. Здесь важно её название, потому что именно по этому названию эта функция будет обнаружена в библиотеке user32:*/
-        [DllImport(user32, CharSet = CharSet.Auto)] // Укажем финкции, где она находится.
+        // Укажем финкции, где она находится.
+
+        // Разные перегрузки методов:
+        [DllImport(user32, CharSet = CharSet.Auto)]
         private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
         /* IntPtr - это безопасный указатель на память, определяемый размерностью операционной системы (32 или 64 bit). Используется в Windows API. Дополнительно можно почитать
          * про функцию SendMessage в библиотеке user32.dll, которая предназначена для отправки сообщений windows.*/
+        [DllImport(user32, CharSet = CharSet.Auto)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, WM Msg, IntPtr wParam, IntPtr lParam);
+        public static IntPtr SendMessage(this Window window, WM Msg, IntPtr wParam, IntPtr lParam) =>
+            SendMessage(window.GetWindowHandle(), Msg, wParam, lParam);
 
         /* Все сообщения windows скопировыны готовыми из проекта преподавателя (данные классы можно найти в интернете). Для этого в папе Extentions создаём классы WM.cs и SC.cs.
          * (на сайте Pinvoke.net собрана вся информация для взаимодействия с различными библиотеками win32 (ядро операционной системы Windows)). Сообщения же - это по сути некоторый

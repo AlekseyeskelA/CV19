@@ -145,6 +145,122 @@
                     </AdornerDecorator>
                 </DockPanel>
             </Grid>
+            
+            <!--Сделаем возможность масштабирования элементов окна:-->
+            <Grid x:Name="PART_ResizeElements">
+                <i:Interaction.Behaviors>
+                    <b:ResizeWindowPanel/>
+                </i:Interaction.Behaviors>
+                <Grid.Resources>
+                    <Style TargetType="{x:Type Line}">
+                        <!--<Setter Property="Stroke" Value="Red"/>-->
+                        <!--После того, как все линии и триггеры подготовлены, выключаем у линий расцветку:-->
+                        <!--<Setter Property="Stroke" Value="Transparent"/>-->
+                        <!--Если изменить цвет линий на Transparen, то триггер почему-то перестаёт работать. Поэтому, пока сделаем так:-->
+                        <Setter Property="Stroke" Value="White"/>
+                        <Setter Property="Opacity" Value="0.01"/>
+                        <!---Толщина линии. Это по сути толщина региона, где будет действовать мышка на перемещение:-->
+                        <Setter Property="StrokeThickness" Value="7"/>
+                        <!--Отобразим линии. Для этого установим значение свойств X1, X2, Y1, Y2:-->
+                        <Setter Property="X1" Value="1"/>
+                        <Setter Property="X2" Value="1"/>
+                        <Setter Property="Y1" Value="1"/>
+                        <Setter Property="Y2" Value="1"/>
+                        <!--Далее с помощью триггеров изменим значение соответствующих свойств. Добавляем триггеры к стилю, которые будут по разному реагировать на значения
+                        свойств VerticalAlignment и HorizontalAlignment:-->
+                        <Style.Triggers>
+                            <!--Нам понадобится использовать не просто триггер, а мульти-триггер, потому что нам понадобится анализировать два свойства сразу:-->
+                            <!--Для верхней линии:-->
+                            <MultiTrigger>
+                                <!--У мульти-триггера есть свойство Conditions, в которое мы можем установить интересующие нас значения:-->
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="VerticalAlignment" Value="Top"/>
+                                    <Condition Property="HorizontalAlignment" Value="Stretch"/>
+                                </MultiTrigger.Conditions>
+                                <!--Если у нас Top и Stretch, то для этой линии нужно задать Setter-ом свойство X2 в значение актуальной ширины самой линии:-->
+                                <Setter Property="X2" Value="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                <!--Поменяем курсор, чтобы он отображался соответствующим образом при наведении на линию-зону для изменения размеров окна:-->
+                                <Setter Property="Cursor" Value="SizeNS"/>
+                            </MultiTrigger>
+                            <!--Аналогично для остальный линий:-->
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="VerticalAlignment" Value="Bottom"/>
+                                    <Condition Property="HorizontalAlignment" Value="Stretch"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="X2" Value="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                <Setter Property="Cursor" Value="SizeNS"/>
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="VerticalAlignment" Value="Stretch"/>
+                                    <Condition Property="HorizontalAlignment" Value="Left"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Y2" Value="{Binding ActualHeight, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                <Setter Property="Cursor" Value="SizeWE"/>
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="VerticalAlignment" Value="Stretch"/>
+                                    <Condition Property="HorizontalAlignment" Value="Right"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Y2" Value="{Binding ActualHeight, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                <Setter Property="Cursor" Value="SizeWE"/>
+                            </MultiTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style TargetType="{x:Type Rectangle}">
+                        <!--<Setter Property="Fill" Value="DarkRed"/>-->
+                        <!--После того, как все прямоугольники и триггеры подготовлены, выключаем у них расцветку:-->
+                        <!--<Setter Property="Fill" Value="Transparent"/>-->
+                        <!--Если изменить цвет линий на Transparen, то триггер почему-то перестаёт работать. Поэтому, пока сделаем так:-->
+                        <Setter Property="Fill" Value="White"/>
+                        <Setter Property="Opacity" Value="0.01"/>
+                        <Setter Property="Width" Value="7"/>
+                        <Setter Property="Height" Value="7"/>
+                        <Style.Triggers>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="VerticalAlignment" Value="Top"/>
+                                    <Condition Property="HorizontalAlignment" Value="Left"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Cursor" Value="SizeNWSE"/>
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="VerticalAlignment" Value="Bottom"/>
+                                    <Condition Property="HorizontalAlignment" Value="Right"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Cursor" Value="SizeNWSE"/>
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="VerticalAlignment" Value="Top"/>
+                                    <Condition Property="HorizontalAlignment" Value="Right"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Cursor" Value="SizeNESW"/>
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="VerticalAlignment" Value="Bottom"/>
+                                    <Condition Property="HorizontalAlignment" Value="Left"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Cursor" Value="SizeNESW"/>
+                            </MultiTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Resources>
+                
+                <Line VerticalAlignment="Top"/>
+                <Line VerticalAlignment="Bottom"/>
+                <Line HorizontalAlignment="Left"/>
+                <Line HorizontalAlignment="Right"/>
+
+                <Rectangle VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <Rectangle VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                <Rectangle VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                <Rectangle VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+            </Grid>
         </Grid>
     </ControlTemplate>
     
