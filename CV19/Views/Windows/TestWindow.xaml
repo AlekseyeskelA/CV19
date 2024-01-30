@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CV19.Views.Windows"
         Style="{StaticResource CV19WindowStyle}"
-        Icon="../../Resources/WindowIcon.png"
+        Icon="../../Resources/WindowIcon.ico"
         Title="TestWindow" Height="450" Width="800">
     <!--Icon="../../Resources/WindowIcon.png" - Преподаватеть в свойствах файла WindowIcon.png в пункте "Дествия при сборке" поменял "Нет" на "Ресурс", но помоему, и так всё работает.-->
     <Grid>

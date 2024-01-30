@@ -29,6 +29,8 @@
         xmlns:system="clr-namespace:System;assembly=System.Runtime.Extensions"
         xmlns:cm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        Icon="../../Resources/WindowIcon.ico"
+        Style="{StaticResource CV19WindowStyle}"
         Title="{Binding Path=Title}"
         DataContext="{Binding MainWindowModel, Source={StaticResource Locator}}"
         Height="450" Width="800">

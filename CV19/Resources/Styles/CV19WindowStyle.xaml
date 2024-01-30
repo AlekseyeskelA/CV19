@@ -58,17 +58,43 @@
             <Border Name="PART_Border"
                     Margin="7"
                     BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="{TemplateBinding BorderThickness}"/>
+                    BorderThickness="{TemplateBinding BorderThickness}">
+                
+                <!--Возможно это не нужно:-->
+                <Border.Effect>
+                    <!--Блюр-эффект (шейдер, доступный "из коробки") на величину самой рамки:-->
+                    <!--<BlurEffect RenderingBias="{TemplateBinding BorderThickness}"/>-->
+                    <BlurEffect Radius="{TemplateBinding BorderThickness}"/>
+                </Border.Effect>
+            </Border>
+
+            <!--Немного переделали:-->
+            <!--<Border Name="PART_Border"
+                    Margin="7"
+                    BorderBrush="Red"
+                    BorderThickness="4">
+
+                --><!--Возможно это не нужно:--><!--
+                <Border.Effect>
+                    --><!--Блюр-эффект на величину самой рамки:--><!--
+                    <BlurEffect Radius="2"/>
+                </Border.Effect>-->
+            <!--</Border>-->
             <!--Внутри у нас будет ещё один Grid с именем PART_MainGrid для того, чтобы на него ссылаться в возможных триггерах или в логике работы самого окна.
             Точно также указываем, что у нас будет некоторый визуальный зазор снаружы, т.е. это будет пустая рамка, к который могут выходить какие-то дополнительные визуальные
             элементы, т.е. которые будут торчать как-бы визуально снаружи этого самого окна. Поэтому задаём отступы для Grid также на величину этого значения 7. Устанавливаем
             свойство Background, т.е. у нас будет визуально закрашенная область, и снаружи ещё по 7 точек с каждой стороны будут прозрачной рамкой, которую будет не видно.
             Указываем режим рендеринга текста для всех визуальных элементов, которые находятся внутри:-->
             <Grid x:Name="PART_MainGrid"
-                  Margin="7"
+                  Margin="10"
                   Background="{TemplateBinding Background}"
                   TextOptions.TextRenderingMode="ClearType"
                   TextOptions.TextFormattingMode="Display">
+                <!--Тень у нас будет отбрасывать визуальный элемент, который отображает содержимое (DropShadowEffect - это тоже шейдер, доступный "из коробки") :-->
+                <Grid.Effect>
+                    <!--<DropShadowEffect Opacity="0.5" BlurRadius="7" ShadowDepth="4" Color="Red"/>-->
+                    <DropShadowEffect Opacity="0.5" BlurRadius="7" ShadowDepth="4" Color="Blue"/>
+                </Grid.Effect>
                 <!--Разместим контент окна. ContentPresenter указывает, где конкретно внутри этого шаблона будет размещено содержимое окна. Т.е., снаружи у нас будет общая таблица
                 Grid,потом в эту таблицу будет помещена рамка окна потом будет размещена Grid, закрашенная в цвет фона окна, и внутри уже буде размещём специальный элемент
                 ContentPresenter, который бцдет отображать само содержимое этого окна.-->
@@ -84,7 +110,7 @@
                         <DockPanel Height="32">
 
                             <!--В файле TestWindow.xaml в начале прописываем путь к нашей картинке Icon="../../Resources/WindowIcon.png".-->
-                            <Image Name="PART_Icon" DockPanel.Dock="Left"
+                            <Image Name="PART_Icon" DockPanel.Dock="Left" Margin="3,-10,0,0"
                                    Source="{TemplateBinding Icon}">
                                 <i:Interaction.Behaviors>
                                     <b:WindowSystemIconBehavior/>
@@ -278,6 +304,9 @@
         <!--Нам необходимо добавить специальный зазор, в котором будут рисоваться технические элементы. Поэтому у окна надо добавить рамку:-->
         <Setter Property="BorderThickness" Value="7"/>
         
+        <!--Возможно это не нужно:-->
+        <Setter Property="BorderBrush" Value="DarkBlue"/>
+
         <!--Добавим основные цвета. Есть класс SystemColors, в котором есть основные системные цвета:-->
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
         <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
