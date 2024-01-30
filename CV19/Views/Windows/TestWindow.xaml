@@ -1,0 +1,23 @@
+﻿<Window x:Class="CV19.Views.Windows.TestWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" mc:Ignorable="d"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CV19.Views.Windows"
+        Style="{StaticResource CV19WindowStyle}"
+        Icon="../../Resources/WindowIcon.ico"
+        Title="TestWindow" Height="450" Width="800">
+    <!--Icon="../../Resources/WindowIcon.png" - Преподаватеть в свойствах файла WindowIcon.png в пункте "Дествия при сборке" поменял "Нет" на "Ресурс", но помоему, и так всё работает.-->
+    <Grid>
+        <!--Чтобы хапускалось это окно, в файле App.xaml временно заменим запись MainWindow на TestWindow, затем добавим стиль окна в резурсы. В ничале этого файла добавим
+        только что созданный стиль окна. Для того, чтобы  нарисовать своё собственное окно так, как нам захочется, необходимо у окна выстаивть свойство,которое называется
+        WindowsStyle в состояние None, убрав таким образом все визуальные элементы, которые рисует операционная система, т.е. меню окна, кнопки справа вверху и основ и основную рамку.
+        Всё исчезает и остаётся только контент окна, и в этот контент окна мы сможем нарисовать свои собственные визуальные элементы, но тогда вся ответственность по поведению этого
+        окна по масштабированию, сворачиванию, разворачиванию, закрытию лежит уже на нас. Это свойство мы установим в стиле.-->
+        <Button VerticalAlignment="Top" HorizontalAlignment="Left" Margin="30,40" Padding="20,5">HelloWorld</Button>
+        <Canvas>
+            <Ellipse Canvas.Left="153" Canvas.Bottom="20" StrokeThickness="1" Stroke="Blue" Fill="Red"
+                     Width="30" Height="20" Canvas.Top="188"/>
+        </Canvas>
+    </Grid>
+</Window>

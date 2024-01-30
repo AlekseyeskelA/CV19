@@ -1,0 +1,321 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+                    xmlns:b="clr-namespace:CV19.Infrastructure.Behaviors">
+
+    <!--Определим стиль для всех кнопок:-->
+    <Style x:Key="CV19WindowHeaderButtonStyle" TargetType="{x:Type Button}">
+        <!--Запрещаем передавать фокус кнопкам:-->
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        
+        <!--Определим шаблон прямо внутри самого стиля:-->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid>
+                        <!--Толщину и цвет рамки привязываем к стандартным параметрам кнопки:-->
+                        <Border x:Name="PART_Border" Background="Transparent"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}">
+                            <ContentPresenter/>
+                        </Border>
+                    </Grid>
+
+                    <!--Определим триггеры, которые будут по разному отображать кнопку в различных состояниях-->
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_Border" Property="Background" Value="LightSkyBlue"/>
+                            <Setter TargetName="PART_Border" Property="Opacity" Value="0.7"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="PART_Border" Property="Background" Value="Blue"/>
+                            <Setter TargetName="PART_Border" Property="Opacity" Value="1"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                        <!--Теперь применим этот стиль к нашим кнопкам в верхнем правом углу-->
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Geometry x:Key="MinimizeButtonIconGeometry">M0,8 H8 M0,7 H8 M0,6 H8</Geometry>
+    <Geometry x:Key="MaximizeToMaxButtonIconGeometry">M0,0 H8 V8 H0 V0 M0,1 H8 M0,2 H8</Geometry>
+    <Geometry x:Key="MaximizeToMinButtonIconGeometry">M0,3 H5 V8 H0 V3 M0,4 H5 M3,0 H8 V5 H7 M3,1 H8</Geometry>
+    <Geometry x:Key="CloseButtonIconGeometry">M0,0 L8,8 M0,8 L8,0</Geometry>
+    
+    <!--Сделаем шаблон, который создаст визуальный стиль нашего окна:-->
+    <ControlTemplate x:Key="CV19WindowTemplate" TargetType="{x:Type Window}">
+        <!--Далее рисуем само окно:-->
+        <Grid>
+            <!--Для рамки нужно обязательно задать имя потому, что на это имя расчитывает стандартный шаблон окна и некоторые триггеры, т.е. логика, которая зашита
+            именно в классе Window, ищет внутри содержимого окна объект с именем PART_Border. Цвет рамки BorderBrush можно указать вручную здесь, а можем привязаться к
+            свойству BorderBrush, которое описано в самом окне, и мы можем указать, что для рамки внутри шаблона мы хотим выполнить связь со свойством родительского элемента
+            (для типа Window), т.е. того, для чего рисуется шаблон. Для этого используется специальное расширение для привязки к свойствам TemplateBinding. Укажем, что
+            свойство рамки BorderBrush должно быть связано со всвойством BorderBrash родительского элемента окна. Аналогично - толщина. Внутри рамки у на ничего не будет.
+            Это просто визуальный элемент, который рисует прямоугольник:-->
+            <Border Name="PART_Border"
+                    Margin="7"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}">
+                
+                <!--Возможно это не нужно:-->
+                <Border.Effect>
+                    <!--Блюр-эффект (шейдер, доступный "из коробки") на величину самой рамки:-->
+                    <!--<BlurEffect RenderingBias="{TemplateBinding BorderThickness}"/>-->
+                    <BlurEffect Radius="{TemplateBinding BorderThickness}"/>
+                </Border.Effect>
+            </Border>
+
+            <!--Немного переделали:-->
+            <!--<Border Name="PART_Border"
+                    Margin="7"
+                    BorderBrush="Red"
+                    BorderThickness="4">
+
+                --><!--Возможно это не нужно:--><!--
+                <Border.Effect>
+                    --><!--Блюр-эффект на величину самой рамки:--><!--
+                    <BlurEffect Radius="2"/>
+                </Border.Effect>-->
+            <!--</Border>-->
+            <!--Внутри у нас будет ещё один Grid с именем PART_MainGrid для того, чтобы на него ссылаться в возможных триггерах или в логике работы самого окна.
+            Точно также указываем, что у нас будет некоторый визуальный зазор снаружы, т.е. это будет пустая рамка, к который могут выходить какие-то дополнительные визуальные
+            элементы, т.е. которые будут торчать как-бы визуально снаружи этого самого окна. Поэтому задаём отступы для Grid также на величину этого значения 7. Устанавливаем
+            свойство Background, т.е. у нас будет визуально закрашенная область, и снаружи ещё по 7 точек с каждой стороны будут прозрачной рамкой, которую будет не видно.
+            Указываем режим рендеринга текста для всех визуальных элементов, которые находятся внутри:-->
+            <Grid x:Name="PART_MainGrid"
+                  Margin="10"
+                  Background="{TemplateBinding Background}"
+                  TextOptions.TextRenderingMode="ClearType"
+                  TextOptions.TextFormattingMode="Display">
+                <!--Тень у нас будет отбрасывать визуальный элемент, который отображает содержимое (DropShadowEffect - это тоже шейдер, доступный "из коробки") :-->
+                <Grid.Effect>
+                    <!--<DropShadowEffect Opacity="0.5" BlurRadius="7" ShadowDepth="4" Color="Red"/>-->
+                    <DropShadowEffect Opacity="0.5" BlurRadius="7" ShadowDepth="4" Color="Blue"/>
+                </Grid.Effect>
+                <!--Разместим контент окна. ContentPresenter указывает, где конкретно внутри этого шаблона будет размещено содержимое окна. Т.е., снаружи у нас будет общая таблица
+                Grid,потом в эту таблицу будет помещена рамка окна потом будет размещена Grid, закрашенная в цвет фона окна, и внутри уже буде размещём специальный элемент
+                ContentPresenter, который бцдет отображать само содержимое этого окна.-->
+                <!--AdornerDecorator позволяет добавлять какие-то дополнительные визуальные элементы. Мы его добавляем вокруг ContentPresenter, чтобы в последствии другие
+                системы смогли как-то декорировать содержимое окна.-->
+                <!--Добавим заголовок окна с кнопками, а также какие-нибудь визуальные элементы, которые могут пригодиться для управления окном. В DockPanel мы сможем
+                в разные части окна пристыковывать разные элементы:-->
+                <DockPanel>
+                    <Grid Name="PART_Titlebar" DockPanel.Dock="Top" Background="WhiteSmoke">
+                        <i:Interaction.Behaviors>
+                            <b:WindowsTitleBarBehavior/>
+                        </i:Interaction.Behaviors>
+                        <DockPanel Height="32">
+
+                            <!--В файле TestWindow.xaml в начале прописываем путь к нашей картинке Icon="../../Resources/WindowIcon.png".-->
+                            <Image Name="PART_Icon" DockPanel.Dock="Left" Margin="3,-10,0,0"
+                                   Source="{TemplateBinding Icon}">
+                                <i:Interaction.Behaviors>
+                                    <b:WindowSystemIconBehavior/>
+                                </i:Interaction.Behaviors>
+                            </Image>
+
+
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                <!--<Button>Min</Button>
+                                <Button>Max</Button>
+                                <Button>Close</Button>-->
+
+                                <StackPanel.Resources>
+                                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource CV19WindowHeaderButtonStyle}"></Style>
+                                    
+                                    <!--Необходимо установить стиль для элемента Path, иначе в кнопках ничего отображаться не будет:-->
+                                    <Style TargetType="{x:Type Path}">
+                                        <Setter Property="StrokeThickness" Value="2"/>
+                                        <!--Цвет линии нужно привязать к цвету Foreground кнопки. В этом случае для кнопки, которая будет закрывать окно, мы сможем выставить
+                                        Foreground="Red", и крестик станет красным за счёт этой привязки:--> 
+                                        <Setter Property="Stroke" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+                                        <Setter Property="Margin" Value="10"/>
+                                    </Style>
+                                </StackPanel.Resources>
+                                <Button>
+                                    <i:Interaction.Behaviors>
+                                        <b:MinimizeWindow/>
+                                    </i:Interaction.Behaviors>
+                                    <Path Data="{StaticResource MinimizeButtonIconGeometry}"/>                                    
+                                </Button>
+                                <Button>
+                                    <i:Interaction.Behaviors>
+                                        <b:WindowStateChange/>
+                                    </i:Interaction.Behaviors>
+                                    <Path Data="{StaticResource MaximizeToMaxButtonIconGeometry}"/>
+                                </Button>
+                                <Button Foreground="Red">
+                                    <i:Interaction.Behaviors>
+                                        <b:CloseWindow/>
+                                    </i:Interaction.Behaviors>
+                                    <Path Data="{StaticResource CloseButtonIconGeometry}"/>
+                                </Button>
+                            </StackPanel>
+                            
+                            <!--<TextBlock Name="PART_Title" Text="123"/>-->
+
+                            <!--Свойство Text элемента TextBlock привяжем к свойству Title:--> 
+                            <TextBlock Name="PART_Title"
+                                       Text="{TemplateBinding Title}"
+                                       FontSize="12"
+                                       FontFamily="Segoe UI"
+                                       Margin="4,0,0,0"
+                                       VerticalAlignment="Center"/>
+                        </DockPanel>
+                    </Grid>
+                    <AdornerDecorator>
+                        <ContentPresenter/>
+                    </AdornerDecorator>
+                </DockPanel>
+            </Grid>
+            
+            <!--Сделаем возможность масштабирования элементов окна:-->
+            <Grid x:Name="PART_ResizeElements">
+                <i:Interaction.Behaviors>
+                    <b:ResizeWindowPanel/>
+                </i:Interaction.Behaviors>
+                <Grid.Resources>
+                    <Style TargetType="{x:Type Line}">
+                        <!--<Setter Property="Stroke" Value="Red"/>-->
+                        <!--После того, как все линии и триггеры подготовлены, выключаем у линий расцветку:-->
+                        <!--<Setter Property="Stroke" Value="Transparent"/>-->
+                        <!--Если изменить цвет линий на Transparen, то триггер почему-то перестаёт работать. Поэтому, пока сделаем так:-->
+                        <Setter Property="Stroke" Value="White"/>
+                        <Setter Property="Opacity" Value="0.01"/>
+                        <!---Толщина линии. Это по сути толщина региона, где будет действовать мышка на перемещение:-->
+                        <Setter Property="StrokeThickness" Value="7"/>
+                        <!--Отобразим линии. Для этого установим значение свойств X1, X2, Y1, Y2:-->
+                        <Setter Property="X1" Value="1"/>
+                        <Setter Property="X2" Value="1"/>
+                        <Setter Property="Y1" Value="1"/>
+                        <Setter Property="Y2" Value="1"/>
+                        <!--Далее с помощью триггеров изменим значение соответствующих свойств. Добавляем триггеры к стилю, которые будут по разному реагировать на значения
+                        свойств VerticalAlignment и HorizontalAlignment:-->
+                        <Style.Triggers>
+                            <!--Нам понадобится использовать не просто триггер, а мульти-триггер, потому что нам понадобится анализировать два свойства сразу:-->
+                            <!--Для верхней линии:-->
+                            <MultiTrigger>
+                                <!--У мульти-триггера есть свойство Conditions, в которое мы можем установить интересующие нас значения:-->
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="VerticalAlignment" Value="Top"/>
+                                    <Condition Property="HorizontalAlignment" Value="Stretch"/>
+                                </MultiTrigger.Conditions>
+                                <!--Если у нас Top и Stretch, то для этой линии нужно задать Setter-ом свойство X2 в значение актуальной ширины самой линии:-->
+                                <Setter Property="X2" Value="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                <!--Поменяем курсор, чтобы он отображался соответствующим образом при наведении на линию-зону для изменения размеров окна:-->
+                                <Setter Property="Cursor" Value="SizeNS"/>
+                            </MultiTrigger>
+                            <!--Аналогично для остальный линий:-->
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="VerticalAlignment" Value="Bottom"/>
+                                    <Condition Property="HorizontalAlignment" Value="Stretch"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="X2" Value="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                <Setter Property="Cursor" Value="SizeNS"/>
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="VerticalAlignment" Value="Stretch"/>
+                                    <Condition Property="HorizontalAlignment" Value="Left"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Y2" Value="{Binding ActualHeight, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                <Setter Property="Cursor" Value="SizeWE"/>
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="VerticalAlignment" Value="Stretch"/>
+                                    <Condition Property="HorizontalAlignment" Value="Right"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Y2" Value="{Binding ActualHeight, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                <Setter Property="Cursor" Value="SizeWE"/>
+                            </MultiTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style TargetType="{x:Type Rectangle}">
+                        <!--<Setter Property="Fill" Value="DarkRed"/>-->
+                        <!--После того, как все прямоугольники и триггеры подготовлены, выключаем у них расцветку:-->
+                        <!--<Setter Property="Fill" Value="Transparent"/>-->
+                        <!--Если изменить цвет линий на Transparen, то триггер почему-то перестаёт работать. Поэтому, пока сделаем так:-->
+                        <Setter Property="Fill" Value="White"/>
+                        <Setter Property="Opacity" Value="0.01"/>
+                        <Setter Property="Width" Value="7"/>
+                        <Setter Property="Height" Value="7"/>
+                        <Style.Triggers>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="VerticalAlignment" Value="Top"/>
+                                    <Condition Property="HorizontalAlignment" Value="Left"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Cursor" Value="SizeNWSE"/>
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="VerticalAlignment" Value="Bottom"/>
+                                    <Condition Property="HorizontalAlignment" Value="Right"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Cursor" Value="SizeNWSE"/>
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="VerticalAlignment" Value="Top"/>
+                                    <Condition Property="HorizontalAlignment" Value="Right"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Cursor" Value="SizeNESW"/>
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="VerticalAlignment" Value="Bottom"/>
+                                    <Condition Property="HorizontalAlignment" Value="Left"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Cursor" Value="SizeNESW"/>
+                            </MultiTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Resources>
+                
+                <Line VerticalAlignment="Top"/>
+                <Line VerticalAlignment="Bottom"/>
+                <Line HorizontalAlignment="Left"/>
+                <Line HorizontalAlignment="Right"/>
+
+                <Rectangle VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <Rectangle VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                <Rectangle VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                <Rectangle VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+            </Grid>
+        </Grid>
+    </ControlTemplate>
+    
+    <Style x:Key="CV19WindowStyle" TargetType="{x:Type Window}">
+        <!--Для того, чтобы  нарисовать своё собственное окно так, как нам захочется, необходимо у окна выстаивть свойство,которое называется
+        WindowsStyle в состояние None, убрав таким образом все визуальные элементы, которые рисует операционная система, т.е. меню окна, кнопки справа вверху и основ и основную рамку.
+        Всё исчезает и остаётся только контент окна, и в этот контент окна мы сможем нарисовать свои собственные визуальные элементы, но тогда вся ответственность по поведению этого
+        окна по масштабированию, сворачиванию, разворачиванию, закрытию лежит уже на нас. Это свойство мы установим в стиле:-->
+        <Setter Property="WindowStyle" Value="None"/>
+
+        <!--Для того, чтобы окно можно было рисовать с прозрачными элементами (например, с быркой посередине, в виде звезды), необходимо обеспечить возможность рисовать окно
+        с прозрачными элементами для этого выставим следующее свойство (оно по умолчанию выключено):-->
+        <Setter Property="AllowsTransparency" Value="True"/>
+        
+        <!--Нам необходимо добавить специальный зазор, в котором будут рисоваться технические элементы. Поэтому у окна надо добавить рамку:-->
+        <Setter Property="BorderThickness" Value="7"/>
+        
+        <!--Возможно это не нужно:-->
+        <Setter Property="BorderBrush" Value="DarkBlue"/>
+
+        <!--Добавим основные цвета. Есть класс SystemColors, в котором есть основные системные цвета:-->
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
+        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
+        
+        <!--Обеспечиваем возможность масштабирования окна, которое нам придётся в последствии реализовать самостоятельно спомощью специальных визуальных элементов:-->
+        <Setter Property="ResizeMode" Value="CanResizeWithGrip"/>
+        
+        <!--Применим выше созданный шаблон в стиле:-->
+        <Setter Property="Template" Value="{StaticResource CV19WindowTemplate}"/>
+    </Style>
+    
+</ResourceDictionary>
