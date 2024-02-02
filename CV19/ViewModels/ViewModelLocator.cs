@@ -9,6 +9,8 @@ namespace CV19.ViewModels
         /* Свойство для получения MainWindowViewModel. Получать её мы будем так: Мы обращаемся к хосту App.Host внутри нашего приложения, берём сервисы (.Services),
         и просим выдать нам класс сервиса MainWindowViewModel (.GetRequiredService<MainWindowViewModel>())*/
         public MainWindowViewModel MainWindowModel => App.Host.Services.GetRequiredService<MainWindowViewModel>();
+
+        public StudentsManagementViewModel StudentsManagement => App.Host.Services.GetRequiredService<StudentsManagementViewModel>();
     }
     // Далее компилируемся, и размещаем объект этого класса в ресурсах на уровне всего приложения в файле App.Xaml.
 }

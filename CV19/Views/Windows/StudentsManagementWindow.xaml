@@ -1,0 +1,27 @@
+﻿<Window x:Class="CV19.Views.Windows.StudentsManagementWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" mc:Ignorable="d"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CV19"        
+        DataContext="{Binding StudentsManagement, Source={StaticResource Locator}}"
+        Title="{Binding Title}" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" MinWidth="200"/>
+            <ColumnDefinition Width="200" MinWidth="200"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <GroupBox Grid.Column="0" Header="Группы">
+            <ListBox/>
+        </GroupBox>
+        <GroupBox Grid.Column="1" Header="Студенты">
+            <ListBox/>
+        </GroupBox>
+        <GroupBox Grid.Column="2" Header="Информация">
+            <ListBox/>
+        </GroupBox>
+
+        <GridSplitter Grid.Column="0" HorizontalAlignment="Right" Width="3"></GridSplitter>
+    </Grid>
+</Window>
