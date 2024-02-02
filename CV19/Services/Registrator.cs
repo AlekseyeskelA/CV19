@@ -1,5 +1,6 @@
 ﻿using CV19.Models.Decanat;
 using CV19.Services.Interfaces;
+using CV19.Services.Students;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CV19.Services
