@@ -23,6 +23,7 @@ namespace CV19.Services
             /* Так как у нас хранидище данных в памяти, то создаём сервис Singlton, который будет создан для всего приложения как один объект: */
             services.AddSingleton<StudentsRepository>();
             services.AddSingleton<GroupsRepository>();
+            services.AddSingleton<StudentsManager>();
 
             return services;
         }
