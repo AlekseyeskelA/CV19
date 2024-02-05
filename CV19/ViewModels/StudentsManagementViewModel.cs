@@ -31,5 +31,13 @@ namespace CV19.ViewModels
         /// <summary>Выбранная группа студентов</summary>
         public Group SelectedGroup { get => _SelectedGroup; set => Set(ref _SelectedGroup, value); }
         #endregion
+
+        #region SelectedStudent : Student - Выбранный студент
+        /// <summary>Выбранный студент</summary>
+        private Student _SelectedStudent;
+
+        /// <summary>Выбранный студент</summary>
+        public Student SelectedStudent { get => _SelectedStudent; set => Set(ref _SelectedStudent, value); }
+        #endregion
     }
 }
