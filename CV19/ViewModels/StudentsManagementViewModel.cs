@@ -1,7 +1,9 @@
-﻿using CV19.Models.Decanat;
+﻿using CV19.Infrastructure.Commands;
+using CV19.Models.Decanat;
 using CV19.Services.Students;
 using CV19.ViewModels.Base;
 using System.Collections.Generic;
+using System.Windows.Input;
 
 namespace CV19.ViewModels
 {
@@ -10,6 +12,32 @@ namespace CV19.ViewModels
         // Конструктор:
         private readonly StudentsManager _StudentsManager;
         public StudentsManagementViewModel(StudentsManager StudentsManager) => _StudentsManager = StudentsManager;
+
+        #region Команды
+        #region Command EditStudentCommand - Команда редактирования студента			
+        private ICommand _EditStudentCommand;
+        /// <summary>Команда редактирования студента</summary>
+        public ICommand EditStudentCommand => _EditStudentCommand
+            ??= new LambdaCommand(OnEditStudentCommandExecuted, CanEditStudentCommandExecute);
+        private static bool CanEditStudentCommandExecute(object p) => p is Student;
+        private void OnEditStudentCommandExecuted(object p)
+        {
+            var student = (Student)p;   // Приводим параметр команды к студенту.
+        }
+        #endregion
+
+        #region Command CreateNewStudentCommand - Создание нового студента			
+        private ICommand _CreateNewStudentCommand;
+        /// <summary>Создание нового студента</summary>
+        public ICommand CreateNewStudentCommand => _CreateNewStudentCommand
+            ??= new LambdaCommand(OnCreateNewStudentCommandExecuted, CanCreateNewStudentCommandExecute);
+        private static bool CanCreateNewStudentCommandExecute(object p) => p is Group; // Можно создаватьтудента только выбраннуюгруппу.
+        private void OnCreateNewStudentCommandExecuted(object p)
+        {
+            var group = (Group)p;
+        }
+        #endregion
+        #endregion
 
         /* Проверим, связь View и ViewModel при помощи зоголовка: */
         #region Title : string - Заголовок окна
