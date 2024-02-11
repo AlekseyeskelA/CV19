@@ -4,7 +4,7 @@ using System.Windows;
 
 namespace CV19.Views.Windows
 {
-    public partial class StudentEditorWindow
+    public partial class StudentManagerWindow
     {
         #region FirstName : string - Имя
         /// <summary>Имя</summary>
@@ -12,7 +12,7 @@ namespace CV19.Views.Windows
             DependencyProperty.Register(
                 nameof(FirstName),
                 typeof(string),
-                typeof(StudentEditorWindow),
+                typeof(StudentManagerWindow),
                 new PropertyMetadata(default(string)));
 
         /// <summary>Имя</summary>
@@ -27,7 +27,7 @@ namespace CV19.Views.Windows
             DependencyProperty.Register(
                 nameof(LastName),
                 typeof(string),
-                typeof(StudentEditorWindow),
+                typeof(StudentManagerWindow),
                 new PropertyMetadata(default(string)));
 
         /// <summary>Фамилия</summary>
@@ -42,7 +42,7 @@ namespace CV19.Views.Windows
             DependencyProperty.Register(
                 nameof(Patronymic),
                 typeof(string),
-                typeof(StudentEditorWindow),
+                typeof(StudentManagerWindow),
                 new PropertyMetadata(default(string)));
 
         /// <summary>Отчество</summary>
@@ -57,7 +57,7 @@ namespace CV19.Views.Windows
             DependencyProperty.Register(
                 nameof(Rating),
                 typeof(double),
-                typeof(StudentEditorWindow),
+                typeof(StudentManagerWindow),
                 new PropertyMetadata(default(double)));
 
         /// <summary>Оценка</summary>
@@ -72,7 +72,7 @@ namespace CV19.Views.Windows
             DependencyProperty.Register(
                 nameof(Birthday),
                 typeof(DateTime),
-                typeof(StudentEditorWindow),
+                typeof(StudentManagerWindow),
                 new PropertyMetadata(default(DateTime)));
 
         /// <summary>Дата рождения</summary>
@@ -82,6 +82,6 @@ namespace CV19.Views.Windows
         #endregion
 
         /* Далее выполним привязку внутри окна к самому себе. */
-        public StudentEditorWindow() => InitializeComponent();
+        public StudentManagerWindow() => InitializeComponent();
     }
 }

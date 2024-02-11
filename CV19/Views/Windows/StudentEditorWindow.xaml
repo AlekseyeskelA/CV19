@@ -1,4 +1,4 @@
-﻿<Window x:Class="CV19.Views.Windows.StudentEditorWindow"
+﻿<Window x:Class="CV19.Views.Windows.StudentManagerWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" mc:Ignorable="d"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,8 +8,7 @@
         Title="Редактирование студента"        
         Height="234" Width="350"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        ShowInTaskbar="False"
-        WindowStyle="ToolWindow"
+        ShowInTaskbar="False"        
         ResizeMode="NoResize">
     <DockPanel>
         <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0,7,0,0"
@@ -19,13 +18,13 @@
             <!--Добавим кнопки управление c помощью них. Управление можно сделать через команды, а можно сделать через CodeBehind-обрабатчики событий.
             Сделаем команды. Параметром у нас будет привязка в относительном режиме RelativeSource, которая будет искать тип Window:-->
             <Button Content="Ok" Margin="10,0" Padding="35,5" IsDefault="True" FontWeight="Bold"
-                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=l:StudentEditorWindow}}">
+                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=l:StudentManagerWindow}}">
                 <Button.Command>
                     <cmd:CloseDialogCommand DialogResult="True"/>
                 </Button.Command>
             </Button>
             <Button Content="Cencel" Margin="10,0" IsCancel="True"
-                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=l:StudentEditorWindow}}">
+                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=l:StudentManagerWindow}}">
                 <Button.Command>
                     <cmd:CloseDialogCommand DialogResult="False"/>
                 </Button.Command>

@@ -25,8 +25,31 @@ namespace CV19.Services.Students
             _Groups = Groups;
         }
 
+        // Метод создания студента для указанной по её имени группы:
+        public bool Create(Student Student, string GroupName)
+        {
+            GroupName = "";
+            if (Student is null) throw new ArgumentNullException(nameof(Student));
+            if (string.IsNullOrWhiteSpace(GroupName)) throw new ArgumentException("Некорректное имя группы", nameof(GroupName));
+
+            var group = _Groups.Get(GroupName);
+            if (group is null)
+            {
+                group = new Group { Name = GroupName };
+                _Groups.Add(group);
+            }
+            /* добавляем в список студентов нового студента для группы: */
+            group.Students.Add(Student);
+            /* Добавляем студента в репозиторий: */
+            _Students.Add(Student);
+
+            return true;
+        }
+
         /* Шаблон UnitOfWork подразумевает создание некоторой сущности, которая выполняет какой-то набор операций, нацеленный на какую-то конкретную сущность.
          * В нашеим случае это - студенты. Но, для выполнения операций над студентами может понадобиться управление информацией по гркппам. Т.е. таким образом
          * шаблон UnitOfWork внутри себя может использовать какие-то более атомарные сервисы для выполнения возложенных на него обязанностей.*/
+
+        public void Update(Student Student) => _Students.Update(Student.Id, Student);
     }
 }
