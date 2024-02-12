@@ -1,4 +1,6 @@
-﻿using CV19.Services.Interfaces;
+﻿using CV19.Models.Decanat;
+using CV19.Services.Interfaces;
+using CV19.Services.Students;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CV19.Services
@@ -17,6 +19,13 @@ namespace CV19.Services
             
             services.AddTransient<IAsyncDataService, AsyncDataService>();   // Регистрируем новый сервис и подключим его во главной Вью-Модели.
             services.AddTransient<IWebServerService, HttpListenerWebServer>();
+
+            /* Так как у нас хранидище данных в памяти, то создаём сервис Singlton, который будет создан для всего приложения как один объект: */
+            services.AddSingleton<StudentsRepository>();
+            services.AddSingleton<GroupsRepository>();
+            services.AddSingleton<StudentsManager>();
+
+            services.AddTransient<IUserDialogService, WindowsUserDialogService>();
 
             return services;
         }
