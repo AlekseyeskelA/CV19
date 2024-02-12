@@ -9,6 +9,9 @@ namespace CV19.Services
 {
     class WindowsUserDialogService : IUserDialogService
     {
+        /* Способ расположить окно по центру родительского: */
+        private static Window ActiveWindow => Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive);   // Найдём активное окно.
+
         /* В любой момент мы можем отказаться от класса IUserDialogService, переписать его иначе, реализовав этот интерфейс другим способом, например, 
          * с использованием web-интерфейса, и диалоговые окна будут показаны уже другим способом. И при этом модели-представления теперь расчитывают только
          * на этот интерфейс для взаимодействия. Т.е., таким образом мы развязали логическую и визуальную части. */
@@ -48,8 +51,8 @@ namespace CV19.Services
                 Birthday = student.Birthday,
                 /* Спомощью следующего свойства можно открыть окно диалога по центру родительского. Преподаватель сказал, что с главным окном это очень просто,
                  * а так приходится прибегать к таким вот костылям. Так плохо, потому что приходится привязываться к конкретному окну:*/
-                Owner = Application.Current.Windows.OfType<StudentsManagementWindow>().FirstOrDefault(),
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
+                Owner = ActiveWindow,                                       // Способ расположить окно по центру родительского.
+                WindowStartupLocation = WindowStartupLocation.CenterOwner   // Это можно написатьлибо здесь, лито в xaml-разметке в свойствая окна.
                 /* В качестве алтенативы можно передавать отбельный параметр в метод Edit, но преподаватель сказал, что можно ещё подумать. */
             };
             if (dlg.ShowDialog() != true)
@@ -64,6 +67,18 @@ namespace CV19.Services
 
             /* И возвращаем положительный результат: */
             return true;
+        }
+
+        public string GetStringValue(string Message, string Caption, string DefaultValue = null)
+        {
+            var value_dialog = new StringValueDialogWindow
+            {
+                Message = Message,
+                Title = Caption,
+                Value = DefaultValue ?? string.Empty,
+                Owner = ActiveWindow                                        // Способ расположить окно по центру родительского.
+            };
+            return value_dialog.ShowDialog() == true ? value_dialog.Value : DefaultValue;
         }
     }
 }

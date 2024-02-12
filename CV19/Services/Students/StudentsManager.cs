@@ -28,7 +28,6 @@ namespace CV19.Services.Students
         // Метод создания студента для указанной по её имени группы:
         public bool Create(Student Student, string GroupName)
         {
-            GroupName = "";
             if (Student is null) throw new ArgumentNullException(nameof(Student));
             if (string.IsNullOrWhiteSpace(GroupName)) throw new ArgumentException("Некорректное имя группы", nameof(GroupName));
 

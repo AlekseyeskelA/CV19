@@ -18,4 +18,14 @@ namespace CV19.Services.Interfaces
 
         /* Теперь наделим студентов и группу интерфейсом сущности. */
     }
+
+    /* Альтернативный вариант: */
+    //public interface IRepository<IEntity> where IEntity : Models.Interfaces.IEntity
+    //{
+    //    void Add(IEntity item);
+    //    IEnumerable<IEntity> GetAll();
+    //    IEntity Get(int id) => GetAll().FirstOrDefault(item => item.Id == id);
+    //    bool Remove(IEntity item);
+    //    void Update(int id, IEntity item);
+    //}
 }

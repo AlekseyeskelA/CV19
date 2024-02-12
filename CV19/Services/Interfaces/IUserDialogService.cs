@@ -23,5 +23,8 @@ namespace CV19.Services.Interfaces
         bool Confirm(string Message, string Caption, bool Exclamation = false);
 
         /* Далее сделаем реализацию этого сервиса WindowsUserDialogService в папке Services. */
+
+        /* Для наглядности удобства полученной структуры добавим текстовое сообжение и соответствующее диалоговое окно StringValueDialogWindow: */
+        string GetStringValue(string Message, string Caption, string DefaultValue = null);
     }
 }

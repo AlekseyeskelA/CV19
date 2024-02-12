@@ -96,6 +96,20 @@ namespace CV19.ViewModels
                 OnCreateNewStudentCommandExecuted(p);
         }
         #endregion
+
+        #region Command TestCommand - Тестовая команда			
+        private ICommand _TestCommand;
+        /// <summary>Тестовая команда</summary>
+        public ICommand TestCommand => _TestCommand
+            ??= new LambdaCommand(OnTestCommandExecuted, CanTestCommandExecute);
+        private bool CanTestCommandExecute(object p) => true;
+        private void OnTestCommandExecuted(object p)
+        {
+            var value = _UserDialog.GetStringValue("Введите строку", "123", "значение по умолчанию");
+
+            _UserDialog.ShowInformation($"Введено {value}", "123");
+        }
+        #endregion
         #endregion
 
         /* Проверим, связь View и ViewModel при помощи зоголовка: */
