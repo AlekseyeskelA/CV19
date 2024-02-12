@@ -11,6 +11,8 @@ namespace CV19.ViewModels
             services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<CountriesStatisticViewModel>();
             services.AddSingleton<WebServerViewModel>();
+            services.AddTransient<StudentsManagementViewModel>();   // Режим Transient - модель будет создаваться каждый раз, когда будет создаваться новое окно,
+                                                                    // ViewModel будет каждый раз новая.
 
             return services;
         }

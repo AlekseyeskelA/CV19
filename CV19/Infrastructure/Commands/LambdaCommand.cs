@@ -33,6 +33,14 @@ namespace CV19.Infrastructure.Commands
         public override bool CanExecute(object parameter) => _CanExecute?.Invoke(parameter) ?? true;
 
         // Реализация метода Execute. Вызываем метод Execute и передаём в него параметр:
-        public override void Execute(object parameter) => _Execute(parameter);
+        //public override void Execute(object parameter) => _Execute(parameter);
+
+        // Немного подкорректируем код: Если невозможно выполнить команду, то выходим. Преподаватель утверждает, что "она существенно упорщает жизнь,
+        // как показывает практика":
+        public override void Execute(object parameter)
+        {
+            if (!CanExecute(parameter)) return;
+            _Execute(parameter);
+        }
     }
 }
